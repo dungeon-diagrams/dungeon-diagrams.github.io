@@ -1,0 +1,29 @@
+{
+  "name": "dungeons-and-diagrams",
+  "description": "Web interface for Dungeons and Diagrams game",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist/*; gulp",
+    "serve": "serve dist"
+  },
+  "author": {
+    "name": "Jesse Clark",
+    "email": "jesse@modusponens.org"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.3.0",
+    "gulp-rewrite-imports": "^1.1.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "serve": "^14.0.1",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "preact": "^10.10.0"
+  },
+  "overrides": {
+    "glob-parent": "^6.0.1"
+  }
+}
