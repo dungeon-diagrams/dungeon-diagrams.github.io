@@ -4,8 +4,8 @@ const ts = require("gulp-typescript");
 const tsProject = ts.createProject("tsconfig.json");
 
 const paths = {
-  pages: ["src/*.html"],
-  libs: ["node_modules/preact/dist/preact.module.js", "node_modules/preact/dist/preact.module.js.map"]
+  pages: ["src/**/*.html"],
+  js: ["src/**/*.js"]
 };
 
 gulp.task("copy-html", function () {
@@ -13,7 +13,7 @@ gulp.task("copy-html", function () {
 });
 
 gulp.task("copy-libs", function () {
-  return gulp.src(paths.libs).pipe(gulp.dest("dist/scripts"));
+  return gulp.src(paths.js).pipe(gulp.dest("dist"));
 });
 
 gulp.task("compile-typescript", function () {
@@ -22,14 +22,19 @@ gulp.task("compile-typescript", function () {
     .pipe(tsProject()).js
     .pipe(rewriteImports({
       mappings: {
-        'preact': './preact.module.js'
+        'preact': '../lib/preact.module.js',
+        'runes': '../lib/runes.js'
       }
     }))
-    .pipe(gulp.dest("dist/scripts"))
+    .pipe(gulp.dest("dist"))
   );
 });
 
 gulp.task(
   "default",
-  gulp.parallel("copy-html", "copy-libs", "compile-typescript")
+  gulp.parallel(
+    "copy-html",
+    "copy-libs",
+    "compile-typescript"
+  )
 );

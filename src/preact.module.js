@@ -1,1 +1,0 @@
-../node_modules/preact/dist/preact.module.js
