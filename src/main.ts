@@ -1,8 +1,37 @@
 import { h, Component, render } from "preact";
 import { sayHello } from "./widget.js";
+import { runes } from 'runes';
+import { PuzzleGrid, parsePuzzleSpec } from './puzzle.js';
 
-const el = document.getElementById("greeting");
+declare global {
+    interface Window {
+        runes: object;
+        test: any;
+    }
+}
+
+const spec2 = `
+.25332332
+1#.......
+4..###.#.
+2.#....#.
+2.#.c.#m.
+3.#...##.
+4.####m..
+2.....#.#
+5####...#
+`;
+
+window.runes = runes;
+
+
+const examplePuzzle = new PuzzleGrid(parsePuzzleSpec(spec2));
+window.test = examplePuzzle;
+
+
+const el = document.getElementById("app");
 if (el) {
     el.innerHTML = '';
-    render(sayHello("here"), el);
+    render(sayHello("foo"), el);
+    // render(examplePuzzle, el);
 }
