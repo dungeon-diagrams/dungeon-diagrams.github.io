@@ -1,14 +1,21 @@
 import { h, Component, render } from "preact";
+import * as preact from 'preact';
+import { default as runes } from 'runes';
+
 import { sayHello } from "./widget.js";
-// import { runes } from 'runes';
-import { PuzzleGrid, parsePuzzleSpec } from './puzzle.js';
+import { parsePuzzleSpec } from './puzzle.js';
+import { PuzzleGrid } from './puzzle-view.js';
 
 declare global {
     interface Window {
         runes: object;
         test: any;
+        preact: object;
     }
 }
+
+window.runes = runes;
+window.preact = preact;
 
 const spec2 = `
 .25332332

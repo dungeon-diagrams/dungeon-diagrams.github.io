@@ -1,1 +1,2 @@
-declare function runes(string: string): string[];
+declare module 'runes';
+// declare function runes(string: string): string[];

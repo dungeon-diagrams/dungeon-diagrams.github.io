@@ -1,5 +1,3 @@
-import { h, Component } from "preact";
-
 enum TileType {
     FLOOR = ".",
     WALL = "#",
@@ -7,7 +5,7 @@ enum TileType {
     TREASURE = "t"
 }
 
-class Tile {
+export class Tile {
     type: TileType;
 
     constructor(spec: string) {
@@ -15,44 +13,11 @@ class Tile {
     }
 }
 
-interface PuzzleState {
+export interface PuzzleState {
     name: string;
     rows?: number[];
     cols?: number[];
     cells: Tile[][];
-}
-
-export class PuzzleGrid extends Component<PuzzleState> {
-    render(props: PuzzleState) {
-        const rowEls = props.cells.map((row, y)=>(
-            <tr>
-                {row.map((tile, x)=>(
-                    <td><PuzzleCell x={x} y={y} tile={tile}/></td>
-                ))}
-            </tr>
-        ));
-        return (
-            <table>
-                <tbody>
-                    {rowEls}
-                </tbody>
-            </table>
-        )
-    }
-}
-
-interface CellProps {
-    x: number;
-    y: number;
-    tile: Tile;
-}
-
-export class PuzzleCell extends Component<CellProps> {
-    render(props: CellProps) {
-        return (
-            <div>{props.tile.type}</div>
-        )
-    }
 }
 
 
@@ -97,5 +62,3 @@ export function parsePuzzleSpec(spec: string) {
         cells: cells
     }
 }
-
-export const examplePuzzle = new PuzzleGrid(parsePuzzleSpec(spec2));

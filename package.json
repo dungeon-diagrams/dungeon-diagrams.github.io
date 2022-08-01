@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf dist",
-    "build": "gulp",
+    "build": "gulp build",
+    "watch": "gulp watch",
     "serve": "serve dist"
   },
   "author": {
@@ -14,9 +15,11 @@
     "email": "jesse@modusponens.org"
   },
   "devDependencies": {
+    "cjstoesm": "^2.1.2",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
     "gulp-rewrite-imports": "^1.1.0",
+    "gulp-sourcemaps": "^3.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
     "serve": "^14.0.1",
     "typescript": "^4.7.4"

@@ -1,12 +1,18 @@
 const gulp = require("gulp");
 const rewriteImports = require("gulp-rewrite-imports");
+const sourcemaps = require("gulp-sourcemaps");
 const ts = require("gulp-typescript");
 const tsProject = ts.createProject("tsconfig.json");
+const cjstoesm = require('cjstoesm');
 
 const paths = {
     static: [
         "src/**/*.html",
-        "src/**/*.js"
+        "src/**/*.module.js",
+        "src/**/*.js.map"
+    ],
+    libsCJS: [
+        "src/lib/runes.js"
     ]
 };
 
@@ -14,24 +20,46 @@ gulp.task("copy-static", function () {
     return gulp.src(paths.static).pipe(gulp.dest("dist"));
 });
 
+gulp.task("convert-cjs", async function (cb) {
+    const result = await cjstoesm.transform({
+        input: paths.libsCJS,
+        outDir: "dist/lib/"
+    });
+    cb();
+});
+
 gulp.task("compile-typescript", function () {
     return (
         tsProject.src()
-        .pipe(tsProject()).js
-        .pipe(rewriteImports({
-            mappings: {
-                'preact': '../lib/preact.module.js',
-                'runes': '../lib/runes.js'
-            }
-        }))
-        .pipe(gulp.dest("dist"))
+        .pipe(sourcemaps.init())
+            .pipe(tsProject()).js
+            .pipe(rewriteImports({
+                mappings: {
+                    'preact': '../lib/preact.module.js',
+                    'runes': '../lib/runes.js'
+                }
+            }))
+        .pipe(sourcemaps.write("."))
+        .pipe(gulp.dest("./dist"))
+    );
+});
+
+gulp.task('watch-typescript', function() {
+    gulp.watch('src/**/*.ts',
+        {ignoreInitial: true},
+        gulp.series('compile-typescript')
     );
 });
 
 gulp.task(
-    "default",
+    "build", 
     gulp.parallel(
         "copy-static",
+        "convert-cjs",
         "compile-typescript"
     )
 );
+
+gulp.task('watch', gulp.parallel('build', 'watch-typescript'));
+
+gulp.task('default', gulp.series('build'));
