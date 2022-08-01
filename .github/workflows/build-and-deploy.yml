@@ -1,15 +1,10 @@
-name: NodeJS NPM build
+name: NodeJS deploy to pages
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
-# Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-permissions:
-  pages: write      # to deploy to Pages
-  id-token: write   # to verify the deployment originates from an appropriate source
 
 jobs:
   # Build job
@@ -36,12 +31,10 @@ jobs:
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
-        # Artifact name
-        name: "artifact" # optional, default is artifact
-        # A file, directory or wildcard pattern that describes what to upload
+        name: "github-pages"
         path: "./dist"
         # The desired behavior if no files are found using the provided path.
-        if-no-files-found: warn # optional, default is warn
+        if-no-files-found: warn
         retention-days: 7
 
   # Deploy job
@@ -49,6 +42,11 @@ jobs:
     # Add a dependency to the build job
     needs: build
     if: github.event_name == 'push'
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
 
     # Deploy to the github-pages environment
     environment:
