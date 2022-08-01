@@ -4,37 +4,34 @@ const ts = require("gulp-typescript");
 const tsProject = ts.createProject("tsconfig.json");
 
 const paths = {
-  pages: ["src/**/*.html"],
-  js: ["src/**/*.js"]
+    static: [
+        "src/**/*.html",
+        "src/**/*.js"
+    ]
 };
 
-gulp.task("copy-html", function () {
-  return gulp.src(paths.pages).pipe(gulp.dest("dist"));
-});
-
-gulp.task("copy-libs", function () {
-  return gulp.src(paths.js).pipe(gulp.dest("dist"));
+gulp.task("copy-static", function () {
+    return gulp.src(paths.static).pipe(gulp.dest("dist"));
 });
 
 gulp.task("compile-typescript", function () {
-  return (
-    tsProject.src()
-    .pipe(tsProject()).js
-    .pipe(rewriteImports({
-      mappings: {
-        'preact': '../lib/preact.module.js',
-        'runes': '../lib/runes.js'
-      }
-    }))
-    .pipe(gulp.dest("dist"))
-  );
+    return (
+        tsProject.src()
+        .pipe(tsProject()).js
+        .pipe(rewriteImports({
+            mappings: {
+                'preact': '../lib/preact.module.js',
+                'runes': '../lib/runes.js'
+            }
+        }))
+        .pipe(gulp.dest("dist"))
+    );
 });
 
 gulp.task(
-  "default",
-  gulp.parallel(
-    "copy-html",
-    "copy-libs",
-    "compile-typescript"
-  )
+    "default",
+    gulp.parallel(
+        "copy-static",
+        "compile-typescript"
+    )
 );

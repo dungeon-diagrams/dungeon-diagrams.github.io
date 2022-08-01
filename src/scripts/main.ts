@@ -1,6 +1,6 @@
 import { h, Component, render } from "preact";
 import { sayHello } from "./widget.js";
-import { runes } from 'runes';
+// import { runes } from 'runes';
 import { PuzzleGrid, parsePuzzleSpec } from './puzzle.js';
 
 declare global {
@@ -22,9 +22,6 @@ const spec2 = `
 5####...#
 `;
 
-window.runes = runes;
-
-
 const examplePuzzle = new PuzzleGrid(parsePuzzleSpec(spec2));
 window.test = examplePuzzle;
 
@@ -33,5 +30,6 @@ const el = document.getElementById("app");
 if (el) {
     el.innerHTML = '';
     render(sayHello("foo"), el);
+    // runes(spec2);
     // render(examplePuzzle, el);
 }
