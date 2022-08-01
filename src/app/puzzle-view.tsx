@@ -4,7 +4,7 @@ import { PuzzleState, Tile, parsePuzzleSpec } from "./puzzle.js";
 export class PuzzleGrid extends Component<PuzzleState> {
     render(props: PuzzleState) {
         return (
-            <table>
+            <table class="puzzle-grid">
                 <tbody>
                     {props.cells.map((row, y)=>(
                         <tr>

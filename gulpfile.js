@@ -8,6 +8,7 @@ const cjstoesm = require('cjstoesm');
 const paths = {
     static: [
         "src/**/*.html",
+        "src/**/*.css",
         "src/**/*.module.js",
         "src/**/*.js.map"
     ],
@@ -17,7 +18,14 @@ const paths = {
 };
 
 gulp.task("copy-static", function () {
-    return gulp.src(paths.static).pipe(gulp.dest("dist"));
+    return (
+        gulp.src(paths.static, { since: gulp.lastRun("copy-static")})
+        .pipe(gulp.dest("dist"))
+    );
+});
+
+gulp.task("watch-static", function () {
+    gulp.watch(paths.static, gulp.parallel("copy-static"));
 });
 
 gulp.task("convert-cjs", async function (cb) {
@@ -60,6 +68,6 @@ gulp.task(
     )
 );
 
-gulp.task('watch', gulp.parallel('build', 'watch-typescript'));
+gulp.task('watch', gulp.parallel('build', 'watch-static', 'watch-typescript'));
 
 gulp.task('default', gulp.series('build'));
