@@ -30,6 +30,6 @@ const el = document.getElementById("app");
 if (el) {
     el.innerHTML = '';
     render(sayHello("foo"), el);
-    // runes(spec2);
+    runes(spec2);
     // render(examplePuzzle, el);
 }
