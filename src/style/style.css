@@ -8,6 +8,8 @@ body {
     text-align: center;
 }
 
+/* puzzle components */
+
 .puzzle-grid {
     margin: auto;
 }
@@ -16,14 +18,14 @@ body {
     width: 10vw;
     height: 10vw;
     border-radius: 1vw;
+    vertical-align: middle;
 }
 
 .puzzle-cell {
-    text-align: center;
+    font-size: 150%;
 }
 
-
-/* standard color scheme */
+/* light color scheme (default) */
 
 body {
     background: #ddd;
@@ -46,6 +48,8 @@ body {
         background: #666;
     }
 }
+
+/* high-contrast color scheme */
 
 @media print, (prefers-contrast: high) {
     .puzzle-grid td {

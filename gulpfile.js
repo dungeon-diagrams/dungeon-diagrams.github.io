@@ -53,7 +53,7 @@ gulp.task("compile-typescript", function () {
 });
 
 gulp.task('watch-typescript', function() {
-    gulp.watch('src/**/*.ts',
+    gulp.watch(['src/**/*.ts', 'src/**/*.tsx'],
         {ignoreInitial: true},
         gulp.series('compile-typescript')
     );
