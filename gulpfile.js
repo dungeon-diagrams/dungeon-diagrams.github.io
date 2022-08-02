@@ -9,6 +9,7 @@ const paths = {
     static: [
         "src/**/*.html",
         "src/**/*.css",
+        "src/**/*.es.js",
         "src/**/*.module.js",
         "src/**/*.js.map"
     ],
@@ -44,7 +45,8 @@ gulp.task("compile-typescript", function () {
             .pipe(rewriteImports({
                 mappings: {
                     'preact': '../lib/preact.module.js',
-                    'runes': '../lib/runes.js'
+                    'runes': '../lib/runes.js',
+                    'immutable': '../lib/immutable.es.js'
                 }
             }))
         .pipe(sourcemaps.write("."))

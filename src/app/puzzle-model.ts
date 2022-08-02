@@ -17,6 +17,8 @@ Essential operations:
 
 */
 
+import * as Immutable from 'immutable';
+
 enum TileType {
     FLOOR = ".",
     WALL = "#",
