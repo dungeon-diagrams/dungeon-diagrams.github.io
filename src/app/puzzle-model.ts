@@ -17,18 +17,25 @@ Essential operations:
 
 */
 
-enum TileType {
-    FLOOR = ".",
-    WALL = "#",
-    MONSTER = "m",
-    TREASURE = "t"
+export enum TileType {
+    FLOOR = 'floor',
+    WALL = 'wall',
+    MONSTER = 'monster',
+    TREASURE = 'treasure'
 }
+
+const parseTile: {[key: string]: TileType} = {
+    '.': TileType.FLOOR,
+    '#': TileType.WALL,
+    'm': TileType.MONSTER,
+    't': TileType.TREASURE
+};
 
 export class Tile {
     type: TileType;
 
     constructor(spec: string) {
-        this.type = spec as TileType;
+        this.type = parseTile[spec] as TileType;
     }
 }
 

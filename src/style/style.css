@@ -19,11 +19,25 @@ body {
     height: 10vw;
     border-radius: 1vw;
     vertical-align: middle;
+    overflow: clip;
 }
 
 .puzzle-cell {
-    font-size: 150%;
+    font-size: 200%;
 }
+.puzzle-cell.puzzle-cell-wall {
+    background-color: rgb(75, 41, 2);
+    color: transparent;
+}
+.puzzle-cell.puzzle-cell-floor {
+    color: transparent;
+}
+/* .puzzle-cell.puzzle-cell-monster {
+
+}
+.puzzle-cell.puzzle-cell-treasure {
+
+} */
 
 /* light color scheme (default) */
 
