@@ -17,6 +17,8 @@ Essential operations:
 
 */
 
+import * as Immer from 'immer';
+
 enum TileType {
     FLOOR = ".",
     WALL = "#",

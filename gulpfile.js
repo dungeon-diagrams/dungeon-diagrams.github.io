@@ -9,6 +9,7 @@ const paths = {
     static: [
         "src/**/*.html",
         "src/**/*.css",
+        "src/**/*.esm.js",
         "src/**/*.module.js",
         "src/**/*.js.map"
     ],
