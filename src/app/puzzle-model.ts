@@ -1,3 +1,22 @@
+/*
+
+A puzzle model consists of spec and state.
+The spec is the target wall counts in each row/column, and the monster/treasure locations.
+The state is the current grid of walls and floors.
+A puzzle is solved when the state is valid and matches the spec.
+A puzzle is partially solved when there are any walls and it is not fully solved.
+We would like to encourage sharing unsolved (but solveable) puzzles.
+We would like to discourage sharing spoilers.
+
+Essential operations:
+- parse a shareable string into a model (supporting emoji)
+- serialize a model into a shareable string
+- count the walls in each row/column
+- check if the wall counts match a spec
+- check if the layout is valid
+
+*/
+
 enum TileType {
     FLOOR = ".",
     WALL = "#",
