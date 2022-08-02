@@ -7,10 +7,10 @@ body {
     padding: 0;
     background: #333;
     color: #ccc;
+    text-align: center;
 }
 
 .puzzle-grid {
-    padding-top: 5vw;
     margin: auto;
 }
 

@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import { PuzzleState, Tile, parsePuzzleSpec } from "./puzzle.js";
+import { PuzzleState, Tile, parsePuzzleSpec } from "./puzzle-model.js";
 
 export class PuzzleGrid extends Component<PuzzleState> {
     render(props: PuzzleState) {
@@ -28,7 +28,7 @@ interface CellProps {
 export class PuzzleCell extends Component<CellProps> {
     render(props: CellProps) {
         return (
-            <div>{props.tile.type}</div>
+            <div class="puzzle-cell">{props.tile.type}</div>
         )
     }
 }
