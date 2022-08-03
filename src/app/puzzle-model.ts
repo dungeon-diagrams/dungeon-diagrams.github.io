@@ -58,11 +58,11 @@ const MONSTER: TileType = {
     pattern: /[m🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐊🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🐉🐲🦠🧊]/iu
 };
 
-enum ValidTileType {
-    FLOOR = 'floor',
-    WALL = 'wall',
-    TREASURE = 'treasure',
-    MONSTER = 'monster',
+const enum ValidTileType {
+    FLOOR,
+    WALL,
+    TREASURE,
+    MONSTER,
 };
 
 function emojiNumber(n: number): string {
@@ -125,7 +125,7 @@ export class Puzzle {
     colCounts: number[];
 
     constructor(spec: string) {
-        this.name = "Example Puzzle";
+        this.name = spec.trim().split("\n")[0];
         this.tiles = this.parseTiles(spec);
         this.rowCounts = this.parseRowCounts(spec);
         this.colCounts = this.parseColCounts(spec);
@@ -133,7 +133,7 @@ export class Puzzle {
 
     parseRowCounts(spec: string): number[] {
         const counts = [];
-        const specRows = spec.trim().split("\n").slice(1);
+        const specRows = spec.trim().split("\n").slice(2);
         for (const specRow of specRows) {
             counts.push(parseInt(specRow));
         }
@@ -142,7 +142,7 @@ export class Puzzle {
 
     parseColCounts(spec: string): number[] {
         const counts = [];
-        const specRow = runes(spec.trim().split("\n")[0]).slice(1);
+        const specRow = runes(spec.trim().split("\n")[1]).slice(1);
         for (const specCol of specRow) {
             counts.push(parseInt(specCol));
         }
@@ -151,7 +151,7 @@ export class Puzzle {
 
     parseTiles(spec: string) {
         const tiles: Tile[][] = [];
-        const specRows = spec.trim().split("\n").slice(1);
+        const specRows = spec.trim().split("\n").slice(2);
         for (const specRow of specRows) {
             const rowTiles: Tile[] = [];
             for (const specTile of runes(specRow).slice(1)) {
@@ -163,7 +163,7 @@ export class Puzzle {
     }
 
     toASCII(): string {
-        const lines: string[] = [''];
+        const lines: string[] = [this.name];
         lines.push('.' + this.colCounts.join(''));
         let i = 0;
         for (const row of this.tiles) {
@@ -178,7 +178,7 @@ export class Puzzle {
     }
 
     toEmoji(): string {
-        const lines: string[] = [''];
+        const lines: string[] = [this.name];
         lines.push('⬜️' + this.colCounts.map(emojiNumber).join(''));
         let i = 0;
         for (const row of this.tiles) {

@@ -1,25 +1,28 @@
 import { h, Component } from "preact";
-import { PuzzleState, Tile } from "./puzzle-model.js";
+import { Puzzle, PuzzleState, Tile } from "./puzzle-model.js";
 
 export class PuzzleGrid extends Component<PuzzleState> {
-    render(props: PuzzleState) {
+    render(puzzle: PuzzleState) {
         return (
-            <table class="puzzle-grid">
-                <tbody>
-                    <th />
-                    {props.colCounts.map((col, x) => (
-                        <th className='puzzle-count-col'>{col}</th>
-                    ))}
-                    {props.tiles.map((row, y)=>(
-                        <tr>
-                            <th className='puzzle-count-row'>{props.rowCounts[y]}</th>
-                            {row.map((tile, x)=>(
-                                <PuzzleCell x={x} y={y} tile={tile} />
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div class="puzzle-view">
+                <h2>{puzzle.name}</h2>
+                <table class="puzzle-grid">
+                    <tbody>
+                        <th />
+                        {puzzle.colCounts.map((col, x) => (
+                            <th className='puzzle-count-col'>{col}</th>
+                        ))}
+                        {puzzle.tiles.map((row, y)=>(
+                            <tr>
+                                <th className='puzzle-count-row'>{puzzle.rowCounts[y]}</th>
+                                {row.map((tile, x)=>(
+                                    <PuzzleCell x={x} y={y} tile={tile} />
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         )
     }
 }

@@ -12,6 +12,7 @@ declare global {
 }
 
 const spec = `
+Example Puzzle
 ⬜️2️⃣5️⃣3️⃣3️⃣2️⃣3️⃣3️⃣2️⃣
 1️⃣🟫⬜️⬜️⬜️⬜️⬜️⬜️⬜️
 4️⃣⬜️⬜️🟥🟥🟥⬜️🟥⬜️
@@ -24,6 +25,7 @@ const spec = `
 `;
 
 const spec2 = `
+Example Puzzle 2
 .25332332
 1#.......
 4..###.#.
