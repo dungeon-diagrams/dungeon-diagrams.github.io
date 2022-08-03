@@ -4,12 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" type="text/css" href="style/style.css" />
-    <link rel="preload" as="script" href="app/main.js" />
-    <link rel="preload" as="script" href="app/app.js" />
-    <link rel="preload" as="script" href="app/puzzle-model.js" />
-    <link rel="preload" as="script" href="app/puzzle-view.js" />
-    <link rel="preload" as="script" href="lib/preact.module.js" />
-    <link rel="preload" as="script" href="lib/runes.js" />
     <title>Daily Dungeons and Diagrams</title>
   </head>
   <body>
@@ -22,6 +16,13 @@
         document.write('<div id="status-display" data-status="Loading">Loading...</div>');
       </script>
     </div>
-    <script type="module" src="app/main.js"></script>
+    <script type="module">
+      import {render} from './lib/preact.module.js';
+      import {default as runes} from './lib/runes.js';
+      import {App} from './app/app.js';
+      import {Puzzle} from './app/puzzle-model.js';
+      import {PuzzleGrid} from './app/puzzle-view.js';
+      render(App(), document.body, document.getElementById("app"));
+    </script>
   </body>
 </html>
