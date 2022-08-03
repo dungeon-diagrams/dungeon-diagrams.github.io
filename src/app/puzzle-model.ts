@@ -1,3 +1,5 @@
+import { default as runes } from 'runes';
+
 /*
 
 A puzzle model consists of spec and state.
@@ -21,70 +23,169 @@ export enum TileType {
     FLOOR = 'floor',
     WALL = 'wall',
     MONSTER = 'monster',
-    TREASURE = 'treasure'
+    TREASURE = 'treasure',
 }
 
-const parseTile: {[key: string]: TileType} = {
-    '.': TileType.FLOOR,
-    '#': TileType.WALL,
-    'm': TileType.MONSTER,
-    't': TileType.TREASURE
-};
+// export const TileType = {
+//     "FLOOR":    {name: "floor",    ASCII: '.', "emoji": '⬜️'},
+//     "WALL":     {name: "wall",     ASCII: '#', "emoji": '🟫'},
+//     "MONSTER":  {name: "monster",  ASCII: 'm', "emoji": '🏆'},
+//     "TREASURE": {name: "treasure", ASCII: 'T', "emoji": '🐊'},
+// };
 
 export class Tile {
+    display: string;
     type: TileType;
 
-    constructor(spec: string) {
-        this.type = parseTile[spec] as TileType;
+    constructor(displayTile: string) {
+        this.display = displayTile;
+        this.type = this.parse(displayTile);
+    }
+
+    parse(displayTile: string): TileType {
+        // wall: '#' or any other color square
+        if (displayTile.match(/#|[🟥🟧🟨🟩🟦🟪🟫]/iu)) {
+            return TileType.WALL;
+        }
+        // floor: '.' or any black/white square or any whitespace
+        if (displayTile.match(/\.|\p{White_Space}|[🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️]/iu)) {
+            return TileType.FLOOR;
+        }
+        // treasure: 't' or 🏆 (any emoji Activity or Objects)
+        if (displayTile.match(/t|🏆/iu)) {
+            return TileType.TREASURE;
+        }
+        // monster: any emoji Animals & nature, anything else
+        return TileType.MONSTER;
+    }
+
+    toASCII(): string {
+        switch(this.type) {
+            case TileType.FLOOR:
+                return '.';
+            case TileType.WALL:
+                return '#';
+            case TileType.TREASURE:
+                return 'T';
+            case TileType.MONSTER:
+                return 'm';
+        }
+    }
+
+    toEmoji(): string {
+        if (this.display.match(/\p{ASCII}/u)) {
+            switch(this.type) {
+                case TileType.FLOOR:
+                    return '⬜️';
+                case TileType.WALL:
+                    return '🟫';
+                case TileType.TREASURE:
+                    return '🏆';
+                case TileType.MONSTER:
+                    return '🐊';
+            }
+        }
+        else {
+            return this.display;
+        }
     }
 }
 
 export interface PuzzleState {
     name: string;
-    rows?: number[];
-    cols?: number[];
-    cells: Tile[][];
+    rowCounts: number[];
+    colCounts: number[];
+    tiles: Tile[][];
 }
 
+export class Puzzle {
+    name: string;
+    tiles: Tile[][];
+    rowCounts: number[];
+    colCounts: number[];
 
-const spec = `
-⬜️2️⃣5️⃣3️⃣3️⃣2️⃣3️⃣3️⃣2️⃣
-1️⃣⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️
-4️⃣⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️
-2️⃣⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️
-2️⃣⬜️⬜️⬜️👑⬜️⬜️🐀⬜️
-3️⃣⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️
-4️⃣⬜️⬜️⬜️⬜️⬜️🐍⬜️⬜️
-2️⃣⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️
-5️⃣⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️
-`;
+    constructor(spec: string) {
+        this.name = "Example Puzzle";
+        this.tiles = this.parseTiles(spec);
+        this.rowCounts = this.parseRowCounts(spec);
+        this.colCounts = this.parseColCounts(spec);
+    }
 
-const spec2 = `
-.25332332
-1#.......
-4..###.#.
-2.#....#.
-2.#.t.#m.
-3.#...##.
-4.####m..
-2.....#.#
-5####...#
-`;
-
-export function parsePuzzleSpec(spec: string) {
-    const cells = [];
-    const specRows = spec.trim().split("\n");
-    let i = 0;
-    for (const specRow of specRows) {
-        i += 1;
-        if (i == 1) {
-            continue;
+    parseRowCounts(spec: string): number[] {
+        const counts = [];
+        const specRows = spec.trim().split("\n").slice(1);
+        for (const specRow of specRows) {
+            counts.push(parseInt(specRow));
         }
-        const rowCells = specRow.substring(1).split('').map((char)=>new Tile(char));
-        cells.push(rowCells);
+        return counts;
     }
-    return {
-        name: "Example Puzzle",
-        cells: cells
+
+    parseColCounts(spec: string): number[] {
+        const counts = [];
+        const specRow = runes(spec.trim().split("\n")[0]).slice(1);
+        for (const specCol of specRow) {
+            counts.push(parseInt(specCol));
+        }
+        return counts;
     }
+
+    parseTiles(spec: string) {
+        const tiles: Tile[][] = [];
+        const specRows = spec.trim().split("\n").slice(1);
+        for (const specRow of specRows) {
+            const rowTiles: Tile[] = [];
+            for (const specTile of runes(specRow).slice(1)) {
+                rowTiles.push(new Tile(specTile));
+            }
+            tiles.push(rowTiles);
+        }
+        return tiles;
+    }
+
+    toASCII(): string {
+        const lines: string[] = [''];
+        lines.push('.' + this.colCounts.join(''));
+        let i = 0;
+        for (const row of this.tiles) {
+            const rowStrings = [];
+            rowStrings.push(this.rowCounts[i++].toFixed(0));
+            for (const tile of row) {
+                rowStrings.push(tile.toASCII());
+            }
+            lines.push(rowStrings.join(''))
+        }
+        return lines.join('\n');
+    }
+
+    toEmoji(): string {
+        const lines: string[] = [''];
+        lines.push('⬜️' + this.colCounts.map(emojiNumber).join(''));
+        let i = 0;
+        for (const row of this.tiles) {
+            const rowStrings = [];
+            rowStrings.push(emojiNumber(this.rowCounts[i++]));
+            for (const tile of row) {
+                rowStrings.push(tile.toEmoji());
+            }
+            lines.push(rowStrings.join(''))
+        }
+        return lines.join('\n');
+    }
+
+    unsolve(): Puzzle {
+        for (const row of this.tiles) {
+            for (const tile of row) {
+                if (tile.type == TileType.WALL) {
+                    tile.type = TileType.FLOOR;
+                    tile.display = '.';
+                }
+            }
+        }
+        return this;
+    }
+}
+
+function emojiNumber(n: number): string {
+    const table = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+    return table[n];
 }

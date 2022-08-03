@@ -17,7 +17,7 @@ body {
 .puzzle-grid td {
     width: 10vw;
     height: 10vw;
-    border-radius: 1vw;
+    border-radius: 0.5vw;
     vertical-align: middle;
     overflow: clip;
 }
@@ -33,10 +33,8 @@ body {
     color: transparent;
 }
 /* .puzzle-cell.puzzle-cell-monster {
-
 }
 .puzzle-cell.puzzle-cell-treasure {
-
 } */
 
 /* light color scheme (default) */
@@ -68,5 +66,8 @@ body {
 @media print, (prefers-contrast: high) {
     .puzzle-grid td {
         border: 1px solid #222;
+    }
+    .puzzle-cell {
+        color: #222 !important;
     }
 }

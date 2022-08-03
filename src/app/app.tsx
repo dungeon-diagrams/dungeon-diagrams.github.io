@@ -1,7 +1,27 @@
 import { h, Component, render } from "preact";
-import { parsePuzzleSpec } from './puzzle-model.js';
+import { Puzzle } from './puzzle-model.js';
 import { PuzzleGrid } from './puzzle-view.js';
 
+declare global {
+    // debugging
+    interface Window {
+        runes: object;
+        puzzle: any;
+        preact: object;
+    }
+}
+
+const spec = `
+⬜️2️⃣5️⃣3️⃣3️⃣2️⃣3️⃣3️⃣2️⃣
+1️⃣🟫⬜️⬜️⬜️⬜️⬜️⬜️⬜️
+4️⃣⬜️⬜️🟥🟥🟥⬜️🟥⬜️
+2️⃣⬜️🟥⬜️⬜️⬜️⬜️🟥⬜️
+2️⃣⬜️🟥⬜️👑⬜️🟥🐀⬜️
+3️⃣⬜️🟥⬜️⬜️⬜️🟥🟥⬜️
+4️⃣⬜️🟥🟥🟥🟥🐍⬜️⬜️
+2️⃣⬜️⬜️⬜️⬜️⬜️🟥⬜️🟫
+5️⃣🟫🟫🟫🟫⬜️⬜️⬜️🟫
+`;
 
 const spec2 = `
 .25332332
@@ -10,18 +30,18 @@ const spec2 = `
 2.#....#.
 2.#.t.#m.
 3.#...##.
-4.####m..
+4.####🐍..
 2.....#.#
 5####...#
 `;
 
-const examplePuzzle = new PuzzleGrid(parsePuzzleSpec(spec2));
-
 export function App() {
+    const puzzle = new Puzzle(spec);
+    window.puzzle = puzzle;
     return (
         <div id="app" className="app">
             <h1>Daily Dungeons and Diagrams</h1>
-            <PuzzleGrid {...parsePuzzleSpec(spec2)} />
+            <PuzzleGrid {...puzzle} />
         </div>
     );
 }
