@@ -67,7 +67,7 @@ body {
 
 /* high-contrast color scheme */
 
-@media print, (prefers-contrast: high) {
+@media print, (prefers-contrast: more) {
     .puzzle-grid td {
         border: 1px solid #222;
     }

@@ -7,7 +7,15 @@
     <title>Daily Dungeons and Diagrams</title>
   </head>
   <body>
-    <div id="app">Loading ...</div>
+    <div id="app">
+      <h1>Daily Dungeons and Diagrams</h1>
+      <noscript>
+        <div id="status-display" data-status="Error">This application requires JavaScript. Here are the <a href="http://www.enable-javascript.com/" target="_blank">instructions to enable JavaScript</a> in your web browser.</div>
+      </noscript>
+      <script>
+        document.write('<div id="status-display" data-status="Loading">Loading...</div>');
+      </script>
+    </div>
     <script type="module" src="app/main.js"></script>
   </body>
 </html>

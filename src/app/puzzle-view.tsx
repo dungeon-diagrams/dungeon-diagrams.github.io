@@ -4,9 +4,9 @@ import { Puzzle, PuzzleState, Tile } from "./puzzle-model.js";
 export class PuzzleGrid extends Component<PuzzleState> {
     render(puzzle: PuzzleState) {
         return (
-            <div class="puzzle-view">
+            <div className="puzzle-view">
                 <h2>{puzzle.name}</h2>
-                <table class="puzzle-grid">
+                <table className="puzzle-grid">
                     <tbody>
                         <th />
                         {puzzle.colCounts.map((col, x) => (
