@@ -1,4 +1,6 @@
 import { render } from "preact";
 import { App } from "./app.js";
 
-render(App(), document.body, document.getElementById("app") as Element);
+window.addEventListener('DOMContentLoaded', (event) => {
+    render(App(), document.body, document.getElementById("app") as Element);
+})

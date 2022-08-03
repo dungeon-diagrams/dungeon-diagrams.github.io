@@ -1,6 +1,8 @@
-import { h, Component, render } from "preact";
+import { h } from "preact";
 import { Puzzle } from './puzzle-model.js';
 import { PuzzleGrid } from './puzzle-view.js';
+
+export { render } from "preact";
 
 declare global {
     // debugging
