@@ -44,6 +44,10 @@ body {
     color: #222;    
 }
 
+h1 {
+    font-size: 1rem;
+}
+
 .puzzle-grid td {
     background: #bbb;
 }

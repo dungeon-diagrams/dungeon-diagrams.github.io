@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import { PuzzleState, Tile, TileType } from "./puzzle-model.js";
+import { PuzzleState, Tile } from "./puzzle-model.js";
 
 export class PuzzleGrid extends Component<PuzzleState> {
     render(props: PuzzleState) {
@@ -33,7 +33,7 @@ interface CellProps {
 export class PuzzleCell extends Component<CellProps> {
     render(props: CellProps) {
         return (
-            <td className={`puzzle-cell puzzle-cell-${props.tile.type}`}>{props.tile.toEmoji()}</td>
+            <td className={`puzzle-cell puzzle-cell-${props.tile.toName()}`}>{props.tile.toEmoji()}</td>
         )
     }
 }

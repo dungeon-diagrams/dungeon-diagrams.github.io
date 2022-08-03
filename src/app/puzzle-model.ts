@@ -19,19 +19,61 @@ Essential operations:
 
 */
 
-export enum TileType {
-    FLOOR = 'floor',
-    WALL = 'wall',
-    MONSTER = 'monster',
-    TREASURE = 'treasure',
+interface TileType {
+    name: string;
+    ASCII: string;
+    emoji: string;
+    pattern: RegExp;
 }
 
-// export const TileType = {
-//     "FLOOR":    {name: "floor",    ASCII: '.', "emoji": '⬜️'},
-//     "WALL":     {name: "wall",     ASCII: '#', "emoji": '🟫'},
-//     "MONSTER":  {name: "monster",  ASCII: 'm', "emoji": '🏆'},
-//     "TREASURE": {name: "treasure", ASCII: 'T', "emoji": '🐊'},
-// };
+// floor: '.' or any black/white square or any whitespace
+const FLOOR: TileType = {
+    name: "floor",
+    ASCII: '.',
+    emoji: '⬜️',
+    pattern: /\.|\p{White_Space}|[🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️]/iu
+};
+
+// wall: '#' or any other color square
+const WALL: TileType = {
+    name: "wall",
+    ASCII: '#',
+    emoji: '🟫',
+    pattern: /[#🟥🟧🟨🟩🟦🟪🟫]/iu
+};
+
+// treasure: 't' or 💎 (any emoji Activity or Objects)
+const TREASURE: TileType = {
+    name: "treasure",
+    ASCII: 'T',
+    emoji: '💎',
+    pattern: /[t🏆🥇🥈🥉🏅🎖🔮🎁📦💎👑]/iu
+};
+
+// monster: any emoji Animals & nature, anything else
+const MONSTER: TileType = {
+    name: "monster",
+    ASCII: 'm',
+    emoji: '🦁',
+    pattern: /[m🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐊🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🐉🐲🦠🧊]/iu
+};
+
+enum ValidTileType {
+    FLOOR = 'floor',
+    WALL = 'wall',
+    TREASURE = 'treasure',
+    MONSTER = 'monster',
+};
+
+function emojiNumber(n: number): string {
+    const table = ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+    if (n < table.length) {
+        return table[n];
+    }
+    else {
+        return `{n},`;
+    }
+}
 
 export class Tile {
     display: string;
@@ -43,47 +85,25 @@ export class Tile {
     }
 
     parse(displayTile: string): TileType {
-        // wall: '#' or any other color square
-        if (displayTile.match(/#|[🟥🟧🟨🟩🟦🟪🟫]/iu)) {
-            return TileType.WALL;
+        for (const tileType of [FLOOR, WALL, TREASURE, MONSTER]) {
+            if (displayTile.match(tileType.pattern)) {
+                return tileType;
+            }
         }
-        // floor: '.' or any black/white square or any whitespace
-        if (displayTile.match(/\.|\p{White_Space}|[🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️]/iu)) {
-            return TileType.FLOOR;
-        }
-        // treasure: 't' or 🏆 (any emoji Activity or Objects)
-        if (displayTile.match(/t|🏆/iu)) {
-            return TileType.TREASURE;
-        }
-        // monster: any emoji Animals & nature, anything else
-        return TileType.MONSTER;
+        return MONSTER;
+    }
+
+    toName(): string {
+        return this.type.name;
     }
 
     toASCII(): string {
-        switch(this.type) {
-            case TileType.FLOOR:
-                return '.';
-            case TileType.WALL:
-                return '#';
-            case TileType.TREASURE:
-                return 'T';
-            case TileType.MONSTER:
-                return 'm';
-        }
+        return this.type.ASCII;
     }
 
     toEmoji(): string {
-        if (this.display.match(/\p{ASCII}/u)) {
-            switch(this.type) {
-                case TileType.FLOOR:
-                    return '⬜️';
-                case TileType.WALL:
-                    return '🟫';
-                case TileType.TREASURE:
-                    return '🏆';
-                case TileType.MONSTER:
-                    return '🐊';
-            }
+        if (!this.display.match(/\p{Emoji}/u)) {
+            return this.type.emoji;
         }
         else {
             return this.display;
@@ -173,19 +193,15 @@ export class Puzzle {
     }
 
     unsolve(): Puzzle {
+        // TODO: don't mutate original
         for (const row of this.tiles) {
             for (const tile of row) {
-                if (tile.type == TileType.WALL) {
-                    tile.type = TileType.FLOOR;
+                if (tile.type === WALL) {
+                    tile.type = FLOOR;
                     tile.display = '.';
                 }
             }
         }
         return this;
     }
-}
-
-function emojiNumber(n: number): string {
-    const table = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
-    return table[n];
 }
