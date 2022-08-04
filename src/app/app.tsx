@@ -10,6 +10,7 @@ declare global {
         runes: object;
         puzzle: any;
         preact: object;
+        test: any;
     }
 }
 
@@ -45,7 +46,7 @@ export function App() {
     return (
         <div id="app" className="app">
             <h1>Daily Dungeons and Diagrams</h1>
-            <PuzzleGrid {...puzzle} />
+            <PuzzleGrid puzzle={puzzle} />
         </div>
     );
 }
