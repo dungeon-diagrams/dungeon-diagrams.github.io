@@ -167,24 +167,46 @@ export class Puzzle extends Observable {
     }
 
     isSolved(): boolean {
+        // a puzzle is solved when:
+        // - all wall count expectations are met
+        // - each MONSTER is in a dead end (adjacent to exactly one FLOOR)
+        // - each TREASURE is in a treasure room
+        // - no 2x2 FLOOR tiles outside of a treasure room
+        // - all FLOOR tiles are connected
         return false;
     }
 
-    setTile(x: number, y: number, newType?: TileType, newDisplay?: string): boolean {
-        if (x < 0 || x >= this.colCounts.length || y < 0 || y >= this.rowCounts.length) {
+    setTile(row: number, col: number, newType?: TileType, newDisplay?: string): boolean {
+        if (col < 0 || col >= this.colCounts.length || row < 0 || row >= this.rowCounts.length) {
             return false;
         }
-        const oldTile = this.tiles[y][x];
+        const oldTile = this.tiles[row][col];
         if (!this.editable) {
             if (oldTile.type === MONSTER || oldTile.type === TREASURE) {
                 return false;
             }
         }
         newType ||= WALL;
-        this.tiles[y][x].type = newType;
-        this.tiles[y][x].display = newDisplay || newType.emoji;
+        this.tiles[row][col].type = newType;
+        this.tiles[row][col].display = newDisplay || newType.emoji;
         this.didChange();
         return true;
+    }
+
+    countWalls() {
+        const rowCounts: number[] = [];
+        const colCounts: number[] = [];
+        for (let row = 0; row < this.rowCounts.length; row++) {
+            rowCounts[row] = 0;
+            for (let col = 0; col < this.colCounts.length; col++) {
+                colCounts[col] ||= 0;
+                if (this.tiles[row][col].type === WALL) {
+                    rowCounts[row]++;
+                    colCounts[col]++;
+                }
+            }
+        }
+        return {rowCounts, colCounts};
     }
 
     parseRowCounts(spec: string): number[] {

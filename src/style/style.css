@@ -16,6 +16,7 @@ h1, h2 {
 
 .puzzle-grid {
     margin: auto;
+    cursor: default;
 }
 
 .puzzle-grid td {
@@ -26,12 +27,22 @@ h1, h2 {
     overflow: clip;
 }
 
+.puzzle-count.too-many-walls {
+    color: red;
+}
+.puzzle-count.correct-walls {
+    color: green;
+}
+
 .puzzle-cell {
     font-size: 200%;
 }
 .puzzle-cell.puzzle-cell-wall {
     background-color: rgb(75, 41, 2);
     color: transparent;
+}
+.puzzle-cell.puzzle-cell-wall.too-many-walls {
+    background-color: darkred;
 }
 .puzzle-cell.puzzle-cell-floor {
     color: transparent;

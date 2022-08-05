@@ -21,20 +21,27 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
 
     render() {
         const puzzle = this.state.puzzle;
+        const {rowCounts, colCounts} = puzzle.countWalls();
+        const rowStatus = [...getWallStatus(rowCounts, puzzle.rowCounts)];
+        const colStatus = [...getWallStatus(colCounts, puzzle.colCounts)];
         return (
             <div className="puzzle-view">
                 <h2>{puzzle.name}</h2>
                 <table className="puzzle-grid">
                     <tbody>
                         <th />
-                        {puzzle.colCounts.map((col, x) => (
-                            <th className='puzzle-count-col'>{col}</th>
+                        {puzzle.colCounts.map((count, col) => (
+                            <th className={`puzzle-count col-${col} ${colStatus[col]}`}>
+                                {count}
+                            </th>
                         ))}
-                        {puzzle.tiles.map((row, y)=>(
+                        {puzzle.tiles.map((rowTiles, row)=>(
                             <tr>
-                                <th className='puzzle-count-row'>{puzzle.rowCounts[y]}</th>
-                                {row.map((tile, x)=>(
-                                    <PuzzleCell x={x} y={y} tile={tile} puzzle={puzzle} />
+                                <th className={`puzzle-count row-${row} ${rowStatus[row]}`}>
+                                    {puzzle.rowCounts[row]}
+                                </th>
+                                {rowTiles.map((tile, col)=>(
+                                    <PuzzleCell row={row} col={col} tile={tile} puzzle={puzzle} rowStatus={rowStatus[row]} colStatus={colStatus[col]} />
                                 ))}
                             </tr>
                         ))}
@@ -45,11 +52,27 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
     }
 }
 
+function * getWallStatus(current: number[], expected: number[]) {
+    for (let i = 0; i < current.length; i++) {
+        if (current[i] < expected[i]) {
+            yield 'too-few-walls';
+        }
+        else if (current[i] > expected[i]) {
+            yield 'too-many-walls';
+        }
+        else {
+            yield 'correct-walls';
+        }
+    }
+}
+
 interface CellProps {
-    x: number;
-    y: number;
+    row: number;
+    col: number;
     tile: Tile;
     puzzle: Puzzle;
+    rowStatus: string;
+    colStatus: string;
 }
 
 /**
@@ -58,14 +81,15 @@ interface CellProps {
  * each cell touched with that drag converts to the drag's tile type if possible.
  */
 export class PuzzleCell extends Component<CellProps> {
-    mouseUp(event: MouseEvent) {
-        this.props.puzzle.setTile(this.props.x, this.props.y, this.props.tile.type.opposite);
+    toggle(event: MouseEvent) {
+        this.props.puzzle.setTile(this.props.row, this.props.col, this.props.tile.type.opposite);
+        event.preventDefault();
     }
 
     render(props: CellProps) {
         return (
-            <td className={`puzzle-cell puzzle-cell-${props.tile.toName()}`}
-                onMouseUp={this.mouseUp.bind(this)}
+            <td className={`puzzle-cell puzzle-cell-${props.tile.toName()} ${props.rowStatus} ${props.colStatus}`}
+                onClick={this.toggle.bind(this)}
             >
                 {props.tile.toEmoji()}
             </td>

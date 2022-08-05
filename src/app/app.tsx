@@ -14,8 +14,8 @@ declare global {
     }
 }
 
-const spec = `
-Example Puzzle
+const dailyPuzzles: string[] = [
+`Example Puzzle 1
 ⬜️2️⃣5️⃣3️⃣3️⃣2️⃣3️⃣3️⃣2️⃣
 1️⃣🟫⬜️⬜️⬜️⬜️⬜️⬜️⬜️
 4️⃣⬜️⬜️🟥🟥🟥⬜️🟥⬜️
@@ -25,10 +25,8 @@ Example Puzzle
 4️⃣⬜️🟥🟥🟥🟥🐍⬜️⬜️
 2️⃣⬜️⬜️⬜️⬜️⬜️🟥⬜️🟫
 5️⃣🟫🟫🟫🟫⬜️⬜️⬜️🟫
-`;
-
-const spec2 = `
-Example Puzzle 2
+`,
+`Example Puzzle 2
 .25332332
 1#.......
 4..###.#.
@@ -38,10 +36,42 @@ Example Puzzle 2
 4.####🐍..
 2.....#.#
 5####...#
-`;
+`,
+`Example Puzzle
+.424121
+3.....t
+1......
+2......
+5......
+1.....m
+2m.....
+`,
+`Tenaxxus's Gullet
+.44262347
+7.....m..
+3........
+4.t......
+1........
+7........
+1m.......
+6........
+3..m....m
+`,
+`The Lair of the Elemental King
+.52125423
+4.......m
+1........
+4..m.....
+2........
+6........
+2........
+3...t....
+2........
+`
+];
 
 export function App() {
-    const puzzle = new Puzzle(spec);
+    const puzzle = new Puzzle(dailyPuzzles[4]);
     window.puzzle = puzzle;
     return (
         <div id="app" className="app">
