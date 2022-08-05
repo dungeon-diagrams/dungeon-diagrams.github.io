@@ -51,6 +51,9 @@ h1, h2 {
 }
 .puzzle-cell.puzzle-cell-treasure {
 } */
+.solved-marker.unsolved {
+    visibility: hidden;
+}
 
 /* light color scheme (default) */
 

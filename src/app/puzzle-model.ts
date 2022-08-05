@@ -83,6 +83,18 @@ function emojiNumber(n: number): string {
     }
 }
 
+function arrayEqual(a1: Array<any>, a2: Array<any>): boolean {
+    if (a1.length !== a2.length) {
+        return false;
+    }
+    for (const i in a1) {
+        if (a1[i] !== a2[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 export class Tile {
     display: string;
     type: TileType;
@@ -152,6 +164,8 @@ export class Observable {
 
 export class Puzzle extends Observable {
     name: string;
+    nRows: number;
+    nCols: number;
     rowTargets: number[];
     colTargets: number[];
     tiles: Tile[][];
@@ -162,21 +176,84 @@ export class Puzzle extends Observable {
         this.name = this.parseName(spec);
         this.tiles = this.parseTiles(spec);
         this.rowTargets = this.parseRowCounts(spec);
+        this.nRows = this.rowTargets.length;
         this.colTargets = this.parseColCounts(spec);
+        this.nCols = this.colTargets.length;
         this.editable = false;
     }
 
+    *[Symbol.iterator](): Iterator<[number, number, Tile]> {
+        for (let row = 0; row < this.nRows; row++) {
+            for (let col = 0; col < this.nCols; col++) {
+                yield [row, col, this.tiles[row][col]];
+            }
+        }
+    }
+
     isSolved(): boolean {
-        /*
-        a puzzle is solved when:
-        - all row/column wall counts are equal to their targets
-        - all non-WALL tiles are connected
-        - each MONSTER is in a dead end (adjacent to exactly 1 FLOOR)
-        - each dead end contains a MONSTER
-        - each TREASURE is in a treasure room (3x3 block of 8 FLOOR and 1 TREASURE, adjacent to exactly 1 FLOOR and 0 MONSTER)
-        - no 2x2 blocks of FLOOR tiles outside of a treasure room
-        */
-        return false;
+        // a puzzle is solved when:
+        // - all row/column wall counts are equal to their targets
+        const {rowCounts, colCounts} = this.countWalls();
+        if (!arrayEqual(rowCounts, this.rowTargets)) {
+            console.log("not solved: row wall targets do not match");
+            return false;
+        }
+        if (!arrayEqual(colCounts, this.colTargets)) {
+            console.log("not solved: column wall targets do not match");
+            return false;
+        }
+        // - all non-WALL tiles are connected
+        for (const [row, col, tile] of this) {
+            // - each MONSTER is in a dead end (adjacent to exactly 1 FLOOR)
+            const deadEnd = this.isDeadEnd(row, col);
+            if ((tile.type === MONSTER) && !deadEnd) {
+                console.log("not solved: some monster is not in a dead end", row, col, tile);
+                return false
+            }
+            // - each dead end contains a MONSTER
+            if ((tile.type !== MONSTER) && deadEnd) {
+                console.log("not solved: some dead end has no monster", row, col, tile);
+                return false;
+            }
+        }
+        // - each TREASURE is in a treasure room (3x3 block of 8 FLOOR and 1 TREASURE, adjacent to exactly 1 FLOOR and 0 MONSTER)
+        // - no 2x2 blocks of FLOOR tiles unless a TREASURE is adjacent (including diagonals)
+        return true;
+    }
+
+    isDeadEnd(row: number, col: number): boolean {
+        if (this.tiles[row][col].type === WALL) {
+            return false;
+        }
+        let walkableCount = 0;
+        for (const tile of this.getAdjacentTiles(row, col)) {
+            walkableCount += Number(tile.type !== WALL);
+        }
+        return (walkableCount === 1);
+    }
+
+    getAdjacentTiles(row: number, col: number, height: number = 1, width: number = 1, diagonal: boolean = false): Tile[] {
+        const neighbors: Tile[] = [];
+        const corner = (diagonal ? 1 : 0);
+        for (const r of [row-1, row+height]) {
+            for (let c = col - corner; c < col+width+corner; c++) {
+                if (this.isInBounds(r, c)) {
+                    neighbors.push(this.tiles[r][c]);
+                }
+            }
+        }
+        for (const c of [col-1, col+width]) {
+            for (let r = row; r < row+height; r++) {
+                if (this.isInBounds(r, c)) {
+                    neighbors.push(this.tiles[r][c]);
+                }
+            }
+        }
+        return neighbors;
+    }
+
+    isInBounds(row: number, col: number): boolean {
+        return (row >= 0 && row < this.nRows && col >= 0 && col < this.nCols);
     }
 
     setTile(row: number, col: number, newType?: TileType, newDisplay?: string): boolean {

@@ -24,9 +24,14 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
         const {rowCounts, colCounts} = puzzle.countWalls();
         const rowStatus = [...getWallStatus(rowCounts, puzzle.rowTargets)];
         const colStatus = [...getWallStatus(colCounts, puzzle.colTargets)];
+        const isSolved = puzzle.isSolved();
         return (
             <div className="puzzle-view">
-                <h2><a href={'?puzzle=' + encodeURIComponent(puzzle.toURI())}>{puzzle.name}</a></h2>
+                <h2>
+                    <span className={`solved-marker ${isSolved?'solved':'unsolved'}`}> ⭐️ </span>
+                    <a href={'?puzzle=' + encodeURIComponent(puzzle.toURI())}>{puzzle.name}</a>
+                    <span className={`solved-marker ${isSolved?'solved':'unsolved'}`}> ⭐️ </span>
+                </h2>
                 <table className="puzzle-grid">
                     <tbody>
                         <th />
