@@ -270,6 +270,26 @@ export class Puzzle extends Observable {
         return lines.join('\n');
     }
 
+    toURI(): string {
+        const lines: string[] = [this.name];
+        lines.push('.' + this.colCounts.join(''));
+        let i = 0;
+        for (const row of this.tiles) {
+            const rowStrings = [];
+            rowStrings.push(this.rowCounts[i++].toFixed(0));
+            for (const tile of row) {
+                if (tile.type === FLOOR || tile.type === WALL) {
+                    rowStrings.push(tile.toASCII());
+                }
+                else {
+                    rowStrings.push(tile.toEmoji());
+                }
+            }
+            lines.push(rowStrings.join(''))
+        }
+        return lines.join('\n');
+    }
+
     unsolve(): Puzzle {
         // TODO: don't mutate original
         for (const row of this.tiles) {

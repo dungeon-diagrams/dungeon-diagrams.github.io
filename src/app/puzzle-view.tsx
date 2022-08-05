@@ -26,7 +26,7 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
         const colStatus = [...getWallStatus(colCounts, puzzle.colCounts)];
         return (
             <div className="puzzle-view">
-                <h2>{puzzle.name}</h2>
+                <h2><a href={'?puzzle=' + encodeURIComponent(puzzle.toURI())}>{puzzle.name}</a></h2>
                 <table className="puzzle-grid">
                     <tbody>
                         <th />
