@@ -36,13 +36,13 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
                     <tbody>
                         <th />
                         {puzzle.colTargets.map((count, col) => (
-                            <th className={`puzzle-count col-${col} ${colStatus[col]}`}>
+                            <th className={`puzzle-wall-target col-${col} ${colStatus[col]}`}>
                                 {count}
                             </th>
                         ))}
                         {puzzle.tiles.map((rowTiles, row)=>(
                             <tr>
-                                <th className={`puzzle-count row-${row} ${rowStatus[row]}`}>
+                                <th className={`puzzle-wall-target row-${row} ${rowStatus[row]}`}>
                                     {puzzle.rowTargets[row]}
                                 </th>
                                 {rowTiles.map((tile, col)=>(
@@ -109,7 +109,7 @@ export class PuzzleCell extends Component<CellProps> {
             <td className={`puzzle-cell puzzle-cell-${props.tile.toName()} ${props.rowStatus} ${props.colStatus} ${props.tile.display === 'x' ? 'marked-floor' : ''}`}
                 onClick={this.toggle.bind(this)}
             >
-                {props.tile.display}
+                {props.tile.toEmoji()}
             </td>
         )
     }

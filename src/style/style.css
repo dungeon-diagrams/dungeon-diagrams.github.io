@@ -27,10 +27,10 @@ h1, h2 {
     overflow: clip;
 }
 
-.puzzle-count.too-many-walls {
+.puzzle-wall-target.too-many-walls {
     color: red;
 }
-.puzzle-count.correct-walls {
+.puzzle-wall-target.correct-walls {
     color: green;
 }
 

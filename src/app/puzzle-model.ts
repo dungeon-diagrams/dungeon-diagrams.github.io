@@ -124,6 +124,9 @@ export class Tile {
     }
 
     toEmoji(): string {
+        if (this.display === 'x') {
+            return this.display;
+        }
         if (!this.display.match(/\p{Emoji}/u)) {
             return this.type.emoji;
         }
@@ -218,6 +221,7 @@ export class Puzzle extends Observable {
         }
         // - each TREASURE is in a treasure room (3x3 block of 8 FLOOR and 1 TREASURE, adjacent to exactly 1 FLOOR and 0 MONSTER)
         // - no 2x2 blocks of FLOOR tiles unless a TREASURE is adjacent (including diagonals)
+        console.log("solved!");
         return true;
     }
 
