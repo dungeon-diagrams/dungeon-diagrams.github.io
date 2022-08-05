@@ -152,32 +152,35 @@ export class Observable {
 
 export class Puzzle extends Observable {
     name: string;
-    rowCounts: number[];
-    colCounts: number[];
+    rowTargets: number[];
+    colTargets: number[];
     tiles: Tile[][];
     editable: boolean;
 
     constructor(spec: string) {
         super();
-        this.name = spec.trim().split("\n")[0];
+        this.name = this.parseName(spec);
         this.tiles = this.parseTiles(spec);
-        this.rowCounts = this.parseRowCounts(spec);
-        this.colCounts = this.parseColCounts(spec);
+        this.rowTargets = this.parseRowCounts(spec);
+        this.colTargets = this.parseColCounts(spec);
         this.editable = false;
     }
 
     isSolved(): boolean {
-        // a puzzle is solved when:
-        // - all wall count expectations are met
-        // - each MONSTER is in a dead end (adjacent to exactly one FLOOR)
-        // - each TREASURE is in a treasure room
-        // - no 2x2 FLOOR tiles outside of a treasure room
-        // - all FLOOR tiles are connected
+        /*
+        a puzzle is solved when:
+        - all row/column wall counts are equal to their targets
+        - all non-WALL tiles are connected
+        - each MONSTER is in a dead end (adjacent to exactly 1 FLOOR)
+        - each dead end contains a MONSTER
+        - each TREASURE is in a treasure room (3x3 block of 8 FLOOR and 1 TREASURE, adjacent to exactly 1 FLOOR and 0 MONSTER)
+        - no 2x2 blocks of FLOOR tiles outside of a treasure room
+        */
         return false;
     }
 
     setTile(row: number, col: number, newType?: TileType, newDisplay?: string): boolean {
-        if (col < 0 || col >= this.colCounts.length || row < 0 || row >= this.rowCounts.length) {
+        if (col < 0 || col >= this.colTargets.length || row < 0 || row >= this.rowTargets.length) {
             return false;
         }
         const oldTile = this.tiles[row][col];
@@ -196,9 +199,9 @@ export class Puzzle extends Observable {
     countWalls() {
         const rowCounts: number[] = [];
         const colCounts: number[] = [];
-        for (let row = 0; row < this.rowCounts.length; row++) {
+        for (let row = 0; row < this.rowTargets.length; row++) {
             rowCounts[row] = 0;
-            for (let col = 0; col < this.colCounts.length; col++) {
+            for (let col = 0; col < this.colTargets.length; col++) {
                 colCounts[col] ||= 0;
                 if (this.tiles[row][col].type === WALL) {
                     rowCounts[row]++;
@@ -207,6 +210,10 @@ export class Puzzle extends Observable {
             }
         }
         return {rowCounts, colCounts};
+    }
+
+    parseName(spec: string): string {
+        return spec.trim().split("\n")[0];
     }
 
     parseRowCounts(spec: string): number[] {
@@ -242,11 +249,11 @@ export class Puzzle extends Observable {
 
     toASCII(): string {
         const lines: string[] = [this.name];
-        lines.push('.' + this.colCounts.join(''));
+        lines.push('.' + this.colTargets.join(''));
         let i = 0;
         for (const row of this.tiles) {
             const rowStrings = [];
-            rowStrings.push(this.rowCounts[i++].toFixed(0));
+            rowStrings.push(this.rowTargets[i++].toFixed(0));
             for (const tile of row) {
                 rowStrings.push(tile.toASCII());
             }
@@ -257,11 +264,11 @@ export class Puzzle extends Observable {
 
     toEmoji(): string {
         const lines: string[] = [this.name];
-        lines.push('⬜️' + this.colCounts.map(emojiNumber).join(''));
+        lines.push('⬜️' + this.colTargets.map(emojiNumber).join(''));
         let i = 0;
         for (const row of this.tiles) {
             const rowStrings = [];
-            rowStrings.push(emojiNumber(this.rowCounts[i++]));
+            rowStrings.push(emojiNumber(this.rowTargets[i++]));
             for (const tile of row) {
                 rowStrings.push(tile.toEmoji());
             }
@@ -272,11 +279,11 @@ export class Puzzle extends Observable {
 
     toURI(): string {
         const lines: string[] = [this.name];
-        lines.push('.' + this.colCounts.join(''));
+        lines.push('.' + this.colTargets.join(''));
         let i = 0;
         for (const row of this.tiles) {
             const rowStrings = [];
-            rowStrings.push(this.rowCounts[i++].toFixed(0));
+            rowStrings.push(this.rowTargets[i++].toFixed(0));
             for (const tile of row) {
                 if (tile.type === FLOOR || tile.type === WALL) {
                     rowStrings.push(tile.toASCII());

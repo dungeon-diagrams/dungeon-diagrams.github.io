@@ -22,15 +22,15 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
     render() {
         const puzzle = this.state.puzzle;
         const {rowCounts, colCounts} = puzzle.countWalls();
-        const rowStatus = [...getWallStatus(rowCounts, puzzle.rowCounts)];
-        const colStatus = [...getWallStatus(colCounts, puzzle.colCounts)];
+        const rowStatus = [...getWallStatus(rowCounts, puzzle.rowTargets)];
+        const colStatus = [...getWallStatus(colCounts, puzzle.colTargets)];
         return (
             <div className="puzzle-view">
                 <h2><a href={'?puzzle=' + encodeURIComponent(puzzle.toURI())}>{puzzle.name}</a></h2>
                 <table className="puzzle-grid">
                     <tbody>
                         <th />
-                        {puzzle.colCounts.map((count, col) => (
+                        {puzzle.colTargets.map((count, col) => (
                             <th className={`puzzle-count col-${col} ${colStatus[col]}`}>
                                 {count}
                             </th>
@@ -38,7 +38,7 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
                         {puzzle.tiles.map((rowTiles, row)=>(
                             <tr>
                                 <th className={`puzzle-count row-${row} ${rowStatus[row]}`}>
-                                    {puzzle.rowCounts[row]}
+                                    {puzzle.rowTargets[row]}
                                 </th>
                                 {rowTiles.map((tile, col)=>(
                                     <PuzzleCell row={row} col={col} tile={tile} puzzle={puzzle} rowStatus={rowStatus[row]} colStatus={colStatus[col]} />
