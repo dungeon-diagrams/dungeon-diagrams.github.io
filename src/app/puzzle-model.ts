@@ -41,7 +41,7 @@ interface TileType {
 }
 
 // floor: '.' or any black/white square or any whitespace
-const FLOOR: TileType = {
+export const FLOOR: TileType = {
     name: "floor",
     ASCII: '.',
     emoji: '⬜️',
@@ -49,7 +49,7 @@ const FLOOR: TileType = {
 };
 
 // wall: '#' or any other color square
-const WALL: TileType = {
+export const WALL: TileType = {
     name: "wall",
     ASCII: '#',
     emoji: '🟫',
@@ -58,7 +58,7 @@ const WALL: TileType = {
 };
 
 // treasure: 't' or 💎 (any emoji Activity or Objects)
-const TREASURE: TileType = {
+export const TREASURE: TileType = {
     name: "treasure",
     ASCII: 'T',
     emoji: '💎',
@@ -66,7 +66,7 @@ const TREASURE: TileType = {
 };
 
 // monster: any emoji Animals & nature, anything else
-const MONSTER: TileType = {
+export const MONSTER: TileType = {
     name: "monster",
     ASCII: 'm',
     emoji: '🦁',
@@ -257,7 +257,7 @@ export class Puzzle extends Observable {
     }
 
     setTile(row: number, col: number, newType?: TileType, newDisplay?: string): boolean {
-        if (col < 0 || col >= this.colTargets.length || row < 0 || row >= this.rowTargets.length) {
+        if (!this.isInBounds(row, col)) {
             return false;
         }
         const oldTile = this.tiles[row][col];
@@ -276,14 +276,12 @@ export class Puzzle extends Observable {
     countWalls() {
         const rowCounts: number[] = [];
         const colCounts: number[] = [];
-        for (let row = 0; row < this.rowTargets.length; row++) {
-            rowCounts[row] = 0;
-            for (let col = 0; col < this.colTargets.length; col++) {
-                colCounts[col] ||= 0;
-                if (this.tiles[row][col].type === WALL) {
-                    rowCounts[row]++;
-                    colCounts[col]++;
-                }
+        for (const [row, col, tile] of this) {
+            rowCounts[row] ||= 0;
+            colCounts[col] ||= 0;
+            if (tile.type === WALL) {
+                rowCounts[row]++;
+                colCounts[col]++;
             }
         }
         return {rowCounts, colCounts};

@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import { Puzzle, PuzzleState, Tile} from "./puzzle-model.js";
+import { Puzzle, PuzzleState, Tile, WALL, FLOOR} from "./puzzle-model.js";
 
 export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
     constructor(props: {puzzle: Puzzle}) {
@@ -87,16 +87,29 @@ interface CellProps {
  */
 export class PuzzleCell extends Component<CellProps> {
     toggle(event: MouseEvent) {
-        this.props.puzzle.setTile(this.props.row, this.props.col, this.props.tile.type.opposite);
+        let newType;
+        let newDisplay;
+        if (this.props.tile.type === WALL) {
+            newType = FLOOR;
+            newDisplay = 'x';
+        }
+        else if (this.props.tile.type === FLOOR && this.props.tile.display === 'x') {
+            newType = FLOOR;
+            newDisplay = '.';
+        }
+        else {
+            newType = WALL;
+        }
+        this.props.puzzle.setTile(this.props.row, this.props.col, newType, newDisplay);
         event.preventDefault();
     }
 
     render(props: CellProps) {
         return (
-            <td className={`puzzle-cell puzzle-cell-${props.tile.toName()} ${props.rowStatus} ${props.colStatus}`}
+            <td className={`puzzle-cell puzzle-cell-${props.tile.toName()} ${props.rowStatus} ${props.colStatus} ${props.tile.display === 'x' ? 'marked-floor' : ''}`}
                 onClick={this.toggle.bind(this)}
             >
-                {props.tile.toEmoji()}
+                {props.tile.display}
             </td>
         )
     }
