@@ -33,6 +33,8 @@ function parseQuery(query: string) {
     return params;
 }
 
+// TODO: put these in a navigation menu as links
+
 const dailyPuzzles: string[] = [
 `Example Puzzle
 .424121

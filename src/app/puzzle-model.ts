@@ -32,7 +32,7 @@ Puzzle
     .addObserver(callback)
 */
 
-interface TileType {
+export interface TileType {
     name: string;
     ASCII: string;
     emoji: string;
@@ -198,11 +198,11 @@ export class Puzzle extends Observable {
         // - all row/column wall counts are equal to their targets
         const {rowCounts, colCounts} = this.countWalls();
         if (!arrayEqual(rowCounts, this.rowTargets)) {
-            console.log("not solved: row wall targets do not match");
+            console.log("not solved: row wall counts do not match targets");
             return false;
         }
         if (!arrayEqual(colCounts, this.colTargets)) {
-            console.log("not solved: column wall targets do not match");
+            console.log("not solved: column wall counts do not match targets");
             return false;
         }
         // - all non-WALL tiles are connected
@@ -210,12 +210,12 @@ export class Puzzle extends Observable {
             // - each MONSTER is in a dead end (adjacent to exactly 1 FLOOR)
             const deadEnd = this.isDeadEnd(row, col);
             if ((tile.type === MONSTER) && !deadEnd) {
-                console.log("not solved: some monster is not in a dead end", row, col, tile);
+                console.log("not solved: some monster is not in a dead end", row, col);
                 return false
             }
             // - each dead end contains a MONSTER
             if ((tile.type !== MONSTER) && deadEnd) {
-                console.log("not solved: some dead end has no monster", row, col, tile);
+                console.log("not solved: some dead end has no monster", row, col);
                 return false;
             }
         }

@@ -1,11 +1,13 @@
 import { h, Component } from "preact";
-import { Puzzle, PuzzleState, Tile, WALL, FLOOR} from "./puzzle-model.js";
+import { Puzzle, PuzzleState, Tile, TileType, WALL, FLOOR} from "./puzzle-model.js";
 
 export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
     constructor(props: {puzzle: Puzzle}) {
         super();
         this.state = { puzzle: props.puzzle };
     }
+
+    swipeTile: {type: TileType, display?: string} | null = null;
 
     puzzleChanged = (puzzle: Puzzle)=>{
         this.setState({puzzle: puzzle});
@@ -19,6 +21,40 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
         this.state.puzzle.removeObserver(this.puzzleChanged);
     }
 
+    startSwipe = (event: MouseEvent)=> {
+        event.preventDefault();
+        const targetEl = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement | null;
+        if (targetEl?.classList.contains("puzzle-cell")) {
+            const row = parseInt(targetEl.dataset.row || '');
+            const col = parseInt(targetEl.dataset.col || '');
+            if (this.state.puzzle.isInBounds(row, col)) {
+                const tile = this.state.puzzle.tiles[row][col];
+                this.swipeTile = getNextTile(tile);
+                this.state.puzzle.setTile(row, col, this.swipeTile.type, this.swipeTile.display);
+            }
+        }
+    }
+
+    moveSwipe = (event: MouseEvent)=> {
+        if (!this.swipeTile) { 
+            return;
+        }
+        event.preventDefault();
+        const targetEl = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement | null;
+        if (targetEl?.classList.contains("puzzle-cell")) {
+            const row = parseInt(targetEl.dataset.row || '');
+            const col = parseInt(targetEl.dataset.col || '');
+            if (this.state.puzzle.isInBounds(row, col)) {
+                const tile = this.state.puzzle.tiles[row][col];
+                this.state.puzzle.setTile(row, col, this.swipeTile.type, this.swipeTile.display);
+            }
+        }
+    }
+
+    endSwipe = (event: Event)=> {
+        this.swipeTile = null;
+    }
+
     render() {
         const puzzle = this.state.puzzle;
         const {rowCounts, colCounts} = puzzle.countWalls();
@@ -26,7 +62,11 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
         const colStatus = [...getWallStatus(colCounts, puzzle.colTargets)];
         const isSolved = puzzle.isSolved();
         return (
-            <div className={`puzzle-view ${isSolved?'solved':'unsolved'}`}>
+            <div className={`puzzle-view ${isSolved?'solved':'unsolved'}`}
+                onMouseDown={this.startSwipe}
+                onMouseMove={this.moveSwipe}
+                onMouseUp={this.endSwipe}
+            >
                 <h2>
                     <span className='solved-marker'> ⭐️ </span>
                     <a href={'?puzzle=' + encodeURIComponent(puzzle.toURI())}>{puzzle.name}</a>
@@ -87,30 +127,37 @@ interface CellProps {
  */
 export class PuzzleCell extends Component<CellProps> {
     toggle(event: MouseEvent) {
-        let newType;
-        let newDisplay;
-        if (this.props.tile.type === WALL) {
-            newType = FLOOR;
-            newDisplay = 'x';
-        }
-        else if (this.props.tile.type === FLOOR && this.props.tile.display === 'x') {
-            newType = FLOOR;
-            newDisplay = '.';
-        }
-        else {
-            newType = WALL;
-        }
-        this.props.puzzle.setTile(this.props.row, this.props.col, newType, newDisplay);
+        const {type, display} = getNextTile(this.props.tile);
+        this.props.puzzle.setTile(this.props.row, this.props.col, type, display);
         event.preventDefault();
     }
 
     render(props: CellProps) {
         return (
             <td className={`puzzle-cell puzzle-cell-${props.tile.toName()} ${props.rowStatus} ${props.colStatus} ${props.tile.display === 'x' ? 'marked-floor' : ''}`}
+                data-row={this.props.row}
+                data-col={this.props.col}
                 onClick={this.toggle.bind(this)}
             >
                 {props.tile.toEmoji()}
             </td>
         )
     }
+}
+
+function getNextTile(prevTile: Tile) {
+    let newType;
+    let newDisplay;
+    if (prevTile.type === WALL) {
+        newType = FLOOR;
+        newDisplay = 'x';
+    }
+    else if (prevTile.type === FLOOR && prevTile.display === 'x') {
+        newType = FLOOR;
+        newDisplay = '.';
+    }
+    else {
+        newType = WALL;
+    }
+    return {type: newType, display: newDisplay};
 }
