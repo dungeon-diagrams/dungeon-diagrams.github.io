@@ -114,13 +114,13 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
                     <tbody>
                         <th />
                         {puzzle.colTargets.map((count, col) => (
-                            <th className={`puzzle-wall-target col-${col} ${colStatus[col]}`}>
+                            <th className={`puzzle-wall-target ${colStatus[col]}`} data-col={col}>
                                 {count}
                             </th>
                         ))}
                         {puzzle.tiles.map((rowTiles, row)=>(
                             <tr>
-                                <th className={`puzzle-wall-target row-${row} ${rowStatus[row]}`}>
+                                <th className={`puzzle-wall-target ${rowStatus[row]}`} data-row={row}>
                                     {puzzle.rowTargets[row]}
                                 </th>
                                 {rowTiles.map((tile, col)=>(

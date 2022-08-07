@@ -15,15 +15,20 @@ h1, h2 {
 
 /* puzzle components */
 
+.puzzle-view {
+    max-width: 100vh;
+    margin: auto;
+}
+
 .puzzle-grid {
     margin: auto;
     cursor: default;
 }
 
 .puzzle-grid td {
-    width: 10vw;
-    height: 10vw;
-    border-radius: 0.5vw;
+    min-width: 1em;
+    min-height: 1em;
+    border-radius: 0.1em;
     vertical-align: middle;
     overflow: clip;
 }
