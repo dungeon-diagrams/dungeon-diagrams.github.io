@@ -236,6 +236,13 @@ export class Puzzle extends Observable {
         return (walkableCount === 1);
     }
 
+    getTile(row: number, col: number): Tile | null {
+        if (!this.isInBounds(row, col)) {
+            return null;
+        }
+        return this.tiles[row][col];
+    }
+
     getAdjacentTiles(row: number, col: number, height: number = 1, width: number = 1, diagonal: boolean = false): Tile[] {
         const neighbors: Tile[] = [];
         const corner = (diagonal ? 1 : 0);
