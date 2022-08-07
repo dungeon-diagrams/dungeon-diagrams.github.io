@@ -45,7 +45,7 @@ export const FLOOR: TileType = {
     name: "floor",
     ASCII: '.',
     emoji: '⬜️',
-    pattern: /\.|\p{White_Space}|[🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️]/iu,
+    pattern: /\.|x|\p{White_Space}|[🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️]/iu,
 };
 
 // wall: '#' or any other color square
@@ -132,6 +132,20 @@ export class Tile {
         }
         else {
             return this.display;
+        }
+    }
+
+    nextTile(): Tile {
+        let newType;
+        let newDisplay;
+        if (this.type === WALL) {
+            return new Tile('x');
+        }
+        else if (this.type === FLOOR && this.display === 'x') {
+            return new Tile('.');
+        }
+        else {
+            return new Tile('#');
         }
     }
 }
@@ -267,7 +281,7 @@ export class Puzzle extends Observable {
         return (row >= 0 && row < this.nRows && col >= 0 && col < this.nCols);
     }
 
-    setTile(row: number, col: number, newType?: TileType, newDisplay?: string): boolean {
+    setTile(row: number, col: number, newTile: Tile): boolean {
         if (!this.isInBounds(row, col)) {
             return false;
         }
@@ -277,9 +291,7 @@ export class Puzzle extends Observable {
                 return false;
             }
         }
-        newType ||= WALL;
-        this.tiles[row][col].type = newType;
-        this.tiles[row][col].display = newDisplay || newType.emoji;
+        this.tiles[row][col] = newTile;
         this.didChange();
         return true;
     }

@@ -1,13 +1,11 @@
 import { h, Component } from "preact";
-import { Puzzle, PuzzleState, Tile, TileType, WALL, FLOOR} from "./puzzle-model.js";
+import { Puzzle, Tile } from "./puzzle-model.js";
 
 export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
     constructor(props: {puzzle: Puzzle}) {
         super();
         this.state = { puzzle: props.puzzle };
     }
-
-    swipeTile: {type: TileType, display?: string} | null = null;
 
     puzzleChanged = (puzzle: Puzzle)=>{
         this.setState({puzzle: puzzle});
@@ -21,6 +19,8 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
         this.state.puzzle.removeObserver(this.puzzleChanged);
     }
 
+    swipeTile: Tile | null = null;
+
     mouseDown = (event: MouseEvent) => {
         event.preventDefault();
         this.swipeStart(event);
@@ -32,15 +32,17 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
     }
 
     swipeStart = (event: MouseEvent | Touch)=> {
+        if (this.swipeTile) {
+            return;
+        }
         const targetEl = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement | null;
         if (targetEl?.classList.contains("puzzle-cell")) {
             const row = parseInt(targetEl.dataset.row || '');
             const col = parseInt(targetEl.dataset.col || '');
             const tile = this.state.puzzle.getTile(row, col);
             if (tile) {
-                const tile = this.state.puzzle.tiles[row][col];
-                this.swipeTile = getNextTile(tile);
-                this.state.puzzle.setTile(row, col, this.swipeTile.type, this.swipeTile.display);
+                this.swipeTile = tile.nextTile();
+                this.state.puzzle.setTile(row, col, this.swipeTile);
             }
         }
     }
@@ -55,8 +57,7 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
             const col = parseInt(targetEl.dataset.col || '');
             const tile = this.state.puzzle.getTile(row, col);
             if (tile) {
-                const tile = this.state.puzzle.tiles[row][col];
-                this.state.puzzle.setTile(row, col, this.swipeTile.type, this.swipeTile.display);
+                this.state.puzzle.setTile(row, col, this.swipeTile);
             }
         }
     }
@@ -80,6 +81,14 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
         }
     }
 
+    touchEnd = (event: TouchEvent) => {
+        if (event.touches.length === 0) {
+            setTimeout(()=>{
+                this.swipeEnd(event);
+            }, 100);
+        }
+    }
+
     render() {
         const puzzle = this.state.puzzle;
         const {rowCounts, colCounts} = puzzle.countWalls();
@@ -93,7 +102,7 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
                 onMouseUp={this.swipeEnd}
                 onTouchStart={this.touchStart}
                 onTouchMove={this.touchMove}
-                onTouchEnd={this.swipeEnd}
+                onTouchEnd={this.touchEnd}
                 onTouchCancel={this.swipeEnd}
             >
                 <h2>
@@ -156,8 +165,7 @@ interface CellProps {
  */
 export class PuzzleCell extends Component<CellProps> {
     toggle(event: MouseEvent) {
-        const {type, display} = getNextTile(this.props.tile);
-        this.props.puzzle.setTile(this.props.row, this.props.col, type, display);
+        this.props.puzzle.setTile(this.props.row, this.props.col, this.props.tile.nextTile());
         event.preventDefault();
     }
 
@@ -172,21 +180,4 @@ export class PuzzleCell extends Component<CellProps> {
             </td>
         )
     }
-}
-
-function getNextTile(prevTile: Tile) {
-    let newType;
-    let newDisplay;
-    if (prevTile.type === WALL) {
-        newType = FLOOR;
-        newDisplay = 'x';
-    }
-    else if (prevTile.type === FLOOR && prevTile.display === 'x') {
-        newType = FLOOR;
-        newDisplay = '.';
-    }
-    else {
-        newType = WALL;
-    }
-    return {type: newType, display: newDisplay};
 }

@@ -33,6 +33,14 @@ function parseQuery(query: string) {
     return params;
 }
 
+/*
+ idea for a router: use 404.html to serve the main app.
+ then we can have urls like:
+ /puzzle/1/Tenaxxus-Gullet
+ /puzzle/1#?state=..xx+.t.m,..m.x|
+ /puzzle/?r=424121&c=312512&t=0,5&m=4,5,5,0#?state=.x+.t.|
+*/
+
 // TODO: put these in a navigation menu as links
 
 const dailyPuzzles: string[] = [
