@@ -45,15 +45,15 @@ export const FLOOR: TileType = {
     name: "floor",
     ASCII: '.',
     emoji: '⬜️',
-    pattern: /\.|x|\p{White_Space}|[🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️]/iu,
+    pattern: /\p{White_Space}|[\.x🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️_-]/iu,
 };
 
 // wall: '#' or any other color square
 export const WALL: TileType = {
     name: "wall",
-    ASCII: '#',
+    ASCII: '*',
     emoji: '🟫',
-    pattern: /[#🟥🟧🟨🟩🟦🟪🟫]/iu,
+    pattern: /[*#🟥🟧🟨🟩🟦🟪🟫]/iu,
     opposite: FLOOR
 };
 
@@ -120,12 +120,15 @@ export class Tile {
     }
 
     toASCII(): string {
-        return this.type.ASCII;
+        if (!this.display.match(/\p{ASCII}/u)) {
+            return this.type.ASCII;
+        }
+        return this.display;
     }
 
     toEmoji(): string {
-        if (this.display === 'x') {
-            return this.display;
+        if (this.type === FLOOR && this.display === 'x') {
+            return '🔲';
         }
         if (!this.display.match(/\p{Emoji}/u)) {
             return this.type.emoji;
@@ -311,12 +314,12 @@ export class Puzzle extends Observable {
     }
 
     parseName(spec: string): string {
-        return spec.trim().split("\n")[0];
+        return spec.trim().split(/[\n,!]/)[0];
     }
 
     parseRowCounts(spec: string): number[] {
         const counts = [];
-        const specRows = spec.trim().split("\n").slice(2);
+        const specRows = spec.trim().split(/[\n,!]/).slice(2);
         for (const specRow of specRows) {
             counts.push(parseInt(specRow));
         }
@@ -325,7 +328,7 @@ export class Puzzle extends Observable {
 
     parseColCounts(spec: string): number[] {
         const counts = [];
-        const specRow = runes(spec.trim().split("\n")[1]).slice(1);
+        const specRow = runes(spec.trim().split(/[\n,!]/)[1]).slice(1);
         for (const specCol of specRow) {
             counts.push(parseInt(specCol));
         }
@@ -334,11 +337,21 @@ export class Puzzle extends Observable {
 
     parseTiles(spec: string) {
         const tiles: Tile[][] = [];
-        const specRows = spec.trim().split("\n").slice(2);
+        const specRows = spec.trim().split(/[\n,!]/).slice(2);
         for (const specRow of specRows) {
             const rowTiles: Tile[] = [];
             for (const specTile of runes(specRow).slice(1)) {
                 rowTiles.push(new Tile(specTile));
+            }
+            while (rowTiles.length < this.nRows) {
+                rowTiles.push(new Tile('.'));
+            }
+            tiles.push(rowTiles);
+        }
+        while (tiles.length < this.nCols) {
+            const rowTiles: Tile[] = [];
+            while (rowTiles.length < this.nRows) {
+                rowTiles.push(new Tile('.'));
             }
             tiles.push(rowTiles);
         }
@@ -392,14 +405,14 @@ export class Puzzle extends Observable {
             }
             lines.push(rowStrings.join(''))
         }
-        return lines.join('\n');
+        return lines.join('!');
     }
 
     unsolve(): Puzzle {
         // TODO: don't mutate original
         for (const row of this.tiles) {
             for (const tile of row) {
-                if (tile.type === WALL) {
+                if (tile.type === WALL || tile.type === FLOOR) {
                     tile.type = FLOOR;
                     tile.display = '.';
                 }
