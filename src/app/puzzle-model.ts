@@ -136,13 +136,16 @@ export class Puzzle extends Observable {
         this.nRows = this.rowTargets.length;
         this.colTargets = colTargets;
         this.nCols = this.colTargets.length;
-        this.tiles = tiles;
-        for (let row = 0; row < this.nCols; row++) {
+        this.tiles = [];
+        for (let row = 0; row < this.nRows; row++) {
             this.tiles[row] ||= [];
+            const specRow: Tile[] = tiles[row] || [];
             const rowTiles: Tile[] = [];
-            while (rowTiles.length < this.nRows) {
-                rowTiles.push(new Tile(FLOOR));
+            for (let col = 0; col < this.nCols; col++) {
+                const specTile = specRow[col];
+                rowTiles.push(specTile || new Tile(FLOOR));
             }
+            this.tiles.push(rowTiles);
         }
     }
 
@@ -279,13 +282,11 @@ export class Puzzle extends Observable {
     }
 
     solvableCopy(): SolvablePuzzle {
-         // TODO: actually copy tiles
         const other = new SolvablePuzzle({...this})
         return other;
     }
 
     editableCopy(): EditablePuzzle {
-         // TODO: actually copy tiles
          const other = new EditablePuzzle({...this})
          return other;
      }
@@ -309,6 +310,18 @@ class EditablePuzzle extends Puzzle {
         if (!this.isInBounds(row, col)) {
             return false;
         }
+        return true;
+    }
+
+    setTile(row: number, col: number, newTile: Tile): boolean {
+        if (!this.canEditTile(row, col)) {
+            return false;
+        }
+        this.tiles[row][col] = newTile;
+        const {rowCounts, colCounts} = this.countWalls();
+        this.rowTargets = rowCounts;
+        this.colTargets = colCounts;
+        this.didChange();
         return true;
     }
 }
