@@ -66,7 +66,7 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
     swipeEnd = (event: Event)=> {
         setTimeout(()=>{
             this.swipeTile = null;
-            if (this.state.puzzle.isSolved()) {
+            if (this.state.puzzle.isSolved().solved) {
                 this.state.puzzle.unmarkFloors();
             }
         }, 100);
@@ -92,9 +92,9 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
         const {rowCounts, colCounts} = puzzle.countWalls();
         const rowStatus = [...getWallStatus(rowCounts, puzzle.rowTargets)];
         const colStatus = [...getWallStatus(colCounts, puzzle.colTargets)];
-        const isSolved = puzzle.isSolved();
+        const {solved, reason} = puzzle.isSolved();
         return (
-            <div className={`puzzle-view ${isSolved?'solved':'unsolved'}`}
+            <div className={`puzzle-view ${solved?'solved':'unsolved'}`}
                 onMouseDown={this.mouseDown}
                 onMouseMove={this.mouseMove}
                 onMouseUp={this.swipeEnd}

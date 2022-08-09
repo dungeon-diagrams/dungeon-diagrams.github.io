@@ -183,36 +183,31 @@ export class Puzzle extends Observable {
         return true;
     }
 
-    isSolved(): boolean {
+    isSolved(): {solved: boolean, reason: string} {
         // a puzzle is solved when:
         // - all row/column wall counts are equal to their targets
         const {rowCounts, colCounts} = this.countWalls();
         if (!arrayEqual(rowCounts, this.rowTargets)) {
-            console.log("not solved: row wall counts do not match targets");
-            return false;
+            return {solved: false, reason: "Row wall counts do not match targets."};
         }
         if (!arrayEqual(colCounts, this.colTargets)) {
-            console.log("not solved: column wall counts do not match targets");
-            return false;
+            return {solved: false, reason: "Column wall counts do not match targets."};
         }
         // - all non-WALL tiles are connected
         for (const [row, col, tile] of this) {
             // - each MONSTER is in a dead end (adjacent to exactly 1 FLOOR)
             const deadEnd = this.isDeadEnd(row, col);
             if ((tile.type === MONSTER) && !deadEnd) {
-                console.log("not solved: some monster is not in a dead end", row, col);
-                return false
+                return {solved: false, reason: `Some monster is not in a dead end: (${row}, ${col}).`};
             }
             // - each dead end contains a MONSTER
             if ((tile.type !== MONSTER) && deadEnd) {
-                console.log("not solved: some dead end has no monster", row, col);
-                return false;
+                return {solved: false, reason: `Some dead end has no monster: (${row}, ${col}).`};
             }
         }
         // - each TREASURE is in a treasure room (3x3 block of 8 FLOOR and 1 TREASURE, adjacent to exactly 1 FLOOR and 0 MONSTER)
         // - no 2x2 blocks of FLOOR tiles unless a TREASURE is adjacent (including diagonals)
-        console.log("solved!");
-        return true;
+        return {solved: true, reason: 'Valid dungeon layout.'};
     }
 
     isDeadEnd(row: number, col: number): boolean {
