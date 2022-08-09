@@ -122,7 +122,6 @@ export class Observable {
 }
 
 export class Puzzle extends Observable {
-    __proto__?: object;
     name: string;
     nRows: number;
     nCols: number;
