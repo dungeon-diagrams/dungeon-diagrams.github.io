@@ -276,13 +276,15 @@ export class Puzzle extends Observable {
                 tile.display = '.';
             }
         }
+        this.didChange();
         return this;
     }
 
     unmarkFloors(): Puzzle {
         // TODO: don't mutate original
         for (const [row, col, tile] of this) {
-            if (tile.type === FLOOR && tile.display === 'x') {
+            if (tile.type === FLOOR && tile.reserved) {
+                tile.reserved = false;
                 tile.display = '.';
             }
         }
