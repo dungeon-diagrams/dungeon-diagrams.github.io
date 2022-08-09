@@ -35,7 +35,6 @@ export interface TileType {
     ASCII: string;
     emoji: string;
     pattern: RegExp;
-    opposite?: TileType;
 }
 
 // floor: '.' or any black/white square or any whitespace
@@ -51,8 +50,7 @@ const WALL: TileType = {
     name: "wall",
     ASCII: '*',
     emoji: '🟫',
-    pattern: /[*#🟥🟧🟨🟩🟦🟪🟫]/iu,
-    opposite: FLOOR
+    pattern: /[*#🟥🟧🟨🟩🟦🟪🟫]/iu
 };
 
 // treasure: 't' or 💎 (any emoji Activity or Objects)
@@ -101,13 +99,6 @@ export class Tile {
     }
 }
 
-export interface PuzzleState {
-    name: string;
-    rowCounts: number[];
-    colCounts: number[];
-    tiles: Tile[][];
-}
-
 export class Observable {
     observers: Set<Function>;
 
@@ -131,13 +122,13 @@ export class Observable {
 }
 
 export class Puzzle extends Observable {
+    __proto__?: object;
     name: string;
     nRows: number;
     nCols: number;
     rowTargets: number[];
     colTargets: number[];
     tiles: Tile[][];
-    editable: boolean;
 
     constructor({name, rowTargets, colTargets, tiles}: {name: string, rowTargets: number[], colTargets: number[], tiles: Tile[][]}) {
         super();
@@ -154,7 +145,6 @@ export class Puzzle extends Observable {
                 rowTiles.push(new Tile(FLOOR));
             }
         }
-        this.editable = false;
     }
 
     *[Symbol.iterator](): Iterator<[number, number, Tile]> {
@@ -176,15 +166,17 @@ export class Puzzle extends Observable {
         return this.tiles[row][col];
     }
 
-    setTile(row: number, col: number, newTile: Tile): boolean {
+    canEditTile(row: number, col: number) {
         if (!this.isInBounds(row, col)) {
             return false;
         }
-        const oldTile = this.tiles[row][col];
-        if (!this.editable) {
-            if (oldTile.type === MONSTER || oldTile.type === TREASURE) {
-                return false;
-            }
+        // subclasses override this to add permissions
+        return false;
+    }
+
+    setTile(row: number, col: number, newTile: Tile): boolean {
+        if (!this.canEditTile(row, col)) {
+            return false;
         }
         this.tiles[row][col] = newTile;
         this.didChange();
@@ -291,9 +283,43 @@ export class Puzzle extends Observable {
         this.didChange();
         return this;
     }
+
+    solvableCopy(): SolvablePuzzle {
+         // TODO: actually copy tiles
+        const other = new SolvablePuzzle({...this})
+        return other;
+    }
+
+    editableCopy(): EditablePuzzle {
+         // TODO: actually copy tiles
+         const other = new EditablePuzzle({...this})
+         return other;
+     }
 }
 
-function arrayEqual(a1: Array<any>, a2: Array<any>): boolean {
+class SolvablePuzzle extends Puzzle {
+    canEditTile(row: number, col: number) {
+        if (!this.isInBounds(row, col)) {
+            return false;
+        }
+        const oldTile = this.tiles[row][col];
+        if (oldTile.type === MONSTER || oldTile.type === TREASURE) {
+            return false;
+        }
+        return true;
+    }
+}
+
+class EditablePuzzle extends Puzzle {
+    canEditTile(row: number, col: number) {
+        if (!this.isInBounds(row, col)) {
+            return false;
+        }
+        return true;
+    }
+}
+
+function arrayEqual<T>(a1: Array<T>, a2: Array<T>): boolean {
     if (a1.length !== a2.length) {
         return false;
     }

@@ -198,6 +198,7 @@ export function App() {
     else {
         puzzle = PuzzleString.parse(dailyPuzzles[0]);
     }
+    puzzle = puzzle.solvableCopy();
     window.puzzle = puzzle;
     return (
         <div id="app" className="app">

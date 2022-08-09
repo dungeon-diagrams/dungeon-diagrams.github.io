@@ -158,7 +158,7 @@ interface CellProps {
 
 /**
  * A PuzzleCell is a view of a single Tile.
- * clicking (touching) a cell begins a drag with the opposite tile type.
+ * clicking (touching) a cell begins a drag with the next tile type.
  * each cell touched with that drag converts to the drag's tile type if possible.
  */
 export class PuzzleCell extends Component<CellProps> {
