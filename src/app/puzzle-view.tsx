@@ -1,5 +1,6 @@
 import { h, Component } from "preact";
 import { Puzzle, Tile } from "./puzzle-model.js";
+import { PuzzleString, TileString } from "./puzzle-string.js";
 
 export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
     constructor(props: {puzzle: Puzzle}) {
@@ -104,7 +105,7 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
             >
                 <h2>
                     <span className='solved-marker'> ⭐️ </span>
-                    <a href={'?puzzle=' + encodeURIComponent(puzzle.toURI())}>{puzzle.name}</a>
+                    <a href={'?puzzle=' + encodeURIComponent(PuzzleString.toURI(puzzle))}>{puzzle.name}</a>
                     <span className='solved-marker'> ⭐️ </span>
                 </h2>
                 <table className="puzzle-grid">
@@ -168,12 +169,12 @@ export class PuzzleCell extends Component<CellProps> {
 
     render(props: CellProps) {
         return (
-            <td className={`puzzle-cell puzzle-cell-${props.tile.toName()} ${props.rowStatus} ${props.colStatus} ${props.tile.display === 'x' ? 'marked-floor' : ''}`}
+            <td className={`puzzle-cell puzzle-cell-${props.tile.type.name} ${props.rowStatus} ${props.colStatus} ${props.tile.reserved ? 'marked-floor' : ''}`}
                 data-row={this.props.row}
                 data-col={this.props.col}
                 // onClick={this.toggle.bind(this)}
             >
-                {props.tile.toEmoji()}
+                {TileString.toHTML(props.tile)}
             </td>
         )
     }

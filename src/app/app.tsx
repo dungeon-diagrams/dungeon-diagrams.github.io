@@ -1,6 +1,7 @@
 import { h } from "preact";
 import { Puzzle } from './puzzle-model.js';
 import { PuzzleGrid } from './puzzle-view.js';
+import { PuzzleString } from './puzzle-string.js';
 
 export { render } from "preact";
 
@@ -189,13 +190,13 @@ export function App() {
     const puzzleID = params.puzzle_id as number;
     let puzzle;
     if (puzzleString) {
-        puzzle = new Puzzle(puzzleString);
+        puzzle = PuzzleString.parse(puzzleString);
     }
     else if (puzzleID || puzzleID === 0) {
-        puzzle = new Puzzle(dailyPuzzles[puzzleID]);
+        puzzle = PuzzleString.parse(dailyPuzzles[puzzleID]);
     }
     else {
-        puzzle = new Puzzle(dailyPuzzles[0]);
+        puzzle = PuzzleString.parse(dailyPuzzles[0]);
     }
     window.puzzle = puzzle;
     return (

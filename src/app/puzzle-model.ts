@@ -1,5 +1,3 @@
-import { default as runes } from 'runes';
-
 /*
 
 A puzzle model consists of spec and state.
@@ -45,7 +43,7 @@ const FLOOR: TileType = {
     name: "floor",
     ASCII: '.',
     emoji: '⬜️',
-    pattern: /\p{White_Space}|[\.x🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️_-]/iu,
+    pattern: /\p{White_Space}|[\.x✖️×✖️x╳⨯⨉·🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️💠_-]/iu,
 };
 
 // wall: '#' or any other color square
@@ -77,82 +75,28 @@ export const TileTypes = {
     FLOOR, WALL, TREASURE, MONSTER
 };
 
-function emojiNumber(n: number): string {
-    const table = ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
-    if (n < table.length) {
-        return table[n];
-    }
-    else {
-        return `${n},`;
-    }
-}
-
-function arrayEqual(a1: Array<any>, a2: Array<any>): boolean {
-    if (a1.length !== a2.length) {
-        return false;
-    }
-    for (const i in a1) {
-        if (a1[i] !== a2[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
 export class Tile {
     display: string;
     type: TileType;
-    x?: number;
-    y?: number;
+    reserved: boolean;
 
-    constructor(displayTile: string) {
-        this.display = displayTile;
-        this.type = this.parse(displayTile);
-    }
-
-    parse(displayTile: string): TileType {
-        for (const tileType of [FLOOR, WALL, TREASURE, MONSTER]) {
-            if (displayTile.match(tileType.pattern)) {
-                return tileType;
-            }
-        }
-        return MONSTER;
-    }
-
-    toName(): string {
-        return this.type.name;
-    }
-
-    toASCII(): string {
-        if (!this.display.match(/\p{ASCII}/u)) {
-            return this.type.ASCII;
-        }
-        return this.display;
-    }
-
-    toEmoji(): string {
-        if (this.type === FLOOR && this.display === 'x') {
-            return 'x'; // '🔲';
-        }
-        if (!this.display.match(/\p{Emoji}/u)) {
-            return this.type.emoji;
-        }
-        else {
-            return this.display;
-        }
+    constructor(tileType: TileType, {display, reserved}: {display?: string, reserved?: boolean} = {}) {
+        this.type = tileType;
+        this.display = display || this.type.ASCII;
+        this.reserved = reserved || false;
     }
 
     nextTile(): Tile {
         let newType;
         let newDisplay;
         if (this.type === WALL) {
-            return new Tile('x');
+            return new Tile(FLOOR, {reserved: true});
         }
-        else if (this.type === FLOOR && this.display === 'x') {
-            return new Tile('.');
+        else if (this.type === FLOOR && this.reserved) {
+            return new Tile(FLOOR);
         }
         else {
-            return new Tile('#');
+            return new Tile(WALL);
         }
     }
 }
@@ -195,14 +139,21 @@ export class Puzzle extends Observable {
     tiles: Tile[][];
     editable: boolean;
 
-    constructor(spec: string) {
+    constructor({name, rowTargets, colTargets, tiles}: {name: string, rowTargets: number[], colTargets: number[], tiles: Tile[][]}) {
         super();
-        this.name = this.parseName(spec);
-        this.tiles = this.parseTiles(spec);
-        this.rowTargets = this.parseRowCounts(spec);
+        this.name = name;
+        this.rowTargets = rowTargets;
         this.nRows = this.rowTargets.length;
-        this.colTargets = this.parseColCounts(spec);
+        this.colTargets = colTargets;
         this.nCols = this.colTargets.length;
+        this.tiles = tiles;
+        for (let row = 0; row < this.nCols; row++) {
+            this.tiles[row] ||= [];
+            const rowTiles: Tile[] = [];
+            while (rowTiles.length < this.nRows) {
+                rowTiles.push(new Tile(FLOOR));
+            }
+        }
         this.editable = false;
     }
 
@@ -212,6 +163,32 @@ export class Puzzle extends Observable {
                 yield [row, col, this.tiles[row][col]];
             }
         }
+    }
+
+    isInBounds(row: number, col: number): boolean {
+        return (row >= 0 && row < this.nRows && col >= 0 && col < this.nCols);
+    }
+
+    getTile(row: number, col: number): Tile | null {
+        if (!this.isInBounds(row, col)) {
+            return null;
+        }
+        return this.tiles[row][col];
+    }
+
+    setTile(row: number, col: number, newTile: Tile): boolean {
+        if (!this.isInBounds(row, col)) {
+            return false;
+        }
+        const oldTile = this.tiles[row][col];
+        if (!this.editable) {
+            if (oldTile.type === MONSTER || oldTile.type === TREASURE) {
+                return false;
+            }
+        }
+        this.tiles[row][col] = newTile;
+        this.didChange();
+        return true;
     }
 
     isSolved(): boolean {
@@ -257,13 +234,6 @@ export class Puzzle extends Observable {
         return (walkableCount === 1);
     }
 
-    getTile(row: number, col: number): Tile | null {
-        if (!this.isInBounds(row, col)) {
-            return null;
-        }
-        return this.tiles[row][col];
-    }
-
     getAdjacentTiles(row: number, col: number, height: number = 1, width: number = 1, diagonal: boolean = false): Tile[] {
         const neighbors: Tile[] = [];
         const corner = (diagonal ? 1 : 0);
@@ -284,25 +254,6 @@ export class Puzzle extends Observable {
         return neighbors;
     }
 
-    isInBounds(row: number, col: number): boolean {
-        return (row >= 0 && row < this.nRows && col >= 0 && col < this.nCols);
-    }
-
-    setTile(row: number, col: number, newTile: Tile): boolean {
-        if (!this.isInBounds(row, col)) {
-            return false;
-        }
-        const oldTile = this.tiles[row][col];
-        if (!this.editable) {
-            if (oldTile.type === MONSTER || oldTile.type === TREASURE) {
-                return false;
-            }
-        }
-        this.tiles[row][col] = newTile;
-        this.didChange();
-        return true;
-    }
-
     countWalls() {
         const rowCounts: number[] = [];
         const colCounts: number[] = [];
@@ -315,101 +266,6 @@ export class Puzzle extends Observable {
             }
         }
         return {rowCounts, colCounts};
-    }
-
-    parseName(spec: string): string {
-        return spec.trim().split(/[\n,!]/)[0];
-    }
-
-    parseRowCounts(spec: string): number[] {
-        const counts = [];
-        const specRows = spec.trim().split(/[\n,!]/).slice(2);
-        for (const specRow of specRows) {
-            counts.push(parseInt(specRow));
-        }
-        return counts;
-    }
-
-    parseColCounts(spec: string): number[] {
-        const counts = [];
-        const specRow = runes(spec.trim().split(/[\n,!]/)[1]).slice(1);
-        for (const specCol of specRow) {
-            counts.push(parseInt(specCol));
-        }
-        return counts;
-    }
-
-    parseTiles(spec: string) {
-        const tiles: Tile[][] = [];
-        const specRows = spec.trim().split(/[\n,!]/).slice(2);
-        for (const specRow of specRows) {
-            const rowTiles: Tile[] = [];
-            for (const specTile of runes(specRow).slice(1)) {
-                rowTiles.push(new Tile(specTile));
-            }
-            while (rowTiles.length < this.nRows) {
-                rowTiles.push(new Tile('.'));
-            }
-            tiles.push(rowTiles);
-        }
-        while (tiles.length < this.nCols) {
-            const rowTiles: Tile[] = [];
-            while (rowTiles.length < this.nRows) {
-                rowTiles.push(new Tile('.'));
-            }
-            tiles.push(rowTiles);
-        }
-        return tiles;
-    }
-
-    toASCII(): string {
-        const lines: string[] = [this.name];
-        lines.push('.' + this.colTargets.join(''));
-        let i = 0;
-        for (const row of this.tiles) {
-            const rowStrings = [];
-            rowStrings.push(this.rowTargets[i++].toFixed(0));
-            for (const tile of row) {
-                rowStrings.push(tile.toASCII());
-            }
-            lines.push(rowStrings.join(''))
-        }
-        return lines.join('\n');
-    }
-
-    toEmoji(): string {
-        const lines: string[] = [this.name];
-        lines.push('⬜️' + this.colTargets.map(emojiNumber).join(''));
-        let i = 0;
-        for (const row of this.tiles) {
-            const rowStrings = [];
-            rowStrings.push(emojiNumber(this.rowTargets[i++]));
-            for (const tile of row) {
-                rowStrings.push(tile.toEmoji());
-            }
-            lines.push(rowStrings.join(''))
-        }
-        return lines.join('\n');
-    }
-
-    toURI(): string {
-        const lines: string[] = [this.name];
-        lines.push('.' + this.colTargets.join(''));
-        let i = 0;
-        for (const row of this.tiles) {
-            const rowStrings = [];
-            rowStrings.push(this.rowTargets[i++].toFixed(0));
-            for (const tile of row) {
-                if (tile.type === FLOOR || tile.type === WALL) {
-                    rowStrings.push(tile.toASCII());
-                }
-                else {
-                    rowStrings.push(tile.toEmoji());
-                }
-            }
-            lines.push(rowStrings.join(''))
-        }
-        return lines.join('!');
     }
 
     unsolve(): Puzzle {
@@ -433,4 +289,16 @@ export class Puzzle extends Observable {
         this.didChange();
         return this;
     }
+}
+
+function arrayEqual(a1: Array<any>, a2: Array<any>): boolean {
+    if (a1.length !== a2.length) {
+        return false;
+    }
+    for (const i in a1) {
+        if (a1[i] !== a2[i]) {
+            return false;
+        }
+    }
+    return true;
 }
