@@ -63,7 +63,12 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
     }
 
     swipeEnd = (event: Event)=> {
-        this.swipeTile = null;
+        setTimeout(()=>{
+            this.swipeTile = null;
+            if (this.state.puzzle.isSolved()) {
+                this.state.puzzle.unmarkFloors();
+            }
+        }, 100);
     }
 
     touchStart = (event: TouchEvent) => {
@@ -81,14 +86,6 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
         }
     }
 
-    touchEnd = (event: TouchEvent) => {
-        if (event.touches.length === 0) {
-            setTimeout(()=>{
-                this.swipeEnd(event);
-            }, 100);
-        }
-    }
-
     render() {
         const puzzle = this.state.puzzle;
         const {rowCounts, colCounts} = puzzle.countWalls();
@@ -102,7 +99,7 @@ export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
                 onMouseUp={this.swipeEnd}
                 onTouchStart={this.touchStart}
                 onTouchMove={this.touchMove}
-                onTouchEnd={this.touchEnd}
+                onTouchEnd={this.swipeEnd}
                 onTouchCancel={this.swipeEnd}
             >
                 <h2>

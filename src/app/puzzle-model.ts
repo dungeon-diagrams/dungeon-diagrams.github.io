@@ -41,7 +41,7 @@ export interface TileType {
 }
 
 // floor: '.' or any black/white square or any whitespace
-export const FLOOR: TileType = {
+const FLOOR: TileType = {
     name: "floor",
     ASCII: '.',
     emoji: '⬜️',
@@ -49,7 +49,7 @@ export const FLOOR: TileType = {
 };
 
 // wall: '#' or any other color square
-export const WALL: TileType = {
+const WALL: TileType = {
     name: "wall",
     ASCII: '*',
     emoji: '🟫',
@@ -58,7 +58,7 @@ export const WALL: TileType = {
 };
 
 // treasure: 't' or 💎 (any emoji Activity or Objects)
-export const TREASURE: TileType = {
+const TREASURE: TileType = {
     name: "treasure",
     ASCII: 'T',
     emoji: '💎',
@@ -66,11 +66,15 @@ export const TREASURE: TileType = {
 };
 
 // monster: any emoji Animals & nature, anything else
-export const MONSTER: TileType = {
+const MONSTER: TileType = {
     name: "monster",
     ASCII: 'm',
     emoji: '🦁',
     pattern: /[m🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐊🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🐉🐲🦠🧊]/iu
+};
+
+export const TileTypes = {
+    FLOOR, WALL, TREASURE, MONSTER
 };
 
 function emojiNumber(n: number): string {
@@ -128,7 +132,7 @@ export class Tile {
 
     toEmoji(): string {
         if (this.type === FLOOR && this.display === 'x') {
-            return '🔲';
+            return 'x'; // '🔲';
         }
         if (!this.display.match(/\p{Emoji}/u)) {
             return this.type.emoji;
@@ -410,14 +414,23 @@ export class Puzzle extends Observable {
 
     unsolve(): Puzzle {
         // TODO: don't mutate original
-        for (const row of this.tiles) {
-            for (const tile of row) {
-                if (tile.type === WALL || tile.type === FLOOR) {
-                    tile.type = FLOOR;
-                    tile.display = '.';
-                }
+        for (const [row, col, tile] of this) {
+            if (tile.type === WALL || tile.type === FLOOR) {
+                tile.type = FLOOR;
+                tile.display = '.';
             }
         }
+        return this;
+    }
+
+    unmarkFloors(): Puzzle {
+        // TODO: don't mutate original
+        for (const [row, col, tile] of this) {
+            if (tile.type === FLOOR && tile.display === 'x') {
+                tile.display = '.';
+            }
+        }
+        this.didChange();
         return this;
     }
 }

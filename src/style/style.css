@@ -50,7 +50,6 @@ h1, h2 {
 .puzzle-cell.puzzle-cell-wall.too-many-walls {
     background-color: darkred;
 }
-.puzzle-view.solved .puzzle-cell-floor,
 .puzzle-cell.puzzle-cell-floor:not(.marked-floor) {
     color: transparent;
 }
