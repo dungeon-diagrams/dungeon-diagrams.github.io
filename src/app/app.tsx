@@ -1,38 +1,7 @@
 import { h } from "preact";
 import { Puzzle } from './puzzle-model.js';
 import { PuzzleGrid } from './puzzle-view.js';
-import { PuzzleString } from './puzzle-string.js';
-
-export { render } from "preact";
-
-// debugging
-declare global {
-    interface Window {
-        runes: object;
-        puzzle: any;
-        preact: object;
-        test: any;
-    }
-}
-
-function parseQuery(query: string) {
-    query = query.replace(/^\?|\/$/g,'');
-    const items = query.split('&');
-    const params: any = {};
-    items.forEach(function(item){
-        const parts = item.split('=');
-        const key = decodeURIComponent(parts[0]);
-        let value: string | string[] | number = decodeURIComponent(parts[1]);
-        if (value.match(/^\d+$/)) {
-            value = parseInt(value);
-        }
-        else if (value.match(/,/)) {
-            value = value.split(/,/);
-        }
-        params[key] = value;
-    });
-    return params;
-}
+import { PuzzleString, parseQuery } from './puzzle-string.js';
 
 /*
  idea for a router: use 404.html to serve the main app.

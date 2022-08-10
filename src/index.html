@@ -4,22 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" type="text/css" href="style/style.css" />
-    <!-- preload modules (chrome) -->
-    <link rel="modulepreload" href="./lib/preact.module.js" />
-    <link rel="modulepreload" href="./lib/runes.js" />
-    <link rel="modulepreload" href="./app/app.js" />
-    <link rel="modulepreload" href="./app/puzzle-model.js" />
-    <link rel="modulepreload" href="./app/puzzle-view.js" />
-    <link rel="modulepreload" href="./app/puzzle-string.js" />
-    <!-- preload modules (firefox) -->
-    <script type="module">
-      import "./lib/preact.module.js";
-      import "./lib/runes.js";
-      import "./app/app.js";
-      import "./app/puzzle-model.js";
-      import "./app/puzzle-view.js";
-      import "./app/puzzle-string.js";
-    </script>
+    <script type="module" src="app/main.js?v=1"></script>
     <title>Daily Dungeons and Diagrams</title>
   </head>
   <body>
@@ -32,9 +17,5 @@
         document.write('<div id="status-display" data-status="Loading">Loading...</div>');
       </script>
     </div>
-    <script type="module">
-      import { render, App } from "./app/app.js";
-      render(App(), document.body, document.getElementById("app"));
-    </script>
   </body>
 </html>

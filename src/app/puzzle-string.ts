@@ -166,3 +166,25 @@ function emojiNumber(n: number): string {
         return `${n},`;
     }
 }
+
+
+/* --- query and hash --- */
+
+export function parseQuery(query: string) {
+    query = query.replace(/^\?|\/$/g,'');
+    const items = query.split('&');
+    const params: any = {};
+    items.forEach(function(item){
+        const parts = item.split('=');
+        const key = decodeURIComponent(parts[0]);
+        let value: string | string[] | number = decodeURIComponent(parts[1]);
+        if (value.match(/^\d+$/)) {
+            value = parseInt(value);
+        }
+        else if (value.match(/,/)) {
+            value = value.split(/,/);
+        }
+        params[key] = value;
+    });
+    return params;
+}

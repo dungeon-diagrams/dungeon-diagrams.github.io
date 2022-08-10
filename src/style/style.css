@@ -33,11 +33,11 @@ h1, h2 {
     overflow: clip;
 }
 
-.puzzle-wall-target.too-many-walls {
+.puzzle-wall-target.too-few-walls {
     color: red;
 }
-.puzzle-wall-target.correct-walls {
-    color: green;
+.puzzle-wall-target.too-many-walls {
+    color: magenta;
 }
 
 .puzzle-cell {
