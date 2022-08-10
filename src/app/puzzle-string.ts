@@ -29,6 +29,9 @@ export class TileString {
         if (tile.type === FLOOR && tile.reserved) {
             return '🔲';
         }
+        if (tile.display === 'M') {
+            return '🐉';
+        }
         if (!tile.display.match(/\p{Emoji}/u)) {
             return tile.type.emoji;
         }
@@ -40,6 +43,9 @@ export class TileString {
     static toHTML(tile: Tile): string {
         if (tile.type === FLOOR && tile.reserved) {
             return '×';//⨯';
+        }
+        if (tile.display === 'M') {
+            return '🐉';
         }
         if (!tile.display.match(/\p{Emoji}/u)) {
             return tile.type.emoji;

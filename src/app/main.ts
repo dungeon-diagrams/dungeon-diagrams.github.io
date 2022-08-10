@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         const statusDisplay = document.getElementById("status-display");
         if (statusDisplay) {
             statusDisplay.dataset.status = "Error";
-            statusDisplay.innerText = `${e.message || e}`;
+            statusDisplay.innerText = `${e.name || "Error"}: ${e.message || e}`
         }
     }
 });
