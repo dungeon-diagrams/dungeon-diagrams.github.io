@@ -136,16 +136,12 @@ export class Puzzle extends Observable {
         this.nRows = this.rowTargets.length;
         this.colTargets = colTargets;
         this.nCols = this.colTargets.length;
-        this.tiles = [];
+        this.tiles = tiles; // TODO: make copy
         for (let row = 0; row < this.nRows; row++) {
             this.tiles[row] ||= [];
-            const specRow: Tile[] = tiles[row] || [];
-            const rowTiles: Tile[] = [];
-            for (let col = 0; col < this.nCols; col++) {
-                const specTile = specRow[col];
-                rowTiles.push(specTile || new Tile(FLOOR));
+            while (this.tiles[row].length < this.nCols) {
+                this.tiles[row].push(new Tile(FLOOR));
             }
-            this.tiles.push(rowTiles);
         }
     }
 
