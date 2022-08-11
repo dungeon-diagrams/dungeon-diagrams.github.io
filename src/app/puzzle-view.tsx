@@ -123,7 +123,7 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
         const colStatus = [...getWallStatus(colCounts, puzzle.colTargets)];
         const {solved, reason} = puzzle.isSolved();
 
-        const maxCellHeight = (this.state.size.height - 78) / (puzzle.nRows + 1) - 2;
+        const maxCellHeight = (this.state.size.height - 100) / (puzzle.nRows + 1) - 2;
         const maxCellWidth = this.state.size.width / (puzzle.nCols + 1) - 2;
         const cellSize = Math.floor(Math.min(maxCellHeight, maxCellWidth));
         // const gridHeight = (cellSize+3) * (puzzle.nRows + 1) - 4;
