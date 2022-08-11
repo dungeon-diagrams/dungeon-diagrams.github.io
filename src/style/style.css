@@ -23,6 +23,7 @@ h1, h2 {
 .puzzle-grid {
     margin: auto;
     cursor: default;
+    table-layout: fixed;
 }
 
 .puzzle-grid td {

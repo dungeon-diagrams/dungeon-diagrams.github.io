@@ -99,29 +99,7 @@ export class Tile {
     }
 }
 
-export class Observable {
-    observers: Set<Function>;
-
-    constructor() {
-        this.observers = new Set();
-    }
-
-    addObserver(callback: Function) {
-        this.observers.add(callback);
-    }
-
-    removeObserver(callback: Function) {
-        this.observers.delete(callback);
-    }
-
-    didChange() {
-        for (const observer of this.observers) {
-            observer(this);
-        }
-    }
-}
-
-export class Puzzle extends Observable {
+export class Puzzle extends EventTarget {
     name: string;
     nRows: number;
     nCols: number;
@@ -143,6 +121,10 @@ export class Puzzle extends Observable {
                 this.tiles[row].push(new Tile(FLOOR));
             }
         }
+    }
+
+    didChange() {
+        this.dispatchEvent(new Event('change'));
     }
 
     *[Symbol.iterator](): Iterator<[number, number, Tile]> {

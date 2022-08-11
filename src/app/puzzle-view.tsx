@@ -2,22 +2,51 @@ import { h, Component } from "preact";
 import { Puzzle, Tile } from "./puzzle-model.js";
 import { PuzzleString, TileString } from "./puzzle-string.js";
 
-export class PuzzleGrid extends Component<{puzzle: Puzzle}, {puzzle: Puzzle}> {
+interface PuzzleGridProps {
+    puzzle: Puzzle
+}
+
+interface PuzzleGridState {
+    puzzle: Puzzle,
+    size: {width: number, height: number}
+}
+
+export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
     constructor(props: {puzzle: Puzzle}) {
         super();
-        this.state = { puzzle: props.puzzle };
+        this.state = {
+            puzzle: props.puzzle,
+            size: {
+                width: window.innerWidth,
+                height: window.innerHeight
+            }
+        };
     }
 
-    puzzleChanged = (puzzle: Puzzle)=>{
-        this.setState({puzzle: puzzle});
+    updatePuzzle = (event: Event)=>{
+        const puzzle = event.target as Puzzle;
+        this.setState({
+            puzzle: puzzle
+        });
+    }
+
+    updateSize = (event?: Event)=>{
+        this.setState({
+            size: {
+                width: window.innerWidth,
+                height: window.innerHeight
+            }
+        })
     }
 
     componentDidMount() {
-        this.state.puzzle.addObserver(this.puzzleChanged);
+        this.state.puzzle.addEventListener('change', this.updatePuzzle);
+        window.addEventListener('resize', this.updateSize);
     }
 
     componentWillUnmount() {
-        this.state.puzzle.removeObserver(this.puzzleChanged);
+        this.state.puzzle.removeEventListener('change', this.updatePuzzle);
+        window.removeEventListener('resize', this.updateSize);
     }
 
     swipeTile: Tile | null = null;
