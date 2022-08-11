@@ -122,6 +122,13 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
         const rowStatus = [...getWallStatus(rowCounts, puzzle.rowTargets)];
         const colStatus = [...getWallStatus(colCounts, puzzle.colTargets)];
         const {solved, reason} = puzzle.isSolved();
+
+        const maxCellHeight = (this.state.size.height - 78) / (puzzle.nRows + 1) - 2;
+        const maxCellWidth = this.state.size.width / (puzzle.nCols + 1) - 2;
+        const cellSize = Math.floor(Math.min(maxCellHeight, maxCellWidth));
+        // const gridHeight = (cellSize+3) * (puzzle.nRows + 1) - 4;
+        // const gridWidth = (cellSize+3) * (puzzle.nCols + 1) - 4;
+
         return (
             <div className={`puzzle-view ${solved?'solved':'unsolved'}`}
                 onMouseDown={this.mouseDown}
@@ -132,19 +139,26 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                 onTouchEnd={this.swipeEnd}
                 onTouchCancel={this.swipeEnd}
             >
+                <style>
+                    {`.puzzle-grid td {width:  ${cellSize}px;}
+                      .puzzle-grid tr {height: ${cellSize}px;}`
+                    }
+                </style>
                 <h2>
                     <span className='solved-marker'> ⭐️ </span>
                     <a href={'?puzzle=' + encodeURIComponent(PuzzleString.toURI(puzzle))}>{puzzle.name}</a>
                     <span className='solved-marker'> ⭐️ </span>
                 </h2>
-                <table className="puzzle-grid">
+                <table className="puzzle-grid" style={{fontSize: cellSize*2/3}}>
                     <tbody>
-                        <th />
-                        {puzzle.colTargets.map((count, col) => (
-                            <th className={`puzzle-wall-target ${colStatus[col]}`} data-col={col}>
-                                {count}
-                            </th>
-                        ))}
+                        <tr>
+                            <th></th>
+                            {puzzle.colTargets.map((count, col) => (
+                                <th className={`puzzle-wall-target ${colStatus[col]}`} data-col={col}>
+                                    {count}
+                                </th>
+                            ))}
+                        </tr>
                         {puzzle.tiles.map((rowTiles, row)=>(
                             <tr>
                                 <th className={`puzzle-wall-target ${rowStatus[row]}`} data-row={row}>

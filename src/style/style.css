@@ -24,15 +24,24 @@ h1, h2 {
     margin: auto;
     cursor: default;
     table-layout: fixed;
+    /* width and height to be set by script */
+}
+
+.puzzle-grid th {
+    padding: 0 4px;
 }
 
 .puzzle-grid td {
-    font-size: 200%;
-    width: 36px;
-    height: 36px;
-    border-radius: 0.1em;
+    /* font-size: 150%; */
+    border-radius: 2px;
     vertical-align: middle;
     overflow: clip;
+}
+
+.puzzle-cell-content {
+    display: block;
+    overflow: clip;
+    /* width and height to be set by script */
 }
 
 .puzzle-wall-target.too-few-walls {
