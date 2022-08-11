@@ -61,6 +61,19 @@ h1, h2 {
     visibility: hidden;
 }
 
+/* navigation */
+
+.puzzle-list .puzzle-preview {
+    display: none;
+    position: absolute;
+    left: 50%;
+    margin-left: 10em;
+    margin-top: -5em;
+}
+.puzzle-list:hover .puzzle-preview {
+    display: block;
+}
+
 /* light color scheme (default) */
 
 body, a {

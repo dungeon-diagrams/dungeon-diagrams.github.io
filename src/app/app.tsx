@@ -164,15 +164,32 @@ export function App() {
     else if (puzzleID || puzzleID === 0) {
         puzzle = PuzzleString.parse(dailyPuzzles[puzzleID]);
     }
-    else {
-        puzzle = PuzzleString.parse(dailyPuzzles[0]);
+    if (puzzle) {
+        puzzle = puzzle.solvableCopy();
+        window.puzzle = puzzle;
+        return (
+            <div id="app" className="app">
+                <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
+                <PuzzleGrid puzzle={puzzle} />
+            </div>
+        );
     }
-    puzzle = puzzle.solvableCopy();
-    window.puzzle = puzzle;
-    return (
-        <div id="app" className="app">
-            <h1>Daily Dungeons and Diagrams</h1>
-            <PuzzleGrid puzzle={puzzle} />
-        </div>
-    );
+
+    else {
+        const navLinks = [];
+        for (const puzzleString of dailyPuzzles) {
+            const puzzle = PuzzleString.parse(puzzleString);
+            puzzle.unsolve();
+            navLinks.push(<li className="puzzle-list">
+                <a href={"./?puzzle="+PuzzleString.toURI(puzzle)}>{puzzle.name}</a>
+                <pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
+            </li>)
+        }
+        return (
+            <div id="app" className="app">
+                <h1>Daily Dungeons and Diagrams</h1>
+                <ul>{navLinks}</ul>
+            </div>
+        )
+    }
 }
