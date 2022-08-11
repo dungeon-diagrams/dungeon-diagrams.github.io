@@ -30,7 +30,7 @@ export class TileString {
             return '🔲';
         }
         if (tile.display === 'M') {
-            return '🐉';
+            return '🐲';
         }
         if (!tile.display.match(/\p{Emoji}/u)) {
             return tile.type.emoji;
@@ -45,7 +45,7 @@ export class TileString {
             return '×';//⨯';
         }
         if (tile.display === 'M') {
-            return '🐉';
+            return '🐲';
         }
         if (!tile.display.match(/\p{Emoji}/u)) {
             return tile.type.emoji;
