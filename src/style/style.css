@@ -26,8 +26,9 @@ h1, h2 {
 }
 
 .puzzle-grid td {
-    min-width: 1em;
-    min-height: 1em;
+    font-size: 200%;
+    width: 36px;
+    height: 36px;
     border-radius: 0.1em;
     vertical-align: middle;
     overflow: clip;
@@ -40,9 +41,6 @@ h1, h2 {
     color: magenta;
 }
 
-.puzzle-cell {
-    font-size: 200%;
-}
 .puzzle-cell.puzzle-cell-wall {
     background-color: rgb(75, 41, 2);
     color: transparent;

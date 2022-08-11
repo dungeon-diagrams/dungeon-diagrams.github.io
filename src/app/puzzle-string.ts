@@ -44,6 +44,9 @@ export class TileString {
         if (tile.type === FLOOR && tile.reserved) {
             return '×';//⨯';
         }
+        else if (tile.type === FLOOR) {
+            return '.';
+        }
         if (tile.display === 'M') {
             return '🐲';
         }
