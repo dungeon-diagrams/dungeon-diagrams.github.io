@@ -51,29 +51,26 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
 
     swipeTile: Tile | null = null;
 
-    mouseDown = (event: MouseEvent) => {
-        event.preventDefault();
-        this.swipeStart(event);
-    }
-
-    mouseMove = (event: MouseEvent) => {
-        event.preventDefault();
-        this.swipeMove(event);
-    }
-
-    swipeStart = (event: MouseEvent | Touch)=> {
-        if (this.swipeTile) {
-            return;
-        }
-        const targetEl = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement | null;
+    getTile(x: number, y: number): [number, number, Tile | null] | [null, null, null] {
+        const targetEl = document.elementFromPoint(x, y) as HTMLElement | null;
         if (targetEl?.classList.contains("puzzle-cell")) {
             const row = parseInt(targetEl.dataset.row || '');
             const col = parseInt(targetEl.dataset.col || '');
             const tile = this.state.puzzle.getTile(row, col);
-            if (tile) {
-                this.swipeTile = tile.nextTile();
-                this.state.puzzle.setTile(row, col, this.swipeTile);
-            }
+            return [row, col, tile];
+        }
+        return [null, null, null];
+    }
+
+    swipeStart = (event: MouseEvent | Touch, type?: string)=> {
+        if (this.swipeTile) {
+            return;
+        }
+        const [row, col, tile] = this.getTile(event.clientX, event.clientY);
+        if (tile) {
+            const isEditing = false; // TODO
+            this.swipeTile = tile.nextTile(isEditing, type);
+            this.state.puzzle.setTile(row, col, this.swipeTile);
         }
     }
 
@@ -81,24 +78,32 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
         if (!this.swipeTile) { 
             return;
         }
-        const targetEl = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement | null;
-        if (targetEl?.classList.contains("puzzle-cell")) {
-            const row = parseInt(targetEl.dataset.row || '');
-            const col = parseInt(targetEl.dataset.col || '');
-            const tile = this.state.puzzle.getTile(row, col);
-            if (tile) {
-                this.state.puzzle.setTile(row, col, this.swipeTile);
-            }
+        const [row, col, tile] = this.getTile(event.clientX, event.clientY);
+        if (tile) {
+            this.state.puzzle.setTile(row, col, this.swipeTile);
         }
     }
 
     swipeEnd = (event: Event)=> {
-        setTimeout(()=>{
-            this.swipeTile = null;
-            if (this.state.puzzle.isSolved().solved) {
-                this.state.puzzle.unmarkFloors();
-            }
-        }, 100);
+        setTimeout(this.swipeEndNow, 100);
+    }
+
+    swipeEndNow = (event: Event)=> {
+        this.swipeTile = null;
+        if (this.state.puzzle.isSolved().solved) {
+            this.state.puzzle.unmarkFloors();
+        }
+    }
+
+    mouseDown = (event: MouseEvent) => {
+        event.preventDefault();
+        const type = event.button == 2 ? 'rightClick': 'leftClick';
+        this.swipeStart(event, type);
+    }
+
+    mouseMove = (event: MouseEvent) => {
+        event.preventDefault();
+        this.swipeMove(event);
     }
 
     touchStart = (event: TouchEvent) => {
@@ -106,13 +111,13 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
             return;
         }
         for (let i = 0; i < event.touches.length; i++) {
-            this.swipeStart(event.touches[i])
+            this.swipeStart(event.touches[i], 'touch');
         }
     }
 
     touchMove = (event: TouchEvent) => {
         for (let i = 0; i < event.touches.length; i++) {
-            this.swipeMove(event.touches[i])
+            this.swipeMove(event.touches[i]);
         }
     }
 
@@ -130,26 +135,28 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
         // const gridWidth = (cellSize+3) * (puzzle.nCols + 1) - 4;
 
         return (
-            <div className={`puzzle-view ${solved?'solved':'unsolved'}`}
-                onMouseDown={this.mouseDown}
-                onMouseMove={this.mouseMove}
-                onMouseUp={this.swipeEnd}
-                onTouchStart={this.touchStart}
-                onTouchMove={this.touchMove}
-                onTouchEnd={this.swipeEnd}
-                onTouchCancel={this.swipeEnd}
-            >
-                <style>
-                    {`.puzzle-grid td {width:  ${cellSize}px;}
-                      .puzzle-grid tr {height: ${cellSize}px;}`
-                    }
-                </style>
+            <div className={`puzzle-view ${solved?'solved':'unsolved'}`}>
                 <h2>
                     <span className='solved-marker'> ⭐️ </span>
                     <a href={PuzzleString.toURI(puzzle)}>{puzzle.name}</a>
                     <span className='solved-marker'> ⭐️ </span>
                 </h2>
-                <table className="puzzle-grid" style={{fontSize: cellSize*2/3}}>
+                <style>
+                    {`.puzzle-grid td {width:  ${cellSize}px;}
+                      .puzzle-grid tr {height: ${cellSize}px;}`
+                    }
+                </style>
+                <table className="puzzle-grid"
+                    style={{fontSize: cellSize*2/3}}
+                    onContextMenu={stopEvent}
+                    onMouseDown={this.mouseDown}
+                    onMouseMove={this.mouseMove}
+                    onMouseUp={this.swipeEnd}
+                    onTouchStart={this.touchStart}
+                    onTouchMove={this.touchMove}
+                    onTouchEnd={this.swipeEnd}
+                    onTouchCancel={this.swipeEnd}    
+                >
                     <tbody>
                         <tr>
                             <th></th>
@@ -204,22 +211,22 @@ interface CellProps {
  * clicking (touching) a cell begins a drag with the next tile type.
  * each cell touched with that drag converts to the drag's tile type if possible.
  */
-export class PuzzleCell extends Component<CellProps> {
-    toggle(event: MouseEvent) {
-        this.props.puzzle.setTile(this.props.row, this.props.col, this.props.tile.nextTile());
-        event.preventDefault();
-    }
+export function PuzzleCell(props: CellProps) {
+    return (
+        <td className={`puzzle-cell ${props.rowStatus} ${props.colStatus}`}
+            data-tile={props.tile.constructor.name}
+            data-row={props.row}
+            data-col={props.col}
+            onContextMenu={stopEvent}
+        >
+            {props.tile.toHTML()}
+        </td>
+    )
+}
 
-    render(props: CellProps) {
-        return (
-            <td className={`puzzle-cell ${props.rowStatus} ${props.colStatus}`}
-                data-tile={props.tile.constructor.name}
-                data-row={this.props.row}
-                data-col={this.props.col}
-                // onClick={this.toggle.bind(this)}
-            >
-                {props.tile.toHTML()}
-            </td>
-        )
-    }
+function stopEvent(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    return false;
 }

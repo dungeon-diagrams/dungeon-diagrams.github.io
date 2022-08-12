@@ -50,13 +50,22 @@ export class Tile {
         }
     }
 
-    nextTile(editing?: boolean): Tile {
-        let order: Function[] = [Floor, Wall, MarkedFloor];
+    nextTile(editing?: boolean, type?: string): Tile {
+        let order: Function[];
         if (editing) {
-            order = [Floor, Wall, Monster, BossMonster, Treasure];
+            order = [Wall, Floor, Monster, BossMonster, Treasure];
+        }
+        else if (type === 'rightClick') {
+            order = [MarkedFloor, Floor];
+        }
+        else if (type === 'leftClick') {
+            order = [Wall, Floor];
+        }
+        else { // touch
+            order = [Wall, MarkedFloor, Floor];
         }
         const index = order.indexOf(this.constructor);
-        const nextType = order[(index+1) % order.length] as (new (display?:string) => Tile);
+        const nextType = order[(index+1) % order.length] as (new () => Tile);
         return new nextType();
     }
 }
