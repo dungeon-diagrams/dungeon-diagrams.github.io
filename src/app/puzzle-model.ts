@@ -155,6 +155,9 @@ export class Puzzle extends EventTarget {
     }
 
     setTile(row: number, col: number, newTile: Tile): boolean {
+        if (!(newTile instanceof Tile)) {
+            newTile = new Tile(newTile);
+        }
         if (!this.canEditTile(row, col)) {
             return false;
         }
@@ -291,7 +294,10 @@ class EditablePuzzle extends Puzzle {
         return true;
     }
 
-    setTile(row: number, col: number, newTile: Tile): boolean {
+    setTile(row: number, col: number, newTile: Tile | TileType): boolean {
+        if (!(newTile instanceof Tile)) {
+            newTile = new Tile(newTile);
+        }
         if (!this.canEditTile(row, col)) {
             return false;
         }

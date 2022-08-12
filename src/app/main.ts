@@ -1,7 +1,7 @@
 import * as preact from "preact";
 import { default as runes } from "runes";
 import { App } from "./app.js";
-import { Tile, Puzzle } from "./puzzle-model.js";
+import * as PuzzleModel from "./puzzle-model.js";
 import { PuzzleCell, PuzzleGrid } from "./puzzle-view.js";
 import { TileString, PuzzleString } from "./puzzle-string.js";
 
@@ -10,22 +10,20 @@ declare global {
     interface Window {
         runes: Function;
         preact: object;
-        Tile: Function;
-        Puzzle: Function;
-        TileString: object;
-        PuzzleString: object;
         puzzle: any;
         test: any;
     }
 }
 
 // preload modules
-window.runes = runes;
-window.preact = preact;
-window.Tile = Tile;
-window.Puzzle = Puzzle;
-window.TileString = TileString;
-window.PuzzleString = PuzzleString;
+Object.assign(window, {
+    runes: runes,
+    preact: preact,
+    Puzzle: PuzzleModel.Puzzle,
+    Tile: PuzzleModel.Tile,
+    TileString: TileString,
+    PuzzleString: PuzzleString
+}, PuzzleModel.TileTypes);
 PuzzleGrid;
 App;
 
