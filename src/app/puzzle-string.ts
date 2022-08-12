@@ -1,74 +1,7 @@
 import { default as runes } from 'runes';
-import { Tile, Puzzle, TileTypes } from './puzzle-model.js';
+import { Tile, Puzzle, TileTypes, SolvableTile } from './puzzle-model.js';
 
-const { FLOOR, WALL, TREASURE, MONSTER } = TileTypes;
-
-/* --- tile --- */
-
-export class TileString {
-    static parse(displayTile: string): Tile {
-        for (const tileType of [FLOOR, WALL, TREASURE, MONSTER]) {
-            if (displayTile.match(tileType.pattern)) {
-                return new Tile(tileType, {display: displayTile})
-            }
-        }
-        return new Tile(MONSTER, {display: displayTile});
-    }
-
-    static toASCII(tile: Tile): string {
-        if (tile.type === FLOOR && tile.reserved) {
-            return 'x';
-        }
-        if (!tile.display.match(/\p{ASCII}/u)) {
-            return tile.type.ASCII;
-        }
-        return tile.display;
-    }
-    
-    static toEmoji(tile: Tile): string {
-        if (tile.type === FLOOR && tile.reserved) {
-            return '🔲';
-        }
-        if (tile.display === 'M') {
-            return '🐲';
-        }
-        if (!tile.display.match(/\p{Emoji}/u)) {
-            return tile.type.emoji;
-        }
-        else {
-            return tile.display;
-        }
-    }
-
-    static toHTML(tile: Tile): string {
-        if (tile.type === FLOOR && tile.reserved) {
-            return '×';//⨯';
-        }
-        else if (tile.type === FLOOR) {
-            return '.';
-        }
-        if (tile.display === 'M') {
-            return '🐲';
-        }
-        if (!tile.display.match(/\p{Emoji}/u)) {
-            return tile.type.emoji;
-        }
-        else {
-            return tile.display;
-        }
-    }
-
-    static toURI(tile: Tile): string {
-        if (tile.type === FLOOR || tile.type === WALL) {
-            return TileString.toASCII(tile);
-        }
-        else {
-            return TileString.toEmoji(tile);
-        }
-}
-}
-
-/* --- puzzle --- */
+const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster } = TileTypes;
 
 export class PuzzleString {
     static parse(spec: string): Puzzle {
@@ -107,7 +40,7 @@ export class PuzzleString {
         for (const specRow of specRows) {
             const rowTiles: Tile[] = [];
             for (const specTile of runes(specRow).slice(1)) {
-                rowTiles.push(TileString.parse(specTile));
+                rowTiles.push(Tile.parse(specTile));
             }
             tiles.push(rowTiles);
         }
@@ -122,7 +55,7 @@ export class PuzzleString {
             const rowStrings = [];
             rowStrings.push(puzzle.rowTargets[i++].toFixed(0));
             for (const tile of row) {
-                rowStrings.push(TileString.toASCII(tile));
+                rowStrings.push(tile.ASCII);
             }
             lines.push(rowStrings.join(''))
         }
@@ -131,13 +64,13 @@ export class PuzzleString {
 
     static toEmoji(puzzle: Puzzle): string {
         const lines: string[] = [puzzle.name];
-        lines.push('⬜️' + puzzle.colTargets.map(emojiNumber).join(''));
+        lines.push('⬜️' + puzzle.colTargets.map(PuzzleString.emojiNumber).join(''));
         let i = 0;
         for (const row of puzzle.tiles) {
             const rowStrings = [];
-            rowStrings.push(emojiNumber(puzzle.rowTargets[i++]));
+            rowStrings.push(PuzzleString.emojiNumber(puzzle.rowTargets[i++]));
             for (const tile of row) {
-                rowStrings.push(TileString.toEmoji(tile));
+                rowStrings.push(tile.emoji);
             }
             lines.push(rowStrings.join(''))
         }
@@ -152,7 +85,7 @@ export class PuzzleString {
             const rowStrings = [];
             rowStrings.push(puzzle.rowTargets[i++].toFixed(0));
             for (const tile of row) {
-                rowStrings.push(TileString.toURI(tile));
+                rowStrings.push(PuzzleString.tileURI(tile));
             }
             lines.push(rowStrings.join(''))
         }
@@ -161,25 +94,35 @@ export class PuzzleString {
 
     static toStateURI(puzzle: Puzzle): string {
         return (puzzle.tiles.map((row)=>(
-            row.map(TileString.toURI).join('')
+            row.map(PuzzleString.tileURI).join('')
         )).join('!'));
+    }
+
+    static tileURI(tile: Tile): string {
+        if (tile instanceof SolvableTile) {
+            return tile.ASCII;
+        }
+        else {
+            return tile.emoji;
+        }
+    }
+
+    static emojiNumber(n: number): string {
+        const table = ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+        if (n < table.length) {
+            return table[n];
+        }
+        else {
+            return `${n},`;
+        }
     }
 }
 
-function emojiNumber(n: number): string {
-    const table = ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
-    if (n < table.length) {
-        return table[n];
-    }
-    else {
-        return `${n},`;
-    }
-}
 
 
 /* --- query and hash --- */
 
-export function parseQuery(query: string) {
+export function parseQuery(query: string): {[key:string]: any} {
     query = query.replace(/^\?|\/$/g,'');
     const items = query.split('&');
     const params: any = {};

@@ -54,7 +54,7 @@ h1, h2, h3, h4, h5, h6 {
 .puzzle-cell.puzzle-cell-wall.too-many-walls {
     background-color: darkred;
 }
-.puzzle-cell.puzzle-cell-floor:not(.marked-floor) {
+.puzzle-cell.puzzle-cell-floor {
     color: transparent;
 }
 /* .puzzle-cell.puzzle-cell-monster {

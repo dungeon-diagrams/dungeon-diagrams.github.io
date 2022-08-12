@@ -2,8 +2,8 @@ import * as preact from "preact";
 import { default as runes } from "runes";
 import { App } from "./app.js";
 import * as PuzzleModel from "./puzzle-model.js";
-import { PuzzleCell, PuzzleGrid } from "./puzzle-view.js";
-import { TileString, PuzzleString } from "./puzzle-string.js";
+import { PuzzleGrid } from "./puzzle-view.js";
+import { PuzzleString } from "./puzzle-string.js";
 
 // debugging
 declare global {
@@ -21,7 +21,6 @@ Object.assign(globalThis, {
     preact: preact,
     Puzzle: PuzzleModel.Puzzle,
     Tile: PuzzleModel.Tile,
-    TileString: TileString,
     PuzzleString: PuzzleString
 }, PuzzleModel.TileTypes);
 PuzzleGrid;

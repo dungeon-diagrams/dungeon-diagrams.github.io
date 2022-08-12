@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import { Puzzle, Tile } from "./puzzle-model.js";
-import { PuzzleString, TileString } from "./puzzle-string.js";
+import { PuzzleString } from "./puzzle-string.js";
 
 interface PuzzleGridProps {
     puzzle: Puzzle
@@ -212,12 +212,12 @@ export class PuzzleCell extends Component<CellProps> {
 
     render(props: CellProps) {
         return (
-            <td className={`puzzle-cell puzzle-cell-${props.tile.type.name} ${props.rowStatus} ${props.colStatus} ${props.tile.reserved ? 'marked-floor' : ''}`}
+            <td className={`puzzle-cell puzzle-cell-${props.tile.name} ${props.rowStatus} ${props.colStatus}`}
                 data-row={this.props.row}
                 data-col={this.props.col}
                 // onClick={this.toggle.bind(this)}
             >
-                {TileString.toHTML(props.tile)}
+                {props.tile.HTML}
             </td>
         )
     }

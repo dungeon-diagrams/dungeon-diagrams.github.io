@@ -30,74 +30,91 @@ Puzzle
     .addObserver(callback)
 */
 
-export interface TileType {
-    name: string;
-    ASCII: string;
-    emoji: string;
-    pattern: RegExp;
-}
+export abstract class Tile {
+    name: string = 'tile';
+    ASCII: string = '_';   // should be encodable as a URI with no escape
+    emoji: string = '🌫';  // should be square
+    HTML: string = '';
+    static pattern: RegExp = /.|[\?_-]/;
 
-// floor: '.' or any black/white square or any whitespace
-const FLOOR: TileType = {
-    name: "floor",
-    ASCII: '.',
-    emoji: '⬜️',
-    pattern: /\p{White_Space}|[\.x✖️×✖️x╳⨯⨉·🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️💠🌫_-]/iu,
-};
-
-// wall: '#' or any other color square
-const WALL: TileType = {
-    name: "wall",
-    ASCII: '*',
-    emoji: '🟫',
-    pattern: /[*#🟥🟧🟨🟩🟦🟪🟫]/iu
-};
-
-// treasure: 't' or 💎 (any emoji Activity or Objects)
-const TREASURE: TileType = {
-    name: "treasure",
-    ASCII: 'T',
-    emoji: '💎',
-    pattern: /[t🏆🥇🥈🥉🏅🎖🔮🎁📦💎👑]/iu
-};
-
-// monster: any emoji Animals & nature, anything else
-const MONSTER: TileType = {
-    name: "monster",
-    ASCII: 'm',
-    emoji: '🦁',
-    pattern: /[m☺︎☹☻☃︎♚♛♜♝♞♟♔♕♖♗♘♙🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐊🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🐉🐲☃️⛄️🦠🧊]/iu
-};
-
-export const TileTypes = {
-    FLOOR, WALL, TREASURE, MONSTER
-};
-
-export class Tile {
-    display: string;
-    type: TileType;
-    reserved: boolean;
-
-    constructor(tileType: TileType, {display, reserved}: {display?: string, reserved?: boolean} = {}) {
-        this.type = tileType;
-        this.display = display || this.type.ASCII;
-        this.reserved = reserved || false;
+    constructor(char?: string) {
+        if (char) {
+            if (char.match(/\p{ASCII}/)) {
+                this.ASCII = char;
+            }
+            else {
+                this.emoji = char;
+            }
+        }
+        this.HTML ||= this.emoji;
     }
 
-    nextTile(): Tile {
-        let newType;
-        let newDisplay;
-        if (this.type === WALL) {
-            return new Tile(FLOOR, {reserved: true});
+    nextTile(editing?: boolean): Tile {
+        let order: Function[] = [Floor, Wall, MarkedFloor];
+        if (editing) {
+            order = [Floor, Wall, Monster, BossMonster, Treasure];
         }
-        else if (this.type === FLOOR && this.reserved) {
-            return new Tile(FLOOR);
+        const index = order.indexOf(this.constructor);
+        const nextType = order[(index+1) % order.length] as (new (display?:string) => Tile);
+        return new nextType();
+    }
+
+    static parse(char: string): Tile {
+        for (const tileType of [Floor, Wall, Treasure, BossMonster, MarkedFloor, Monster]) {
+            if (char.match(tileType.pattern)) {
+                return new tileType(char);
+            }
         }
-        else {
-            return new Tile(WALL);
-        }
+        return new Monster(char);
     }
 }
+
+export abstract class SolvableTile extends Tile { }
+
+export class Floor extends SolvableTile {
+    name = 'floor';
+    ASCII = '.';
+    emoji = '⬜️';
+    static pattern = /\p{White_Space}|[\.·🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️]/iu;
+}
+
+export class MarkedFloor extends Floor {
+    name = 'floor-marked';
+    ASCII = 'x';
+    emoji = '🔳';
+    HTML = '×';
+    static pattern = /[x✖️×✖️x╳⨯⨉❌🚫💠]/i;
+}
+
+export class Wall extends SolvableTile {
+    name = 'wall';
+    ASCII = '*';
+    emoji = '🟫';
+    static pattern = /[*#🟥🟧🟨🟩🟦🟪🟫]/iu;
+}
+
+export class Treasure extends Tile {
+    name = 'treasure';
+    ASCII = 'T';
+    emoji = '💎';
+    static pattern = /[t🏆🥇🥈🥉🏅🎖🔮🎁📦💎👑]/iu;
+}
+
+export class Monster extends Tile {
+    name = 'monster';
+    ASCII = 'm';
+    emoji = '🦁';
+    static pattern = /[m☺︎☹☻☃︎♜♝♞♟♖♗♘♙🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔☃️⛄️🦠]/u;
+}
+
+export class BossMonster extends Monster {
+    name = 'monster-boss';
+    ASCII = 'M';
+    emoji = '🐲';
+    static pattern = /[M♚♛♔♕🦖🦕🐊🐉🐲🧊]/u;
+}
+
+export const TileTypes = { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster };
 
 export class Puzzle extends EventTarget {
     name: string;
@@ -118,7 +135,7 @@ export class Puzzle extends EventTarget {
         for (let row = 0; row < this.nRows; row++) {
             this.tiles[row] ||= [];
             while (this.tiles[row].length < this.nCols) {
-                this.tiles[row].push(new Tile(FLOOR));
+                this.tiles[row].push(new Floor());
             }
         }
     }
@@ -176,9 +193,6 @@ export class Puzzle extends EventTarget {
     }
 
     setTile(row: number, col: number, newTile: Tile): boolean {
-        if (!(newTile instanceof Tile)) {
-            newTile = new Tile(newTile);
-        }
         if (!this.canEditTile(row, col)) {
             return false;
         }
@@ -201,11 +215,11 @@ export class Puzzle extends EventTarget {
         for (const [row, col, tile] of this) {
             // - each MONSTER is in a dead end (adjacent to exactly 1 FLOOR)
             const deadEnd = this.isDeadEnd(row, col);
-            if ((tile.type === MONSTER) && !deadEnd) {
+            if ((tile instanceof Monster) && !deadEnd) {
                 return {solved: false, reason: `Some monster is not in a dead end: (${row}, ${col}).`};
             }
             // - each dead end contains a MONSTER
-            if ((tile.type !== MONSTER) && deadEnd) {
+            if (!(tile instanceof Monster) && deadEnd) {
                 return {solved: false, reason: `Some dead end has no monster: (${row}, ${col}).`};
             }
         }
@@ -215,12 +229,12 @@ export class Puzzle extends EventTarget {
     }
 
     isDeadEnd(row: number, col: number): boolean {
-        if (this.tiles[row][col].type === WALL) {
+        if (this.tiles[row][col] instanceof Wall) {
             return false;
         }
         let walkableCount = 0;
         for (const tile of this.getTilesAdjacentTo(row, col)) {
-            walkableCount += Number(tile.type !== WALL);
+            walkableCount += Number(!(tile instanceof Wall));
         }
         return (walkableCount === 1);
     }
@@ -231,7 +245,7 @@ export class Puzzle extends EventTarget {
         for (const [row, col, tile] of this) {
             rowCounts[row] ||= 0;
             colCounts[col] ||= 0;
-            if (tile.type === WALL) {
+            if (tile instanceof Wall) {
                 rowCounts[row]++;
                 colCounts[col]++;
             }
@@ -242,9 +256,8 @@ export class Puzzle extends EventTarget {
     unsolve(): Puzzle {
         // TODO: don't mutate original
         for (const [row, col, tile] of this) {
-            if (tile.type === WALL || tile.type === FLOOR) {
-                tile.type = FLOOR;
-                tile.display = '.';
+            if (tile instanceof SolvableTile) {
+                this.tiles[row][col] = new Floor();
             }
         }
         this.didChange();
@@ -254,9 +267,8 @@ export class Puzzle extends EventTarget {
     unmarkFloors(): Puzzle {
         // TODO: don't mutate original
         for (const [row, col, tile] of this) {
-            if (tile.type === FLOOR && tile.reserved) {
-                tile.reserved = false;
-                tile.display = '.';
+            if (tile instanceof MarkedFloor) {
+                this.tiles[row][col] = new Floor();
             }
         }
         this.didChange();
@@ -280,7 +292,7 @@ class SolvablePuzzle extends Puzzle {
             return false;
         }
         const oldTile = this.tiles[row][col];
-        if (oldTile.type === MONSTER || oldTile.type === TREASURE) {
+        if (!(oldTile instanceof SolvableTile)) {
             return false;
         }
         return true;
@@ -295,10 +307,7 @@ class EditablePuzzle extends Puzzle {
         return true;
     }
 
-    setTile(row: number, col: number, newTile: Tile | TileType): boolean {
-        if (!(newTile instanceof Tile)) {
-            newTile = new Tile(newTile);
-        }
+    setTile(row: number, col: number, newTile: Tile): boolean {
         if (!this.canEditTile(row, col)) {
             return false;
         }
