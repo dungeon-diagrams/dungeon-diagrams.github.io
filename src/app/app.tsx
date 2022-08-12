@@ -1,7 +1,8 @@
 import { h } from "preact";
 import { Puzzle } from './puzzle-model.js';
 import { PuzzleGrid } from './puzzle-view.js';
-import { PuzzleString, parseQuery } from './puzzle-string.js';
+import * as PuzzleString from "./puzzle-string.js";
+import { parseQuery } from './puzzle-string.js';
 
 /*
  idea for a router: use 404.html to serve the main app.
@@ -10,8 +11,6 @@ import { PuzzleString, parseQuery } from './puzzle-string.js';
  /puzzle/1#?state=..xx+.t.m,..m.x|
  /puzzle/?r=424121&c=312512&t=0,5&m=4,5,5,0#?state=.x+.t.|
 */
-
-// TODO: put these in a navigation menu as links
 
 const dailyPuzzles: string[] = [
 `Example Puzzle

@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import { Puzzle, Tile } from "./puzzle-model.js";
-import { PuzzleString } from "./puzzle-string.js";
+import * as PuzzleString from "./puzzle-string.js";
 
 interface PuzzleGridProps {
     puzzle: Puzzle
@@ -146,7 +146,7 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                 </style>
                 <h2>
                     <span className='solved-marker'> ⭐️ </span>
-                    <a href={'?puzzle=' + encodeURIComponent(PuzzleString.toURI(puzzle))}>{puzzle.name}</a>
+                    <a href={PuzzleString.toURI(puzzle)}>{puzzle.name}</a>
                     <span className='solved-marker'> ⭐️ </span>
                 </h2>
                 <table className="puzzle-grid" style={{fontSize: cellSize*2/3}}>

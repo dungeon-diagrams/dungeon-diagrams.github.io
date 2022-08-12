@@ -3,127 +3,149 @@ import { Tile, Puzzle, TileTypes, SolvableTile } from './puzzle-model.js';
 
 const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster } = TileTypes;
 
-export class PuzzleString {
-    static parse(spec: string): Puzzle {
-        const name = PuzzleString.parseName(spec);
-        const rowTargets = PuzzleString.parseRowCounts(spec);
-        const colTargets = PuzzleString.parseColCounts(spec);
-        const tiles = PuzzleString.parseTiles(spec);
-        return new Puzzle({name, rowTargets, colTargets, tiles});
-    }
+export function parse(spec: string): Puzzle {
+    const name = parseName(spec);
+    const rowTargets = parseRowCounts(spec);
+    const colTargets = parseColCounts(spec);
+    const tiles = parseTiles(spec);
+    return new Puzzle({name, rowTargets, colTargets, tiles});
+}
 
-    static parseName(spec: string): string {
-        return spec.trim().split(/[\n,!]/)[0];
-    }
+export function parseName(spec: string): string {
+    return spec.trim().split(/[\n,!]/)[0];
+}
 
-    static parseRowCounts(spec: string): number[] {
-        const counts = [];
-        const specRows = spec.trim().split(/[\n,!]/).slice(2);
-        for (const specRow of specRows) {
-            counts.push(parseInt(specRow));
+export function parseRowCounts(spec: string): number[] {
+    const counts = [];
+    const specRows = spec.trim().split(/[\n,!]/).slice(2);
+    for (const specRow of specRows) {
+        counts.push(parseInt(specRow));
+    }
+    return counts;
+}
+
+export function parseColCounts(spec: string): number[] {
+    const counts = [];
+    const specRow = runes(spec.trim().split(/[\n,!]/)[1]).slice(1);
+    for (const specCol of specRow) {
+        counts.push(parseInt(specCol));
+    }
+    return counts;
+}
+
+export function parseTiles(spec: string) {
+    const tiles: Tile[][] = [];
+    const specRows = spec.trim().split(/[\n,!]/).slice(2);
+    for (const specRow of specRows) {
+        const rowTiles: Tile[] = [];
+        for (const specTile of runes(specRow).slice(1)) {
+            rowTiles.push(Tile.parse(specTile));
         }
-        return counts;
+        tiles.push(rowTiles);
     }
+    return tiles;
+}
 
-    static parseColCounts(spec: string): number[] {
-        const counts = [];
-        const specRow = runes(spec.trim().split(/[\n,!]/)[1]).slice(1);
-        for (const specCol of specRow) {
-            counts.push(parseInt(specCol));
+export function toASCII(puzzle: Puzzle): string {
+    const lines: string[] = [puzzle.name];
+    lines.push('.' + puzzle.colTargets.join(''));
+    let i = 0;
+    for (const row of puzzle.tiles) {
+        const rowStrings = [];
+        rowStrings.push(puzzle.rowTargets[i++].toFixed(0));
+        for (const tile of row) {
+            rowStrings.push(tile.ASCII);
         }
-        return counts;
+        lines.push(rowStrings.join(''))
     }
+    return lines.join('\n');
+}
 
-    static parseTiles(spec: string) {
-        const tiles: Tile[][] = [];
-        const specRows = spec.trim().split(/[\n,!]/).slice(2);
-        for (const specRow of specRows) {
-            const rowTiles: Tile[] = [];
-            for (const specTile of runes(specRow).slice(1)) {
-                rowTiles.push(Tile.parse(specTile));
+export function toEmoji(puzzle: Puzzle): string {
+    const lines: string[] = [puzzle.name];
+    lines.push('⬜️' + puzzle.colTargets.map(emojiNumber).join(''));
+    let i = 0;
+    for (const row of puzzle.tiles) {
+        const rowStrings = [];
+        rowStrings.push(emojiNumber(puzzle.rowTargets[i++]));
+        for (const tile of row) {
+            rowStrings.push(tile.emoji);
+        }
+        lines.push(rowStrings.join(''))
+    }
+    return lines.join('\n');
+}
+
+export function toURI(puzzle: Puzzle): string {
+    return (
+        '?puzzle=' + encodeURIComponent(toUnsolvedURI(puzzle))
+        + '#?state=' + encodeURIComponent(toStateURI(puzzle))
+    );
+}
+
+export function toUnsolvedURI(puzzle: Puzzle): string {
+    return toPuzzleURI(puzzle, false);
+}
+
+export function toPuzzleURI(puzzle: Puzzle, includeState:boolean = true): string {
+    const lines: string[] = [puzzle.name];
+    lines.push('.' + puzzle.colTargets.join(''));
+    let i = 0;
+    for (const row of puzzle.tiles) {
+        const rowStrings = [];
+        rowStrings.push(puzzle.rowTargets[i++].toFixed(0));
+        for (const tile of row) {
+            if (includeState) {
+                rowStrings.push(tileURI(tile));
             }
-            tiles.push(rowTiles);
-        }
-        return tiles;
-    }
-
-    static toASCII(puzzle: Puzzle): string {
-        const lines: string[] = [puzzle.name];
-        lines.push('.' + puzzle.colTargets.join(''));
-        let i = 0;
-        for (const row of puzzle.tiles) {
-            const rowStrings = [];
-            rowStrings.push(puzzle.rowTargets[i++].toFixed(0));
-            for (const tile of row) {
-                rowStrings.push(tile.ASCII);
+            else {
+                rowStrings.push(unsolvedTileURI(tile));
             }
-            lines.push(rowStrings.join(''))
         }
-        return lines.join('\n');
+        lines.push(rowStrings.join('').replace(/\.*$/, ''));
     }
+    return lines.join('!');
+}
 
-    static toEmoji(puzzle: Puzzle): string {
-        const lines: string[] = [puzzle.name];
-        lines.push('⬜️' + puzzle.colTargets.map(PuzzleString.emojiNumber).join(''));
-        let i = 0;
-        for (const row of puzzle.tiles) {
-            const rowStrings = [];
-            rowStrings.push(PuzzleString.emojiNumber(puzzle.rowTargets[i++]));
-            for (const tile of row) {
-                rowStrings.push(tile.emoji);
-            }
-            lines.push(rowStrings.join(''))
-        }
-        return lines.join('\n');
+export function toStateURI(puzzle: Puzzle): string {
+    return (puzzle.tiles.map((row)=>(
+        row.map(tileURI).join('').replace(/\.*$/, '')
+    )).join('!'));
+}
+
+export function unsolvedTileURI(tile: Tile): string {
+    if (tile instanceof SolvableTile) {
+        return '.';
     }
-
-    static toURI(puzzle: Puzzle): string {
-        const lines: string[] = [puzzle.name];
-        lines.push('.' + puzzle.colTargets.join(''));
-        let i = 0;
-        for (const row of puzzle.tiles) {
-            const rowStrings = [];
-            rowStrings.push(puzzle.rowTargets[i++].toFixed(0));
-            for (const tile of row) {
-                rowStrings.push(PuzzleString.tileURI(tile));
-            }
-            lines.push(rowStrings.join(''))
-        }
-        return lines.join('!');
-    }
-
-    static toStateURI(puzzle: Puzzle): string {
-        return (puzzle.tiles.map((row)=>(
-            row.map(PuzzleString.tileURI).join('')
-        )).join('!'));
-    }
-
-    static tileURI(tile: Tile): string {
-        if (tile instanceof SolvableTile) {
-            return tile.ASCII;
-        }
-        else {
-            return tile.emoji;
-        }
-    }
-
-    static emojiNumber(n: number): string {
-        const table = ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
-        if (n < table.length) {
-            return table[n];
-        }
-        else {
-            return `${n},`;
-        }
+    else {
+        return tile.emoji;
     }
 }
 
+export function tileURI(tile: Tile): string {
+    if (tile instanceof SolvableTile) {
+        return tile.ASCII;
+    }
+    else {
+        return tile.emoji;
+    }
+}
+
+export function emojiNumber(n: number): string {
+    const table = ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+    if (n < table.length) {
+        return table[n];
+    }
+    else {
+        return `${n},`;
+    }
+}
 
 
 /* --- query and hash --- */
 
 export function parseQuery(query: string): {[key:string]: any} {
-    query = query.replace(/^\?|\/$/g,'');
+    query = query.replace(/^#?\??|\/$/g,'');
     const items = query.split('&');
     const params: any = {};
     items.forEach(function(item){

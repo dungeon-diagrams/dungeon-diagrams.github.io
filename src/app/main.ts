@@ -3,7 +3,7 @@ import { default as runes } from "runes";
 import { App } from "./app.js";
 import * as PuzzleModel from "./puzzle-model.js";
 import { PuzzleGrid } from "./puzzle-view.js";
-import { PuzzleString } from "./puzzle-string.js";
+import * as PuzzleString from "./puzzle-string.js";
 
 // debugging
 declare global {
