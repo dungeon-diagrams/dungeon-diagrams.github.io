@@ -183,7 +183,7 @@ export function App(query?: string) {
             const puzzle = PuzzleString.parse(puzzleString);
             puzzle.unsolve();
             navLinks.push(<li className="puzzle-list">
-                <a href={"./?puzzle="+PuzzleString.toURI(puzzle)}>{puzzle.name}</a>
+                <a href={PuzzleString.toURI(puzzle)}>{puzzle.name}</a>
                 <pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
             </li>)
         }

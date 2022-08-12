@@ -76,11 +76,12 @@ export function toEmoji(puzzle: Puzzle): string {
     return lines.join('\n');
 }
 
-export function toURI(puzzle: Puzzle): string {
-    return (
-        '?puzzle=' + encodeURIComponent(toUnsolvedURI(puzzle))
-        + '#?state=' + encodeURIComponent(toStateURI(puzzle))
-    );
+export function toURI(puzzle: Puzzle, includeState=false): string {
+    let uri = '?puzzle=' + encodeURIComponent(toUnsolvedURI(puzzle));
+    if (includeState) {
+        uri += '#?state=' + encodeURIComponent(toStateURI(puzzle));
+    }
+    return uri;
 }
 
 export function toUnsolvedURI(puzzle: Puzzle): string {
