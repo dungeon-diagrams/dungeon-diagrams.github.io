@@ -127,10 +127,31 @@ export class Puzzle extends EventTarget {
         this.dispatchEvent(new Event('change'));
     }
 
-    *[Symbol.iterator](): Iterator<[number, number, Tile]> {
-        for (let row = 0; row < this.nRows; row++) {
-            for (let col = 0; col < this.nCols; col++) {
-                yield [row, col, this.tiles[row][col]];
+    [Symbol.iterator](): Iterator<[number, number, Tile]> {
+        return this.getTilesInRect(0, 0, this.nRows, this.nCols);
+    }
+
+    *getTilesInRect(row: number, col: number, height: number, width: number): Iterator<[number, number, Tile]> {
+        for (let r = Math.max(0, row); r < Math.min(this.nRows, row+height); r++) {
+            for (let c = Math.max(0, col); c < Math.min(this.nCols, col+width); c++) {
+                yield [r, c, this.tiles[r][c]];
+            }
+        }
+    }
+
+    *getTilesAdjacentTo(row: number, col: number, height: number = 1, width: number = 1) {
+        for (const r of [row-1, row+height]) {
+            for (let c = col; c < col+width; c++) {
+                if (this.isInBounds(r, c)) {
+                    yield this.tiles[r][c];
+                }
+            }
+        }
+        for (const c of [col-1, col+width]) {
+            for (let r = row; r < row+height; r++) {
+                if (this.isInBounds(r, c)) {
+                    yield this.tiles[r][c];
+                }
             }
         }
     }
@@ -198,30 +219,10 @@ export class Puzzle extends EventTarget {
             return false;
         }
         let walkableCount = 0;
-        for (const tile of this.getAdjacentTiles(row, col)) {
+        for (const tile of this.getTilesAdjacentTo(row, col)) {
             walkableCount += Number(tile.type !== WALL);
         }
         return (walkableCount === 1);
-    }
-
-    getAdjacentTiles(row: number, col: number, height: number = 1, width: number = 1, diagonal: boolean = false): Tile[] {
-        const neighbors: Tile[] = [];
-        const corner = (diagonal ? 1 : 0);
-        for (const r of [row-1, row+height]) {
-            for (let c = col - corner; c < col+width+corner; c++) {
-                if (this.isInBounds(r, c)) {
-                    neighbors.push(this.tiles[r][c]);
-                }
-            }
-        }
-        for (const c of [col-1, col+width]) {
-            for (let r = row; r < row+height; r++) {
-                if (this.isInBounds(r, c)) {
-                    neighbors.push(this.tiles[r][c]);
-                }
-            }
-        }
-        return neighbors;
     }
 
     countWalls() {
