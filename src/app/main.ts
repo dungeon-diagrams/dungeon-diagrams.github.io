@@ -29,7 +29,7 @@ window.PuzzleString = PuzzleString;
 PuzzleGrid;
 App;
 
-window.addEventListener('DOMContentLoaded', (event) => {
+export function init() {
     try {
         preact.render(App(), document.body, document.getElementById("app") as Element);
     }
@@ -40,4 +40,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
             statusDisplay.innerText = `${e.name || "Error"}: ${e.message || e}`
         }
     }
-});
+}
+
+if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", init);
+}
+else {
+    init();
+}
