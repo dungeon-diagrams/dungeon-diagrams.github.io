@@ -16,7 +16,7 @@ declare global {
 }
 
 // preload modules
-Object.assign(window, {
+Object.assign(globalThis, {
     runes: runes,
     preact: preact,
     Puzzle: PuzzleModel.Puzzle,
@@ -40,9 +40,11 @@ export function init() {
     }
 }
 
-if (document.readyState === "loading") {
-    window.addEventListener("DOMContentLoaded", init);
-}
-else {
-    init();
+if (typeof(document) !== 'undefined') {
+    if (document.readyState === "loading") {
+        window.addEventListener("DOMContentLoaded", init);
+    }
+    else {
+        init();
+    }
 }

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="mocha.css" />
+    <style>#app {display: none}</style>
+  </head>
+  <body>
+    <div></div>
+    <div id="mocha"></div>
+
+    <script src="mocha.js"></script>
+
+    <script class="mocha-init">
+      mocha.setup('bdd');
+      mocha.globals(['runes', 'preact', 'Puzzle', 'Tile', 'TileString', 'PuzzleString', 'FLOOR', 'WALL', 'TREASURE', 'MONSTER', 'puzzle']);
+      mocha.checkLeaks();
+    </script>
+    <script type="module" src="test.app.js"></script>
+    <script type="module" src="test.main.js"></script>
+    <script type="module" class="mocha-exec">
+      mocha.run();
+    </script>
+  </body>
+</html>

@@ -153,8 +153,9 @@ or to a partial solution:
 href="?puzzle=(shareable string)"
 */
 
-export function App() {
-    const params = parseQuery(document.location.search);
+export function App(query?: string) {
+    query ||= document.location.search
+    const params = parseQuery(query);
     const puzzleString = params.puzzle as string;
     const puzzleID = params.puzzle_id as number;
     let puzzle;
@@ -166,7 +167,9 @@ export function App() {
     }
     if (puzzle) {
         puzzle = puzzle.solvableCopy();
-        window.puzzle = puzzle;
+        Object.assign(globalThis, {
+            puzzle: puzzle
+        });
         return (
             <div id="app" className="app">
                 <h1><a href=".">Daily Dungeons and Diagrams</a></h1>

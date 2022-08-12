@@ -12,6 +12,9 @@ const paths = {
         "src/**/*.module.js",
         "src/**/*.js.map"
     ],
+    tests: [
+        "test/**/*"
+    ],
     libsCJS: [
         "src/lib/runes.js"
     ]
@@ -60,7 +63,7 @@ gulp.task('watch-typescript', function() {
 });
 
 gulp.task(
-    "build", 
+    'build',
     gulp.parallel(
         "copy-static",
         "convert-cjs",
@@ -68,6 +71,19 @@ gulp.task(
     )
 );
 
-gulp.task('watch', gulp.parallel('build', 'watch-static', 'watch-typescript'));
+gulp.task('build-test', function(){
+    return (
+        gulp.src(paths.tests, { since: gulp.lastRun("build-test")})
+        .pipe(gulp.dest("dist/test/"))
+    )
+})
+
+gulp.task("watch-test", function () {
+    gulp.watch(paths.tests, gulp.parallel("build-test"));
+});
+
+
+gulp.task('watch', gulp.parallel('build', 'watch-static', 'watch-typescript', 'watch-test'));
 
 gulp.task('default', gulp.series('build'));
+
