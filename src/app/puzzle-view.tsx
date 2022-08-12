@@ -162,7 +162,7 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                         {puzzle.tiles.map((rowTiles, row)=>(
                             <tr>
                                 <th className={`puzzle-wall-target ${rowStatus[row]}`} data-row={row}>
-                                    {puzzle.rowTargets[row]}
+                                    {puzzle.rowTargets[row]}&nbsp;
                                 </th>
                                 {rowTiles.map((tile, col)=>(
                                     <PuzzleCell row={row} col={col} tile={tile} puzzle={puzzle} rowStatus={rowStatus[row]} colStatus={colStatus[col]} />
