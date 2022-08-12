@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" type="text/css" href="style/style.css" />
-    <script defer type="module" src="app/main.js?v=1"></script>
+    <script type="module" src="app/main.js?v=1"></script>
     <title>Daily Dungeons and Diagrams</title>
   </head>
   <body>
@@ -14,7 +14,12 @@
         <div id="status-display" data-status="Error">This application requires JavaScript. Here are the <a href="http://www.enable-javascript.com/" target="_blank">instructions to enable JavaScript</a> in your web browser.</div>
       </noscript>
       <script>
-        document.write('<div id="status-display" data-status="Loading">Loading...</div>');
+        if ("noModule" in HTMLScriptElement.prototype) {
+          document.write('<div id="status-display" data-status="Loading">Loading...</div>');
+        }
+        else {
+          document.write('<div id="status-display" data-status="Error">This application requires a web browser that supports ES2015 script modules.</div>');
+        }
       </script>
     </div>
   </body>
