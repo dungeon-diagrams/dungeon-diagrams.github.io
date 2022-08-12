@@ -8,26 +8,6 @@ A puzzle is partially solved when there are any walls and it is not fully solved
 We would like to encourage sharing unsolved (but solveable) puzzles.
 We would like to discourage sharing spoilers.
 
-Essential operations:
-- parse a shareable string into a model (supporting emoji)
-- serialize a model into a shareable string
-- count the walls in each row/column
-- check if the wall counts match a spec
-- check if the layout is valid
-
-Integration:
-- would like to support copying for auto-solve and undo/redo
-- would like to trigger view updates when properties change
-
-Puzzle
-    specs {name, rowCounts, colCounts, monsters, treasures}
-    state {Tile[][]}
-    .isSolved(): boolean
-    .setTile(x, y, Tile | TileType)
-        -> only allow overwriting monsters/treasures if the puzzle is marked as editable
-        -> replaces state with an updated copy
-        -> triggers a callback on observers
-    .addObserver(callback)
 */
 
 export abstract class Tile {
