@@ -1,9 +1,10 @@
-const gulp = require("gulp");
-const rewriteImports = require("gulp-rewrite-imports");
-const sourcemaps = require("gulp-sourcemaps");
-const ts = require("gulp-typescript");
+import gulp from "gulp";
+import rewriteImports from "gulp-rewrite-imports";
+import sourcemaps from "gulp-sourcemaps";
+import ts from "gulp-typescript";
+import * as cjstoesm from "cjstoesm";
+
 const tsProject = ts.createProject("tsconfig.json");
-const cjstoesm = require('cjstoesm');
 
 const paths = {
     static: [
@@ -21,10 +22,8 @@ const paths = {
 };
 
 gulp.task("copy-static", function () {
-    return (
-        gulp.src(paths.static, { since: gulp.lastRun("copy-static")})
-        .pipe(gulp.dest("dist"))
-    );
+    return (gulp.src(paths.static, { since: gulp.lastRun("copy-static") })
+        .pipe(gulp.dest("dist")));
 });
 
 gulp.task("watch-static", function () {
@@ -40,50 +39,34 @@ gulp.task("convert-cjs", async function (cb) {
 });
 
 gulp.task("compile-typescript", function () {
-    return (
-        tsProject.src()
+    return (tsProject.src()
         .pipe(sourcemaps.init())
-            .pipe(tsProject()).js
-            .pipe(rewriteImports({
-                mappings: {
-                    'preact': '../lib/preact.module.js',
-                    'runes': '../lib/runes.js'
-                }
-            }))
+        .pipe(tsProject()).js
+        .pipe(rewriteImports({
+        mappings: {
+            'preact': '../lib/preact.module.js',
+            'runes': '../lib/runes.js'
+        }
+    }))
         .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("./dist"))
-    );
+        .pipe(gulp.dest("./dist")));
 });
 
-gulp.task('watch-typescript', function() {
-    gulp.watch(['src/**/*.ts', 'src/**/*.tsx'],
-        {ignoreInitial: true},
-        gulp.series('compile-typescript')
-    );
+gulp.task('watch-typescript', function () {
+    gulp.watch(['src/**/*.ts', 'src/**/*.tsx'], { ignoreInitial: true }, gulp.series('compile-typescript'));
 });
 
-gulp.task(
-    'build',
-    gulp.parallel(
-        "copy-static",
-        "convert-cjs",
-        "compile-typescript"
-    )
-);
+gulp.task('build', gulp.parallel("copy-static", "convert-cjs", "compile-typescript"));
 
-gulp.task('build-test', function(){
-    return (
-        gulp.src(paths.tests, { since: gulp.lastRun("build-test")})
-        .pipe(gulp.dest("dist/test/"))
-    )
-})
+gulp.task('build-test', function () {
+    return (gulp.src(paths.tests, { since: gulp.lastRun("build-test") })
+        .pipe(gulp.dest("dist/test/")));
+});
 
 gulp.task("watch-test", function () {
     gulp.watch(paths.tests, gulp.parallel("build-test"));
 });
 
-
 gulp.task('watch', gulp.parallel('build', 'watch-static', 'watch-typescript', 'watch-test'));
 
 gulp.task('default', gulp.series('build'));
-
