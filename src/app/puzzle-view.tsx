@@ -212,12 +212,13 @@ export class PuzzleCell extends Component<CellProps> {
 
     render(props: CellProps) {
         return (
-            <td className={`puzzle-cell puzzle-cell-${props.tile.name} ${props.rowStatus} ${props.colStatus}`}
+            <td className={`puzzle-cell ${props.rowStatus} ${props.colStatus}`}
+                data-tile={props.tile.constructor.name}
                 data-row={this.props.row}
                 data-col={this.props.col}
                 // onClick={this.toggle.bind(this)}
             >
-                {props.tile.HTML}
+                {props.tile.toHTML()}
             </td>
         )
     }

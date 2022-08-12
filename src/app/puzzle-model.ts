@@ -10,23 +10,44 @@ We would like to discourage sharing spoilers.
 
 */
 
-export abstract class Tile {
-    name: string = 'tile';
+export class Tile {
     ASCII: string = '_';   // should be encodable as a URI with no escape
     emoji: string = '🌫';  // should be square
-    HTML: string = '';
+    HTML?: string;
     static pattern: RegExp = /.|[\?_-]/;
 
-    constructor(char?: string) {
-        if (char) {
-            if (char.match(/\p{ASCII}/)) {
-                this.ASCII = char;
+    setGlyph(glyph?: string) {
+        if (glyph) {
+            if (glyph.match(/\p{ASCII}/u)) {
+                this.ASCII = glyph;
             }
             else {
-                this.emoji = char;
+                this.emoji = glyph;
             }
         }
-        this.HTML ||= this.emoji;
+    }
+
+    static parse(glyph: string): Tile {
+        let tileType = Monster;
+        for (tileType of [Floor, Wall, Treasure, BossMonster, MarkedFloor, Monster]) {
+            if (glyph.match(tileType.pattern)) {
+                break;
+            }
+        }
+        const tile = new tileType();
+        tile.setGlyph(glyph);
+        return tile;
+    }
+
+    toHTML() {
+        const glyph = this.HTML || this.emoji;
+        const supported = document.fonts.check(`${css(document.body, 'font-size')} ${css(document.body, 'font-family')}`, glyph);
+        if (supported) {
+            return glyph;
+        }
+        else {
+            return this.ASCII;
+        }
     }
 
     nextTile(editing?: boolean): Tile {
@@ -38,57 +59,42 @@ export abstract class Tile {
         const nextType = order[(index+1) % order.length] as (new (display?:string) => Tile);
         return new nextType();
     }
-
-    static parse(char: string): Tile {
-        for (const tileType of [Floor, Wall, Treasure, BossMonster, MarkedFloor, Monster]) {
-            if (char.match(tileType.pattern)) {
-                return new tileType(char);
-            }
-        }
-        return new Monster(char);
-    }
 }
 
 export abstract class SolvableTile extends Tile { }
 
 export class Floor extends SolvableTile {
-    name = 'floor';
     ASCII = '.';
     emoji = '⬜️';
     static pattern = /\p{White_Space}|[\.·🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️]/iu;
 }
 
 export class MarkedFloor extends Floor {
-    name = 'floor-marked';
     ASCII = 'x';
     emoji = '🔳';
     HTML = '×';
-    static pattern = /[x✖️×✖️x╳⨯⨉❌🚫💠]/i;
+    static pattern = /[x✖️×✖️x╳⨯⨉❌🚫💠]/iu;
 }
 
 export class Wall extends SolvableTile {
-    name = 'wall';
     ASCII = '*';
     emoji = '🟫';
     static pattern = /[*#🟥🟧🟨🟩🟦🟪🟫]/iu;
 }
 
 export class Treasure extends Tile {
-    name = 'treasure';
     ASCII = 'T';
     emoji = '💎';
     static pattern = /[t🏆🥇🥈🥉🏅🎖🔮🎁📦💎👑]/iu;
 }
 
 export class Monster extends Tile {
-    name = 'monster';
     ASCII = 'm';
     emoji = '🦁';
-    static pattern = /[m☺︎☹☻☃︎♜♝♞♟♖♗♘♙🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔☃️⛄️🦠]/u;
+    static pattern = /[m☺︎☹☻☃︎♜♝♞♟♖♗♘♙🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔☃️⛄️🦠😈👿👹👺🤡👻💀☠️👽👾🤖🎃🧛🧟🧞🧜🧚]/u;
 }
 
 export class BossMonster extends Monster {
-    name = 'monster-boss';
     ASCII = 'M';
     emoji = '🐲';
     static pattern = /[M♚♛♔♕🦖🦕🐊🐉🐲🧊]/u;
@@ -310,4 +316,8 @@ function arrayEqual<T>(a1: Array<T>, a2: Array<T>): boolean {
         }
     }
     return true;
+}
+
+function css(element: HTMLElement, property:string): string {
+    return window.getComputedStyle(element, null).getPropertyValue(property);
 }

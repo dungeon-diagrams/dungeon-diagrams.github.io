@@ -16,8 +16,11 @@ h1, h2, h3, h4, h5, h6 {
 /* puzzle components */
 
 .puzzle-view {
-    max-width: 100vh;
     margin: auto;
+}
+
+.puzzle-view.unsolved .solved-marker {
+    visibility: hidden;
 }
 
 .puzzle-grid {
@@ -34,12 +37,6 @@ h1, h2, h3, h4, h5, h6 {
     overflow: clip;
 }
 
-.puzzle-cell-content {
-    display: block;
-    overflow: clip;
-    /* width and height to be set by script */
-}
-
 .puzzle-wall-target.too-few-walls {
     color: red;
 }
@@ -47,22 +44,15 @@ h1, h2, h3, h4, h5, h6 {
     color: magenta;
 }
 
-.puzzle-cell.puzzle-cell-wall {
+.puzzle-cell[data-tile="Wall"] {
     background-color: rgb(75, 41, 2);
     color: transparent;
 }
-.puzzle-cell.puzzle-cell-wall.too-many-walls {
+.puzzle-cell[data-tile="Wall"].too-many-walls {
     background-color: darkred;
 }
-.puzzle-cell.puzzle-cell-floor {
+.puzzle-cell[data-tile="Floor"] {
     color: transparent;
-}
-/* .puzzle-cell.puzzle-cell-monster {
-}
-.puzzle-cell.puzzle-cell-treasure {
-} */
-.puzzle-view.unsolved .solved-marker {
-    visibility: hidden;
 }
 
 /* navigation */
