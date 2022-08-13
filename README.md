@@ -8,7 +8,7 @@ This project is intended as an example of readable modern web code in a minimali
 - Source maps are distributed with the original TSX code.
 - We make use of emoji and unicode symbols, and simple CSS shapes.
 - State is stored in strings that can be shared by users, with no app backend.
-- The total download size is less than 10kB (excluding source maps).
+- The total download size is less than 20kB (excluding source maps).
 
 ### Development
 

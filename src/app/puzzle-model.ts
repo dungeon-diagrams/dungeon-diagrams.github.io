@@ -1,22 +1,15 @@
-/*
-
-A puzzle model consists of spec and state.
-The spec is the target wall counts in each row/column, and the monster/treasure locations.
-The state is the current grid of walls and floors.
-A puzzle is solved when the state is valid and matches the spec.
-A puzzle is partially solved when there are any walls and it is not fully solved.
-We would like to encourage sharing unsolved (but solveable) puzzles.
-We would like to discourage sharing spoilers.
-
-*/
-
+/**
+ * @class Tile
+ * Hierarchical representation of tile types.
+ * Use Tile.parse(glyph) to construct a Tile with an arbitrary glyph.
+ */
 export class Tile {
     ASCII: string = '_';   // should be encodable as a URI with no escape
     emoji: string = '🌫';  // should be square
     HTML?: string;
     static pattern: RegExp = /.|[\?_-]/;
 
-    setGlyph(glyph?: string) {
+    setGlyph(glyph: string) {
         if (glyph) {
             if (glyph.match(/\p{ASCII}/u)) {
                 this.ASCII = glyph;
@@ -111,6 +104,17 @@ export class BossMonster extends Monster {
 
 export const TileTypes = { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster };
 
+/**
+ * @class Puzzle
+ * 
+ * A puzzle model consists of spec and state.
+ * The spec is the target wall counts in each row/column, and the monster/treasure locations.
+ * The state is the current grid of walls and floors.
+ * A puzzle is solved when the state is valid and matches the spec.
+ * A puzzle is partially solved when there are any walls and it is not fully solved.
+ * We would like to encourage sharing unsolved (but solveable) puzzles.
+ * We would like to discourage sharing spoilers.
+ */
 export class Puzzle extends EventTarget {
     name: string;
     nRows: number;
