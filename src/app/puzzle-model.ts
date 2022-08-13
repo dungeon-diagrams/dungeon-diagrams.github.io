@@ -75,13 +75,13 @@ export class MarkedFloor extends Floor {
     ASCII = 'x';
     emoji = '🔳';
     HTML = '×';
-    static pattern = /[x✖️×✖️x╳⨯⨉❌🚫💠]/iu;
+    static pattern = /[x✖️×✖️x╳⨯⨉❌⊘🚫💠❖]/iu;
 }
 
 export class Wall extends SolvableTile {
     ASCII = '*';
     emoji = '🟫';
-    static pattern = /[*#🟥🟧🟨🟩🟦🟪🟫]/iu;
+    static pattern = /[*#O◯◌⭕️🪨🟥🟧🟨🟩🟦🟪🟫]/iu;
 }
 
 export class Treasure extends Tile {
@@ -93,7 +93,7 @@ export class Treasure extends Tile {
 export class Monster extends Tile {
     ASCII = 'm';
     emoji = '🦁';
-    static pattern = /[m☺︎☹☻☃︎♜♝♞♟♖♗♘♙🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔☃️⛄️🦠😈👿👹👺🤡👻💀☠️👽👾🤖🎃🧛🧟🧞🧜🧚]/u;
+    static pattern = /[m☺︎☹☻♜♝♞♟♖♗♘♙☃️⛄️🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🦠😈👿👹👺🤡👻💀☠️👽👾🤖🎃🧛🧟🧞🧜🧚🗿🛸]/u;
 }
 
 export class BossMonster extends Monster {
