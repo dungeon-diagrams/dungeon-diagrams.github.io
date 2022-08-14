@@ -167,9 +167,7 @@ export function App(query?: string) {
     }
     if (puzzle) {
         puzzle = puzzle.solvableCopy();
-        Object.assign(globalThis, {
-            puzzle: puzzle
-        });
+        Object.assign(globalThis, {puzzle: puzzle});
         return (
             <div id="app" className="app">
                 <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
@@ -179,6 +177,7 @@ export function App(query?: string) {
     }
     else if (params.mode === 'edit') {
         puzzle = new EditablePuzzle({name:"New Dungeon", colTargets:[0,0,0,0,0,0,0,0], rowTargets:[0,0,0,0,0,0,0,0], tiles: []});
+        Object.assign(globalThis, {puzzle: puzzle});
         return (
             <div id="app" className="app">
                 <h1><a href=".">Daily Dungeons and Diagrams</a></h1>

@@ -46,7 +46,7 @@ export abstract class Tile {
     nextTile(editing?: boolean, eventType?: string): Tile {
         let order: Function[];
         if (editing) {
-            order = [Floor, Wall, Floor, Monster, BossMonster, Treasure];
+            order = [Floor, Wall, Floor, Monster, Wall, BossMonster, Floor, Treasure];
         }
         else if (eventType === 'rightClick') {
             order = [MarkedFloor, Floor];
@@ -354,7 +354,7 @@ export class EditablePuzzle extends Puzzle {
                 }
             }
             else if ((tile instanceof Monster) && !deadEnd) {
-                this.tiles[row][col] == new Floor();
+                this.tiles[row][col] = new Floor();
             }
         }
     }
