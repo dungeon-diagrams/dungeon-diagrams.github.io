@@ -31,6 +31,7 @@ export function init() {
         preact.render(App(), document.body, document.getElementById("app") as Element);
     }
     catch (e: any) {
+        console.error(e);
         const statusDisplay = document.getElementById("status-display");
         if (statusDisplay) {
             statusDisplay.dataset.status = "Error";

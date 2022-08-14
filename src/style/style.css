@@ -55,6 +55,15 @@ h1, h2, h3, h4, h5, h6 {
     color: transparent;
 }
 
+/* editor */
+
+.puzzle-editor-controls input {
+    font-size: 100%;
+}
+.puzzle-editor-controls button {
+    font-size: 150%;
+}
+
 /* navigation */
 
 .puzzle-list .puzzle-preview {

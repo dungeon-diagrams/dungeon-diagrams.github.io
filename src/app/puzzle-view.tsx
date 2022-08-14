@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import { Puzzle, Tile } from "./puzzle-model.js";
+import { Puzzle, Tile, EditablePuzzle } from "./puzzle-model.js";
 import * as PuzzleString from "./puzzle-string.js";
 
 interface PuzzleGridProps {
@@ -68,7 +68,7 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
         }
         const [row, col, tile] = this.getTile(event.clientX, event.clientY);
         if (tile) {
-            const isEditing = false; // TODO
+            const isEditing = (this.state.puzzle instanceof EditablePuzzle);
             this.swipeTile = tile.nextTile(isEditing, type);
             this.state.puzzle.setTile(row, col, this.swipeTile);
         }
@@ -128,7 +128,7 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
         const colStatus = [...getWallStatus(colCounts, puzzle.colTargets)];
         const {solved, reason} = puzzle.isSolved();
 
-        const maxCellHeight = (this.state.size.height - 78) / (puzzle.nRows + 1.5) - 2;
+        const maxCellHeight = (this.state.size.height - 110) / (puzzle.nRows + 1.5) - 2;
         const maxCellWidth = this.state.size.width / (puzzle.nCols + 1) - 2;
         const cellSize = Math.floor(Math.min(maxCellHeight, maxCellWidth));
         // const gridHeight = (cellSize+3) * (puzzle.nRows + 1) - 4;

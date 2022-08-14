@@ -3,7 +3,7 @@
  * Hierarchical representation of tile types.
  * Use Tile.parse(glyph) to construct a Tile with an arbitrary glyph.
  */
-export class Tile {
+export abstract class Tile {
     ASCII: string = '_';   // should be encodable as a URI with no escape
     emoji: string = '🌫';  // should be square
     HTML?: string;
@@ -43,18 +43,18 @@ export class Tile {
         }
     }
 
-    nextTile(editing?: boolean, type?: string): Tile {
+    nextTile(editing?: boolean, eventType?: string): Tile {
         let order: Function[];
         if (editing) {
-            order = [Wall, Floor, Monster, BossMonster, Treasure];
+            order = [Floor, Wall, Floor, Monster, BossMonster, Treasure];
         }
-        else if (type === 'rightClick') {
+        else if (eventType === 'rightClick') {
             order = [MarkedFloor, Floor];
         }
-        else if (type === 'leftClick') {
+        else if (eventType === 'leftClick') {
             order = [Wall, Floor];
         }
-        else { // touch
+        else { // touch event
             order = [Wall, MarkedFloor, Floor];
         }
         const index = order.indexOf(this.constructor);
@@ -130,16 +130,27 @@ export class Puzzle extends EventTarget {
         this.nRows = this.rowTargets.length;
         this.colTargets = colTargets;
         this.nCols = this.colTargets.length;
-        this.tiles = tiles; // TODO: make copy
+        this.updateTiles(tiles);
+        this.tiles ||= [];
+    }
+
+    updateTiles(newTiles: Tile[][]) {
+        this.tiles = [];
         for (let row = 0; row < this.nRows; row++) {
-            this.tiles[row] ||= [];
-            while (this.tiles[row].length < this.nCols) {
-                this.tiles[row].push(new Floor());
+            this.tiles.push([]);
+            for (let col = 0; col < this.nCols; col++) {
+                let newTile;
+                if (newTiles[row]) {
+                    newTile = newTiles[row][col];
+                }
+                this.tiles[row].push(newTile || new Floor());
             }
         }
     }
 
     didChange() {
+        // this should be called once at the end of each 'set' method.
+        // but not for each 'update' method.
         this.dispatchEvent(new Event('change'));
     }
 
@@ -285,7 +296,7 @@ export class Puzzle extends EventTarget {
      }
 }
 
-class SolvablePuzzle extends Puzzle {
+export class SolvablePuzzle extends Puzzle {
     canEditTile(row: number, col: number) {
         if (!this.isInBounds(row, col)) {
             return false;
@@ -298,7 +309,7 @@ class SolvablePuzzle extends Puzzle {
     }
 }
 
-class EditablePuzzle extends Puzzle {
+export class EditablePuzzle extends Puzzle {
     canEditTile(row: number, col: number) {
         if (!this.isInBounds(row, col)) {
             return false;
@@ -311,11 +322,41 @@ class EditablePuzzle extends Puzzle {
             return false;
         }
         this.tiles[row][col] = newTile;
+        this.updateWallTargets();
+        this.updateMonsters();
+        this.didChange();
+        return true;
+    }
+
+    updateWallTargets() {
         const {rowCounts, colCounts} = this.countWalls();
         this.rowTargets = rowCounts;
         this.colTargets = colCounts;
+    }
+
+    setSize(nRows: number, nCols: number) {
+        this.nRows = nRows;
+        this.nCols = nCols;
+        const oldTiles = this.tiles;
+        this.updateTiles(oldTiles);
+        this.updateWallTargets();
+        this.updateMonsters();
         this.didChange();
-        return true;
+    }
+
+    updateMonsters(monsterGlyph?: string) {
+        for (const [row, col, tile] of this) {
+            const deadEnd = this.isDeadEnd(row, col);
+            if (deadEnd && !(tile instanceof Monster)) {
+                this.tiles[row][col] = new Monster();
+                if (monsterGlyph) {
+                    this.tiles[row][col].setGlyph(monsterGlyph);
+                }
+            }
+            else if ((tile instanceof Monster) && !deadEnd) {
+                this.tiles[row][col] == new Floor();
+            }
+        }
     }
 }
 

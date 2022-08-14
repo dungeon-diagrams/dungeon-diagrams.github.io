@@ -1,6 +1,7 @@
 import { h } from "preact";
-import { Puzzle } from './puzzle-model.js';
+import { Puzzle, EditablePuzzle } from './puzzle-model.js';
 import { PuzzleGrid } from './puzzle-view.js';
+import { PuzzleEditor } from './puzzle-editor.js';
 import * as PuzzleString from "./puzzle-string.js";
 import { parseQuery } from './puzzle-string.js';
 
@@ -13,7 +14,7 @@ import { parseQuery } from './puzzle-string.js';
 */
 
 const dailyPuzzles: string[] = [
-`Example Puzzle
+`Example Dungeon
 .424121
 3.....t
 1......
@@ -176,7 +177,15 @@ export function App(query?: string) {
             </div>
         );
     }
-
+    else if (params.mode === 'edit') {
+        puzzle = new EditablePuzzle({name:"New Dungeon", colTargets:[0,0,0,0,0,0,0,0], rowTargets:[0,0,0,0,0,0,0,0], tiles: []});
+        return (
+            <div id="app" className="app">
+                <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
+                <PuzzleEditor puzzle={puzzle} />
+            </div>
+        )
+    }
     else {
         const navLinks = [];
         for (const puzzleString of dailyPuzzles) {
@@ -190,7 +199,10 @@ export function App(query?: string) {
         return (
             <div id="app" className="app">
                 <h1>Daily Dungeons and Diagrams</h1>
-                <ul>{navLinks}</ul>
+                <ul>
+                    <li><a href="?mode=edit">Create New Dungeon</a><br/>&nbsp;</li>
+                    {navLinks}
+                </ul>
             </div>
         )
     }
