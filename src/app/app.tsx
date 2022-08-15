@@ -176,7 +176,7 @@ export function App(query?: string) {
         );
     }
     else if (params.mode === 'edit') {
-        puzzle = new EditablePuzzle({name:"New Dungeon", colTargets:[0,0,0,0,0,0,0,0], rowTargets:[0,0,0,0,0,0,0,0], tiles: []});
+        puzzle = new EditablePuzzle({name:"Untitled Dungeon", colTargets:[0,0,0,0,0,0,0,0], rowTargets:[0,0,0,0,0,0,0,0], tiles: []});
         Object.assign(globalThis, {puzzle: puzzle});
         return (
             <div id="app" className="app">
