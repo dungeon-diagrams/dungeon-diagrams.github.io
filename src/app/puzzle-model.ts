@@ -2,6 +2,16 @@
  * @class Tile
  * Hierarchical representation of tile types.
  * Use Tile.parse(glyph) to construct a Tile with an arbitrary glyph.
+ * Class hierarchy:
+ * Tile
+ *   Wall
+ *   WalkableTile
+ *     Floor
+ *       MarkedFloor
+ *     FixedTile
+ *       Monster
+ *         BossMonster
+ *       Treasure
  */
 export abstract class Tile {
     ASCII: string = '_';   // should be encodable as a URI with no escape
@@ -63,9 +73,10 @@ export abstract class Tile {
     }
 }
 
-export abstract class SolvableTile extends Tile { }
+export abstract class WalkableTile extends Tile { }
+export abstract class FixedTile extends WalkableTile { }
 
-export class Floor extends SolvableTile {
+export class Floor extends WalkableTile {
     ASCII = '.';
     emoji = '⬜️';
     static pattern = /\p{White_Space}|[\.·🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️]/iu;
@@ -78,19 +89,20 @@ export class MarkedFloor extends Floor {
     static pattern = /[x✖️×✖️x╳⨯⨉❌⊘🚫💠❖]/iu;
 }
 
-export class Wall extends SolvableTile {
+export class Wall extends Tile {
     ASCII = '*';
     emoji = '🟫';
     static pattern = /[*#O◯◌⭕️🪨🟥🟧🟨🟩🟦🟪🟫]/iu;
 }
 
-export class Treasure extends Tile {
+export class Treasure extends FixedTile {
     ASCII = 'T';
     emoji = '💎';
     static pattern = /[t🏆🥇🥈🥉🏅🎖🔮🎁📦💎👑]/iu;
 }
 
-export class Monster extends Tile {
+
+export class Monster extends FixedTile {
     ASCII = 'm';
     emoji = '🦁';
     static pattern = /[m☺︎☹☻♜♝♞♟♖♗♘♙☃️⛄️🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🦠😈👿👹👺🤡👻💀☠️👽👾🤖🎃🧛🧟🧞🧜🧚🗿🛸]/u;
@@ -244,7 +256,7 @@ export class Puzzle extends EventTarget {
         }
         let walkableCount = 0;
         for (const tile of this.getTilesAdjacentTo(row, col)) {
-            walkableCount += Number(!(tile instanceof Wall));
+            walkableCount += Number(tile instanceof WalkableTile);
         }
         return (walkableCount === 1);
     }
@@ -264,9 +276,9 @@ export class Puzzle extends EventTarget {
     }
 
     unsolve(): Puzzle {
-        // TODO: don't mutate original
+        // TODO: don't mutate original array
         for (const [row, col, tile] of this) {
-            if (tile instanceof SolvableTile) {
+            if (!(tile instanceof FixedTile)) {
                 this.tiles[row][col] = new Floor();
             }
         }
@@ -275,7 +287,7 @@ export class Puzzle extends EventTarget {
     }
 
     unmarkFloors(): Puzzle {
-        // TODO: don't mutate original
+        // TODO: don't mutate original array
         for (const [row, col, tile] of this) {
             if (tile instanceof MarkedFloor) {
                 this.tiles[row][col] = new Floor();
@@ -302,7 +314,7 @@ export class SolvablePuzzle extends Puzzle {
             return false;
         }
         const oldTile = this.tiles[row][col];
-        if (!(oldTile instanceof SolvableTile)) {
+        if (oldTile instanceof FixedTile) {
             return false;
         }
         return true;

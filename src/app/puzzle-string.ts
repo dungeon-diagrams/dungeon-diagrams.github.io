@@ -1,5 +1,5 @@
 import { default as runes } from 'runes';
-import { Tile, Puzzle, TileTypes, SolvableTile } from './puzzle-model.js';
+import { Tile, Puzzle, TileTypes, FixedTile } from './puzzle-model.js';
 
 const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster } = TileTypes;
 
@@ -115,7 +115,7 @@ export function toStateURI(puzzle: Puzzle): string {
 }
 
 export function unsolvedTileURI(tile: Tile): string {
-    if (tile instanceof SolvableTile) {
+    if (!(tile instanceof FixedTile)) {
         return '.';
     }
     else {
@@ -124,7 +124,7 @@ export function unsolvedTileURI(tile: Tile): string {
 }
 
 export function tileURI(tile: Tile): string {
-    if (tile instanceof SolvableTile) {
+    if (!(tile instanceof FixedTile)) {
         return tile.ASCII;
     }
     else {
