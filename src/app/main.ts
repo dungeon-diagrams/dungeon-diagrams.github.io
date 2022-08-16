@@ -4,6 +4,7 @@ import { App } from "./app.js";
 import * as PuzzleModel from "./puzzle-model.js";
 import { PuzzleGrid } from "./puzzle-view.js";
 import * as PuzzleString from "./puzzle-string.js";
+import * as HTMLUtils from "./html-utils.js";
 
 // debugging
 declare global {
@@ -25,6 +26,7 @@ Object.assign(globalThis, {
 }, PuzzleModel.TileTypes);
 PuzzleGrid;
 App;
+HTMLUtils;
 
 export function init() {
     try {

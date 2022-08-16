@@ -351,9 +351,31 @@ export class EditablePuzzle extends Puzzle {
         this.nCols = nCols;
         const oldTiles = this.tiles;
         this.updateTiles(oldTiles);
-        this.updateWallTargets();
-        this.updateMonsters();
+        while (this.rowTargets.length < nRows) {
+            this.rowTargets.push(0);
+        }
+        while (this.colTargets.length < nCols) {
+            this.colTargets.push(0);
+        }
+        this.rowTargets.length = nRows;
+        this.colTargets.length = nCols;
+        // this.updateWallTargets();
+        // this.updateMonsters();
         this.didChange();
+    }
+
+    setRowTargets(rowTargets: number[]) {
+        this.rowTargets = rowTargets
+        if (this.rowTargets.length != this.nRows) {
+            this.setSize(this.rowTargets.length, this.nCols);
+        }
+    }
+
+    setColTargets(colTargets: number[]) {
+        this.colTargets = colTargets
+        if (this.colTargets.length != this.nRows) {
+            this.setSize(this.colTargets.length, this.nCols);
+        }
     }
 
     updateMonsters(monsterGlyph?: string) {

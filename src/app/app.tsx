@@ -1,9 +1,9 @@
-import { h } from "preact";
+import { h } from 'preact';
 import { Puzzle, EditablePuzzle } from './puzzle-model.js';
 import { PuzzleGrid } from './puzzle-view.js';
 import { PuzzleEditor } from './puzzle-editor.js';
-import * as PuzzleString from "./puzzle-string.js";
-import { parseQuery } from './puzzle-string.js';
+import * as PuzzleString from './puzzle-string.js';
+import { parseQuery } from './html-utils.js';
 
 /*
  idea for a router: use 404.html to serve the main app.

@@ -1,4 +1,6 @@
 import { h, Component, createRef } from "preact";
+import { default as runes } from "runes";
+
 import { Puzzle, EditablePuzzle, Monster, Treasure, Tile } from "./puzzle-model.js";
 import { PuzzleGrid } from "./puzzle-view.js";
 
@@ -44,41 +46,54 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
         this.state.puzzle.removeEventListener('change', this.updatePuzzle);
     }
 
-    updateValues = (event: Event) => {
-        const values = readForm(this.ref.current);
-
+    handleChange = (event: Event) => {
+        const input = event.target as HTMLInputElement;
         const puzzle = this.state.puzzle;
-        puzzle.name = values.name;
-        puzzle.setSize(values.nRows, values.nCols);
-        puzzle.rowTargets = values.rowTargets.split(',').map((s:string)=>parseInt(s));
-        puzzle.colTargets = values.colTargets.split(',').map((s:string)=>parseInt(s));
-
-        let monsterTile = this.state.monsterTile;
-        if (values.monsterGlyph != monsterTile.emoji) {
-            monsterTile = new Monster();
-            monsterTile.setGlyph(values.monsterGlyph);
+        if (input.type === 'checkbox') {
+            this.setState({[input.name]: input.checked});
         }
-        let treasureTile = this.state.treasureTile;
-        if (values.treasureGlyph != treasureTile.emoji) {
-            treasureTile = new Treasure();
-            treasureTile.setGlyph(values.treasureGlyph);
+        else if (input.type === 'radio') {
+            this.setState({[input.name]: input.value});
         }
-
-        this.setState({
-            puzzle,
-            tool: values.tool,
-            autoTarget: values['auto-target'],
-            autoMonster: values['auto-monster'],
-            monsterTile,
-            treasureTile,
-        });
+        else if (input.name === 'name') {
+            puzzle.name = input.value;
+        }
+        else if (input.name === 'nRows') {
+            puzzle.setSize(parseInt(input.value), puzzle.nCols);
+        }
+        else if (input.name === 'nCols') {
+            puzzle.setSize(puzzle.nRows, parseInt(input.value));
+        }
+        else if (input.name === 'rowTargets') {
+            puzzle.setRowTargets(input.value.split(',').map((s:string)=>parseInt(s)));
+        }
+        else if (input.name === 'colTargets') {
+            puzzle.setColTargets(input.value.split(',').map((s:string)=>parseInt(s)));
+        }
+        else if (input.name === 'monsterGlyph') {
+            const glyph = runes(input.value)[0];
+            const monsterTile = Monster.parse(glyph);
+            if (monsterTile instanceof Monster) {
+                monsterTile.emoji = glyph; // TODO
+                this.setState({monsterTile, tool: "monster"});
+            }
+        }
+        else if (input.name === 'treasureGlyph') {
+            const glyph = runes(input.value)[0];
+            const treasureTile = Treasure.parse(glyph);
+            if (treasureTile instanceof Treasure) {
+                treasureTile.emoji = glyph; // TODO
+                this.setState({treasureTile, tool: "monster"});
+            }
+        }
+        this.setState({});
     }
 
     render() {
         return (
             <div className="puzzle-editor" ref={this.ref}>
-                <div className="puzzle-editor-controls">
-                    <fieldset onChange={this.updateValues}>
+                <div className="puzzle-editor-controls" onChange={this.handleChange}>
+                    <fieldset>
                         <legend>Puzzle Properties</legend>
                         <label>
                             {"Name: "}
@@ -96,35 +111,37 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
                             <input name="nRows" type="number" inputMode="numeric" pattern="[0-9]*" size={1} value={this.state.puzzle.nRows} />
                             <input name="rowTargets" type="text" value={this.state.puzzle.rowTargets.join(',')} />
                         </label>
-                        <br/>
-                        <label>
-                            <input name="auto-target" type="checkbox" checked={this.state.autoTarget} /> Auto-count walls
-                        </label>
                     </fieldset>
                     <br />
-                    <fieldset onChange={this.updateValues}>
+                    <fieldset>
                         <legend>Tool</legend>
                         <label>
                             <input name="tool" type="radio" value="wall" checked={this.state.tool=="wall"} />
                             Wall
+                            <br/><input type="radio" style={{visibility:"hidden"}} />
                             <label>
-                                <input type="checkbox" name="auto-monster" checked={this.state.autoMonster} />
-                                Auto-monster
+                                Auto-place monsters: 
+                                <input type="checkbox" name="autoMonster" checked={this.state.autoMonster} />
+                            </label>
+                            <br/><input type="radio" style={{visibility:"hidden"}} />
+                            <label>
+                                Auto-update counts: 
+                                <input type="checkbox" name="autoTarget" checked={this.state.autoTarget} />
                             </label>
                         </label>
-                        <br />
+                        <br/><br/>
                         <label>
                             <input name="tool" type="radio" value="monster" checked={this.state.tool=="monster"} />
                             Monster&nbsp;
                             <input name="monsterGlyph" type="text" size={1} value={this.state.monsterTile.emoji} />
                         </label>
-                        <br />
+                        <br/><br/>
                         <label>
                             <input name="tool" type="radio" value="treasure" checked={this.state.tool=="treasure"} />
                             Treasure&nbsp;
                             <input name="treasureGlyph" type="text" size={1} value={this.state.treasureTile.emoji} />
                         </label>
-                        <br/>
+                        <br/><br/>
                         <label>
                             <input name="tool" type="radio" value="floor" checked={this.state.tool=="floor"} />
                             Erase
@@ -135,27 +152,4 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
             </div>
         )
     }
-}
-
-function readForm(form: HTMLElement) {
-    const values: {[key:string]: any} = {};
-    const inputs = form.querySelectorAll('[name]');
-    for (let i = 0; i < inputs.length; i++) {
-        const input = inputs[i] as HTMLInputElement;
-        if (input.type === 'checkbox') {
-            values[input.name] = input.checked;
-        }
-        else if (input.type === 'radio') {
-            if (input.checked) {
-                values[input.name] = input.value;
-            }
-        }
-        else if (input.type === 'number') {
-            values[input.name] = parseInt(input.value);
-        }
-        else {
-            values[input.name] = input.value;
-        }
-    }
-    return values;
 }
