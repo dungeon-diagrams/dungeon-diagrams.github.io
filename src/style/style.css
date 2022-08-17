@@ -43,7 +43,32 @@ h1, h2, h3, h4, h5, h6 {
 .puzzle-wall-target.too-many-walls {
     color: magenta;
 }
+.puzzle-wall-target.correct-walls {
+    animation: pulse 167ms linear;
+}
 
+@keyframes pulse {
+    50% {
+        transform: scale(115%);
+    }
+    100% {
+        transform: scale(100%);
+    }
+}
+
+@keyframes dance {
+    25% {
+        transform: rotate(-10deg);
+    }
+    75% {
+        transform: rotate(10deg);
+    }
+}
+
+.puzzle-cell {
+    transition-property: font-size;
+    transition-duration: 250ms;
+}
 .puzzle-cell[data-tile="Wall"] {
     background-color: rgb(75, 41, 2);
     color: transparent;
@@ -54,6 +79,14 @@ h1, h2, h3, h4, h5, h6 {
 .puzzle-cell[data-tile="Floor"] {
     color: transparent;
 }
+.puzzle-view.solved .puzzle-cell[data-tile="Monster"],
+.puzzle-view.solved .puzzle-cell[data-tile="BossMonster"] {
+    font-size: 90%;
+}
+.puzzle-view.solved .puzzle-cell[data-tile="Treasure"] {
+    font-size: 110%;
+}
+
 
 /* editor */
 
