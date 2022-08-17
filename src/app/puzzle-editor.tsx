@@ -40,10 +40,30 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
 
     componentDidMount() {
         this.state.puzzle.addEventListener('change', this.updatePuzzle);
+        document.body.addEventListener('keyup', this.keyUp);
     }
 
     componentWillUnmount() {
         this.state.puzzle.removeEventListener('change', this.updatePuzzle);
+        document.body.removeEventListener('keyup', this.keyUp);
+    }
+
+    keyUp = (event: KeyboardEvent)=>{
+        if ((event.target as HTMLElement).tagName === 'INPUT') {
+            return;
+        }
+        if (event.key == '1') {
+            this.setState({tool: "wall"});
+        }
+        else if (event.key == '2') {
+            this.setState({tool: "monster"});
+        }
+        else if (event.key == '3') {
+            this.setState({tool: "treasure"});
+        }
+        else if (event.key == '4') {
+            this.setState({tool: "floor"});
+        }
     }
 
     handleChange = (event: Event) => {
