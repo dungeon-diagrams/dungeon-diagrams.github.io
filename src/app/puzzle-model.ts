@@ -8,6 +8,7 @@
  *   WalkableTile
  *     Floor
  *       MarkedFloor
+ *       RoomFloor (not implemented)
  *     FixedTile
  *       Monster
  *         BossMonster

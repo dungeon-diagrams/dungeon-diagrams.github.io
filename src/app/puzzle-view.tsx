@@ -66,6 +66,9 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
         if (this.swipeTile) {
             return;
         }
+        if (this.state.puzzle.isSolved().solved) {
+            return;
+        }
         const [row, col, tile] = this.getTile(event.clientX, event.clientY);
         if (tile) {
             const isEditing = (this.state.puzzle instanceof EditablePuzzle);
