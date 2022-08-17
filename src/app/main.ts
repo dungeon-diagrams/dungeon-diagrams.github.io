@@ -1,3 +1,5 @@
+import '../lib/debug.module.js';
+
 import * as preact from "preact";
 import { default as runes } from "runes";
 import { App } from "./app.js";

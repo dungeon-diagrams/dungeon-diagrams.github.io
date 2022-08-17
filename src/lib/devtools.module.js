@@ -1,0 +1,1 @@
+../../node_modules/preact/devtools/dist/devtools.module.js
