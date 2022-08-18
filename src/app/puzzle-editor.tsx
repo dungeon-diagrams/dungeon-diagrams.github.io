@@ -3,6 +3,9 @@ import { default as runes } from "runes";
 
 import { Puzzle, EditablePuzzle, Monster, Treasure, Tile } from "./puzzle-model.js";
 import { PuzzleGrid } from "./puzzle-view.js";
+import { Brush, EraseBrush, MonsterBrush, TreasureBrush, DesignBrush } from "./brush.js";
+
+type ToolType = "floor" | "wall" | "monster" | "treasure";
 
 interface PuzzleEditorProps {
     puzzle: EditablePuzzle;
@@ -10,15 +13,15 @@ interface PuzzleEditorProps {
 
 interface PuzzleEditorState {
     puzzle: EditablePuzzle;
-    tool: string;
+    tool: ToolType;
     autoTarget: boolean;
     autoMonster: boolean;
-    monsterTile: Monster;
+    monsterTile: Monster; // TODO: either store the glyph, or construct a brush from the tile
     treasureTile: Treasure;
 }
 
 export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState> {
-    ref = createRef();
+    brush: Brush;
 
     constructor(props: PuzzleEditorProps) {
         super(props);
@@ -30,6 +33,7 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
             monsterTile: new Monster(),
             treasureTile: new Treasure()
         };
+        this.brush = this.makeBrush();
         Object.assign(globalThis, {puzEditor: this});
     }
 
@@ -52,17 +56,16 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
         if ((event.target as HTMLElement).tagName === 'INPUT') {
             return;
         }
-        if (event.key == '1') {
-            this.setState({tool: "wall"});
+        const hotKeys: {[key:string]: ToolType} = {
+            '1': 'wall',
+            '2': 'monster',
+            '3': 'treasure',
+            '4': 'floor'
         }
-        else if (event.key == '2') {
-            this.setState({tool: "monster"});
-        }
-        else if (event.key == '3') {
-            this.setState({tool: "treasure"});
-        }
-        else if (event.key == '4') {
-            this.setState({tool: "floor"});
+        if (event.key in hotKeys) {
+            const tool = hotKeys[event.key];
+            this.setState({tool});
+            this.brush = this.makeBrush();
         }
     }
 
@@ -74,6 +77,7 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
         }
         else if (input.type === 'radio') {
             this.setState({[input.name]: input.value});
+            this.brush = this.makeBrush();
         }
         else if (input.name === 'name') {
             puzzle.name = input.value;
@@ -109,9 +113,30 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
         this.setState({});
     }
 
+    makeBrush(): Brush {
+        let brush;
+        if (this.state.tool === "floor") {
+            brush = new EraseBrush();
+        }
+        else if (this.state.tool === "monster") {
+            brush = new MonsterBrush();
+            brush.glyph = this.state.monsterTile.toHTML();
+        }
+        else if (this.state.tool === "treasure") {
+            brush = new TreasureBrush();
+            brush.glyph = this.state.treasureTile.toHTML();
+        }
+        else { // "wall"
+            brush = new DesignBrush();
+            brush.autoMonster = this.state.autoMonster;
+            brush.autoTarget = this.state.autoTarget;
+        }
+        return brush;
+    }
+
     render() {
         return (
-            <div className="puzzle-editor" ref={this.ref}>
+            <div className="puzzle-editor">
                 <div className="puzzle-editor-controls" onChange={this.handleChange}>
                     <fieldset>
                         <legend>Puzzle Properties</legend>
@@ -168,7 +193,7 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
                         </label>
                     </fieldset>
                 </div>
-                <PuzzleGrid puzzle={this.state.puzzle} />
+                <PuzzleGrid puzzle={this.state.puzzle} brush={this.brush} editAfterSolve={true} />
             </div>
         )
     }

@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { Puzzle, EditablePuzzle } from './puzzle-model.js';
-import { PuzzleGrid } from './puzzle-view.js';
+import { PuzzleSolver } from './puzzle-view.js';
 import { PuzzleEditor } from './puzzle-editor.js';
 import * as PuzzleString from './puzzle-string.js';
 import { parseQuery } from './html-utils.js';
@@ -171,7 +171,7 @@ export function App(query?: string) {
         return (
             <div id="app" className="app">
                 <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
-                <PuzzleGrid puzzle={puzzle} />
+                <PuzzleSolver puzzle={puzzle} />
             </div>
         );
     }

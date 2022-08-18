@@ -1,16 +1,34 @@
 import { h, Component } from "preact";
-import { Puzzle, Tile, EditablePuzzle } from "./puzzle-model.js";
+import { Puzzle, Tile } from "./puzzle-model.js";
+import { Brush, SolveBrush } from "./brush.js";
 import * as PuzzleString from "./puzzle-string.js";
 
 interface PuzzleGridProps {
-    puzzle: Puzzle
+    puzzle: Puzzle;
+    brush: Brush;
+    editAfterSolve: boolean;
 }
 
 interface PuzzleGridState {
-    puzzle: Puzzle,
-    size: {width: number, height: number}
+    puzzle: Puzzle;
+    size: {width: number, height: number};
 }
 
+export function PuzzleSolver(props: {puzzle: Puzzle}) {
+    const { puzzle } = props;
+    const brush = new SolveBrush();
+    const editAfterSolve = false;
+    return (
+        <PuzzleGrid {...{puzzle, brush, editAfterSolve}} />
+    )
+}
+
+/**
+ * PuzzleGrid displays a Puzzle.
+ * It scales tiles to the available space and converts events
+ * from mouse or touchscreen into [row, tile] coordinates.
+ * A Brush object performs painting operations on those coordinates.
+ */
 export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
     constructor(props: {puzzle: Puzzle}) {
         super();
@@ -42,14 +60,14 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
     componentDidMount() {
         this.state.puzzle.addEventListener('change', this.updatePuzzle);
         window.addEventListener('resize', this.updateSize);
+        window.addEventListener('blur', this.strokeEnd);
     }
 
     componentWillUnmount() {
         this.state.puzzle.removeEventListener('change', this.updatePuzzle);
         window.removeEventListener('resize', this.updateSize);
+        window.removeEventListener('blur', this.strokeEnd);
     }
-
-    swipeTile: Tile | null = null;
 
     getTile(x: number, y: number): [number, number, Tile | null] | [null, null, null] {
         const targetEl = document.elementFromPoint(x, y) as HTMLElement | null;
@@ -62,65 +80,66 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
         return [null, null, null];
     }
 
-    swipeStart = (event: MouseEvent | Touch, type?: string)=> {
-        if (this.swipeTile) {
-            return;
-        }
-        if (this.state.puzzle.isSolved().solved) {
-            return;
-        }
-        const [row, col, tile] = this.getTile(event.clientX, event.clientY);
-        if (tile) {
-            const isEditing = (this.state.puzzle instanceof EditablePuzzle);
-            this.swipeTile = tile.nextTile(isEditing, type);
-            this.state.puzzle.setTile(row, col, this.swipeTile);
-        }
-    }
-
-    swipeMove = (event: MouseEvent | Touch)=> {
-        if (!this.swipeTile) { 
-            return;
-        }
-        const [row, col, tile] = this.getTile(event.clientX, event.clientY);
-        if (tile) {
-            this.state.puzzle.setTile(row, col, this.swipeTile);
-        }
-    }
-
-    swipeEnd = (event: Event)=> {
-        setTimeout(this.swipeEndNow, 100);
-    }
-
-    swipeEndNow = (event: Event)=> {
-        this.swipeTile = null;
-        if (this.state.puzzle.isSolved().solved) {
-            this.state.puzzle.unmarkFloors();
-        }
-    }
-
     mouseDown = (event: MouseEvent) => {
         event.preventDefault();
-        const type = event.button == 2 ? 'rightClick': 'leftClick';
-        this.swipeStart(event, type);
+        if (this.props.brush.activeTile) {
+            return;
+        }
+        const eventType = event.button == 2 ? 'rightClick': 'leftClick';
+        const [row, col, tile] = this.getTile(event.clientX, event.clientY);
+        if (tile != null) {
+            this.props.brush.strokeStart(this.props.puzzle, row, col, eventType);
+        }
     }
 
     mouseMove = (event: MouseEvent) => {
-        event.preventDefault();
-        this.swipeMove(event);
+        if (this.props.brush.activeTile) {
+            event.preventDefault();
+            const [row, col, tile] = this.getTile(event.clientX, event.clientY);
+            if (tile != null) {
+                this.props.brush.strokeMove(this.props.puzzle, row, col);
+            }
+        }
+    }
+
+    strokeEnd = (event: Event) => {
+        if (this.props.brush.activeTile) {
+            setTimeout(()=>{
+                this.props.brush.strokeEnd(this.props.puzzle);
+            }, 100);
+        }
     }
 
     touchStart = (event: TouchEvent) => {
-        if (this.swipeTile) {
+        event.preventDefault();
+        if (this.props.brush.activeTile) {
             return;
         }
-        for (let i = 0; i < event.touches.length; i++) {
-            this.swipeStart(event.touches[i], 'touch');
+        const eventType = 'touch';
+        for (let i = 0; i < event.targetTouches.length; i++) {
+            const touch = event.targetTouches[i];
+            const [row, col, tile] = this.getTile(touch.clientX, touch.clientY);
+            if (tile != null) {
+                this.props.brush.strokeStart(this.props.puzzle, row, col, eventType);
+            }
         }
     }
 
     touchMove = (event: TouchEvent) => {
-        for (let i = 0; i < event.touches.length; i++) {
-            this.swipeMove(event.touches[i]);
+        if (this.props.brush.activeTile) {
+            for (let i = 0; i < event.targetTouches.length; i++) {
+                const touch = event.targetTouches[i];
+                const [row, col, tile] = this.getTile(touch.clientX, touch.clientY);
+                if (tile != null) {
+                    this.props.brush.strokeMove(this.props.puzzle, row, col);
+                }
+            }
+        }
+    }
+
+    touchEnd = (event: TouchEvent) => {
+        if (event.targetTouches.length == 0) {
+            this.strokeEnd(event);
         }
     }
 
@@ -154,11 +173,11 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                     onContextMenu={stopEvent}
                     onMouseDown={this.mouseDown}
                     onMouseMove={this.mouseMove}
-                    onMouseUp={this.swipeEnd}
+                    onMouseUp={this.strokeEnd}
                     onTouchStart={this.touchStart}
                     onTouchMove={this.touchMove}
-                    onTouchEnd={this.swipeEnd}
-                    onTouchCancel={this.swipeEnd}    
+                    onTouchEnd={this.touchEnd}
+                    onTouchCancel={this.touchEnd}    
                 >
                     <tbody>
                         <tr>
