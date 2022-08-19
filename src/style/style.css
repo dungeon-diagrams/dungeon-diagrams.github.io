@@ -6,7 +6,6 @@ body {
     margin: 0;
     padding: 0;
     text-align: center;
-    overflow: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -40,6 +39,7 @@ h1, h2, h3, h4, h5, h6 {
     margin: auto;
     cursor: default;
     table-layout: fixed;
+    user-select: none;
     /* width and height to be set by script */
 }
 

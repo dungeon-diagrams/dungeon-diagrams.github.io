@@ -162,8 +162,10 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                     <span className='solved-marker'> ⭐️ </span>
                 </h2>
                 <style>
-                    {`.puzzle-grid td {width:  ${cellSize}px;}
-                      .puzzle-grid tr {height: ${cellSize}px;}`
+                    {`
+                        body {overflow: hidden;}
+                        .puzzle-grid td {width:  ${cellSize}px;}
+                        .puzzle-grid tr {height: ${cellSize}px;}`
                     }
                 </style>
                 <table className="puzzle-grid"
