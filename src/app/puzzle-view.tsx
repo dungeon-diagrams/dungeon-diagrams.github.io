@@ -59,12 +59,14 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
         this.state.puzzle.addEventListener('change', this.updatePuzzle);
         window.addEventListener('resize', this.updateSize);
         window.addEventListener('blur', this.strokeEnd);
+        window.addEventListener('mouseup', this.strokeEnd);
     }
 
     componentWillUnmount() {
         this.state.puzzle.removeEventListener('change', this.updatePuzzle);
         window.removeEventListener('resize', this.updateSize);
         window.removeEventListener('blur', this.strokeEnd);
+        window.removeEventListener('mouseup', this.strokeEnd);
     }
 
     getTile(x: number, y: number): [number, number, Tile | null] | [null, null, null] {
@@ -173,7 +175,6 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                     onContextMenu={stopEvent}
                     onMouseDown={this.mouseDown}
                     onMouseMove={this.mouseMove}
-                    onMouseUp={this.strokeEnd}
                     onTouchStart={this.touchStart}
                     onTouchMove={this.touchMove}
                     onTouchEnd={this.touchEnd}
