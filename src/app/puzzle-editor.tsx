@@ -69,6 +69,7 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
         }
         if (event.key in hotKeys) {
             const tool = hotKeys[event.key];
+            this.brushes[this.state.tool].strokeEnd(this.props.puzzle);
             this.setState({tool});
         }
     }
@@ -82,6 +83,7 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
             this.setState({[input.name]: input.checked});
         }
         else if (input.type === 'radio') {
+            this.brushes[this.state.tool].strokeEnd(this.props.puzzle);
             this.setState({[input.name]: input.value});
         }
         else if (input.name === 'name') {
