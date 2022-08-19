@@ -218,20 +218,8 @@ export function App(query?: string) {
                 <ul>
                     <li><a href="?mode=edit">Create New Dungeon</a></li>
                 </ul>
-                <Menu />
                 <SettingsButton />
             </div>
         )
     }
-}
-
-function Menu() {
-    return (
-        <nav className='menu'>
-            <ul>
-                <li><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a></li>
-                <li><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a></li>
-            </ul>
-        </nav>
-    )
 }

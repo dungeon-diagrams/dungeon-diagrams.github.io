@@ -5,6 +5,11 @@ export function SettingsButton() {
     return (
         <MenuButton>
             <ControlPanel />
+            <br/>
+            <nav>
+                <a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a><br/>
+                <a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a>
+            </nav>
         </MenuButton>
     )
 }
