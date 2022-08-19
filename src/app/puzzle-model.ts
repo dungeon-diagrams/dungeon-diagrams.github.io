@@ -53,25 +53,6 @@ export abstract class Tile {
             return this.ASCII;
         }
     }
-
-    nextTile(editing?: boolean, eventType?: string): Tile {
-        let order: Function[];
-        if (editing) {
-            order = [Floor, Wall, Floor, Monster, Wall, BossMonster, Floor, Treasure];
-        }
-        else if (eventType === 'rightClick') {
-            order = [MarkedFloor, Floor];
-        }
-        else if (eventType === 'leftClick') {
-            order = [Wall, Floor];
-        }
-        else { // touch event
-            order = [Wall, MarkedFloor, Floor];
-        }
-        const index = order.indexOf(this.constructor);
-        const nextType = order[(index+1) % order.length] as (new () => Tile);
-        return new nextType();
-    }
 }
 
 export abstract class WalkableTile extends Tile { }
@@ -106,13 +87,13 @@ export class Treasure extends FixedTile {
 export class Monster extends FixedTile {
     ASCII = 'm';
     emoji = '🦁';
-    static pattern = /[m☺︎☹☻♜♝♞♟♖♗♘♙☃️⛄️🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🦠😈👿👹👺🤡👻💀☠️👽👾🤖🎃🧛🧟🧞🧜🧚🗿🛸]/u;
+    static pattern = /[a-su-wyz☺︎☹☻♜♝♞♟♖♗♘♙☃️⛄️🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🦠😈👿👹👺🤡👻💀☠️👽👾🤖🎃🧛🧟🧞🧜🧚🗿🛸]/u;
 }
 
 export class BossMonster extends Monster {
     ASCII = 'M';
     emoji = '🐲';
-    static pattern = /[M♚♛♔♕🦖🦕🐊🐉🐲🧊]/u;
+    static pattern = /[A-SU-WYZ♚♛♔♕🦖🦕🐊🐉🐲🧊]/u;
 }
 
 export const TileTypes = { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster };
@@ -168,10 +149,10 @@ export class Puzzle extends EventTarget {
     }
 
     [Symbol.iterator](): Iterator<[number, number, Tile]> {
-        return this.getTilesInRect(0, 0, this.nRows, this.nCols);
+        return this.getTilesInRect(0, 0, this.nRows, this.nCols) as Iterator<[number, number, Tile]>;
     }
 
-    *getTilesInRect(row: number, col: number, height: number, width: number): Iterator<[number, number, Tile]> {
+    *getTilesInRect(row:number, col:number, height:number, width:number): Generator<[number, number, Tile]> {
         for (let r = Math.max(0, row); r < Math.min(this.nRows, row+height); r++) {
             for (let c = Math.max(0, col); c < Math.min(this.nCols, col+width); c++) {
                 yield [r, c, this.tiles[r][c]];
@@ -179,35 +160,35 @@ export class Puzzle extends EventTarget {
         }
     }
 
-    *getTilesAdjacentTo(row: number, col: number, height: number = 1, width: number = 1) {
+    *getTilesAdjacentTo(row:number, col:number, height:number = 1, width:number = 1): Generator<[number, number, Tile]> {
         for (const r of [row-1, row+height]) {
             for (let c = col; c < col+width; c++) {
                 if (this.isInBounds(r, c)) {
-                    yield this.tiles[r][c];
+                    yield [r, c, this.tiles[r][c]];
                 }
             }
         }
         for (const c of [col-1, col+width]) {
             for (let r = row; r < row+height; r++) {
                 if (this.isInBounds(r, c)) {
-                    yield this.tiles[r][c];
+                    yield [r, c, this.tiles[r][c]];
                 }
             }
         }
     }
 
-    isInBounds(row: number, col: number): boolean {
+    isInBounds(row:number, col:number): boolean {
         return (row >= 0 && row < this.nRows && col >= 0 && col < this.nCols);
     }
 
-    getTile(row: number, col: number): Tile | null {
+    getTile(row:number, col:number): Tile | null {
         if (!this.isInBounds(row, col)) {
             return null;
         }
         return this.tiles[row][col];
     }
 
-    canEditTile(row: number, col: number) {
+    canEditTile(row:number, col:number) {
         if (!this.isInBounds(row, col)) {
             return false;
         }
@@ -215,7 +196,7 @@ export class Puzzle extends EventTarget {
         return false;
     }
 
-    setTile(row: number, col: number, newTile: Tile): boolean {
+    setTile(row:number, col:number, newTile:Tile): boolean {
         if (!this.canEditTile(row, col)) {
             return false;
         }
@@ -224,7 +205,7 @@ export class Puzzle extends EventTarget {
         return true;
     }
 
-    isSolved(): {solved: boolean, reason: string} {
+    isSolved(): {solved:boolean, reason:string} {
         // a puzzle is solved when:
         // - all row/column wall counts are equal to their targets
         const {rowCounts, colCounts} = this.countWalls();
@@ -251,12 +232,12 @@ export class Puzzle extends EventTarget {
         return {solved: true, reason: 'Valid dungeon layout.'};
     }
 
-    isDeadEnd(row: number, col: number): boolean {
+    isDeadEnd(row:number, col:number): boolean {
         if (this.tiles[row][col] instanceof Wall) {
             return false;
         }
         let walkableCount = 0;
-        for (const tile of this.getTilesAdjacentTo(row, col)) {
+        for (const [r, c, tile] of this.getTilesAdjacentTo(row, col)) {
             walkableCount += Number(tile instanceof WalkableTile);
         }
         return (walkableCount === 1);
@@ -335,8 +316,6 @@ export class EditablePuzzle extends Puzzle {
             return false;
         }
         this.tiles[row][col] = newTile;
-        this.updateWallTargets();
-        this.updateMonsters();
         this.didChange();
         return true;
     }
@@ -347,7 +326,7 @@ export class EditablePuzzle extends Puzzle {
         this.colTargets = colCounts;
     }
 
-    setSize(nRows: number, nCols: number) {
+    setSize(nRows: number, nCols: number, autoTarget: boolean=false) {
         this.nRows = nRows;
         this.nCols = nCols;
         const oldTiles = this.tiles;
@@ -360,8 +339,9 @@ export class EditablePuzzle extends Puzzle {
         }
         this.rowTargets.length = nRows;
         this.colTargets.length = nCols;
-        // this.updateWallTargets();
-        // this.updateMonsters();
+        if (autoTarget) {
+            this.updateWallTargets();
+        }
         this.didChange();
     }
 
@@ -374,22 +354,23 @@ export class EditablePuzzle extends Puzzle {
 
     setColTargets(colTargets: number[]) {
         this.colTargets = colTargets
-        if (this.colTargets.length != this.nRows) {
-            this.setSize(this.colTargets.length, this.nCols);
+        if (this.colTargets.length != this.nCols) {
+            this.setSize(this.nRows, this.colTargets.length);
         }
     }
 
-    updateMonsters(monsterGlyph?: string) {
-        for (const [row, col, tile] of this) {
-            const deadEnd = this.isDeadEnd(row, col);
+    updateMonsters(row:number, col:number, monsterGlyph?: string) {
+        this.getTilesInRect
+        for (const [r, c, tile] of this.getTilesAdjacentTo(row, col)) {
+            const deadEnd = this.isDeadEnd(r, c);
             if (deadEnd && !(tile instanceof Monster)) {
-                this.tiles[row][col] = new Monster();
+                this.tiles[r][c] = new Monster();
                 if (monsterGlyph) {
-                    this.tiles[row][col].setGlyph(monsterGlyph);
+                    this.tiles[r][c].setGlyph(monsterGlyph);
                 }
             }
             else if ((tile instanceof Monster) && !deadEnd) {
-                this.tiles[row][col] = new Floor();
+                this.tiles[r][c] = new Floor();
             }
         }
     }

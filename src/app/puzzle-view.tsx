@@ -6,7 +6,6 @@ import * as PuzzleString from "./puzzle-string.js";
 interface PuzzleGridProps {
     puzzle: Puzzle;
     brush: Brush;
-    editAfterSolve: boolean;
 }
 
 interface PuzzleGridState {
@@ -17,9 +16,8 @@ interface PuzzleGridState {
 export function PuzzleSolver(props: {puzzle: Puzzle}) {
     const { puzzle } = props;
     const brush = new SolveBrush();
-    const editAfterSolve = false;
     return (
-        <PuzzleGrid {...{puzzle, brush, editAfterSolve}} />
+        <PuzzleGrid {...{puzzle, brush}} />
     )
 }
 

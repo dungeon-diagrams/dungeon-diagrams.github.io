@@ -23,7 +23,7 @@ const { Wall, Floor, MarkedFloor, Monster, Treasure } = TileTypes;
  * 
  * MonsterBrush and TreasureBrush:
  *   creates a new tile with a custom glyph
- *   toggles the tile if it is already floor
+ *   toggles the tile if it is already the target
  * 
  */
  export type EventType = "leftClick" | "rightClick" | "touch" | "default";
@@ -49,15 +49,19 @@ export class Brush {
         }
     }
 
-    getNextTile(prevTile: Tile, eventType: EventType) {
-        const order: Function[] = this.tileOrder[eventType] || this.tileOrder.default;
+    getNextTile(prevTile:Tile, eventType:EventType) {
+        const order:Function[] = this.tileOrder[eventType] || this.tileOrder.default;
         const index = order.indexOf(prevTile.constructor);
         const nextType = order[(index + 1) % order.length] as (new () => Tile);
-        return new nextType();
+        return nextType;
     }
 
-    paintTile(puzzle: Puzzle, row: number, col: number) {
-        if (this.activeTile) {
+    shouldPaint(puzzle:Puzzle, row:number, col:number) {
+        return true;
+    }
+
+    paintTile(puzzle:Puzzle, row:number, col:number) {
+        if (this.activeTile && this.shouldPaint(puzzle, row, col)) {
             const result = puzzle.setTile(row, col, this.activeTile);
             if (result) {
                 this.didPaint(puzzle, row, col);
@@ -72,8 +76,9 @@ export class Brush {
 
     strokeStart(puzzle: Puzzle, row: number, col: number, eventType: EventType) {
         const prevTile = puzzle.getTile(row, col) as Tile;
-        this.activeTile = this.getNextTile(prevTile, eventType);
-        if (this.glyph) {
+        const nextType = this.getNextTile(prevTile, eventType);
+        this.activeTile = new nextType();
+        if (this.glyph && nextType !== Floor) {
             this.activeTile.setGlyph(this.glyph);
         }
         this.paintTile(puzzle, row, col);
@@ -94,26 +99,37 @@ export class Brush {
  
  export class MonsterBrush extends Brush {
      tileOrder = {default: [Monster, Floor]};
-     glyph = 'm';
+     glyph = '🦁';
+
+     getNextTile(prevTile: Tile, eventType: EventType) {
+        if (prevTile.toHTML() === this.glyph) {
+            return Floor;
+        }
+        else {
+            return Monster;
+        }
+    }
  }
  
  export class TreasureBrush extends Brush {
      tileOrder = {default: [Treasure, Floor]};
-     glyph = 'T';
+     glyph = '💎';
  }
  
  export class DesignBrush extends Brush {
      tileOrder = {default: [Wall, Floor]};
  
-     autoMonster = false;
-     autoTarget = false;
+     autoMonster = true;
+     autoTarget = true;
  
      didPaint(puzzle:EditablePuzzle, row:number, col:number) {
          if (this.autoMonster) {
-             puzzle.updateMonsters();    
+             puzzle.updateMonsters(row, col);
+             puzzle.didChange();
          }
          if (this.autoTarget) {
              puzzle.updateWallTargets();
+             puzzle.didChange();
          }
      }
  }
@@ -124,13 +140,16 @@ export class Brush {
          rightClick: [MarkedFloor, Floor],
          default: [Wall, MarkedFloor, Floor]
      }
+
+     shouldPaint(puzzle:Puzzle, row:number, col:number) {
+        return (!puzzle.isSolved().solved);
+     }
  
      strokeEnd(puzzle: Puzzle) {
          this.activeTile = null;
          if (puzzle.isSolved().solved) {
              puzzle.unmarkFloors();
          }
- 
      }
  }
  
