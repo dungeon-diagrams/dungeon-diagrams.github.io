@@ -210,10 +210,24 @@ export function App(query?: string) {
             <div id="app" className="app">
                 <h1>Daily Dungeons and Diagrams</h1>
                 <ul>
-                    <li><a href="?mode=edit">Create New Dungeon</a><br/>&nbsp;</li>
                     {navLinks}
                 </ul>
+                <ul>
+                    <li><a href="?mode=edit">Create New Dungeon</a></li>
+                </ul>
+                <Menu />
             </div>
         )
     }
+}
+
+function Menu() {
+    return (
+        <nav className='menu'>
+            <ul>
+                <li><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a></li>
+                <li><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a></li>
+            </ul>
+        </nav>
+    )
 }
