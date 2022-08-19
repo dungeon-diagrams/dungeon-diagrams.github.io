@@ -13,6 +13,19 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1rem;
 }
 
+/* control panel */
+.menu-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 1em;
+    text-align: left;
+}
+.menu-button {
+    cursor: pointer;
+    user-select: none;
+}
+
 /* puzzle components */
 
 .puzzle-view {

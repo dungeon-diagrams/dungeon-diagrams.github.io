@@ -184,6 +184,7 @@ export function App(query?: string) {
             <div id="app" className="app">
                 <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
                 <PuzzleSolver puzzle={puzzle} />
+                <SettingsButton />
             </div>
         );
     }
@@ -194,6 +195,7 @@ export function App(query?: string) {
             <div id="app" className="app">
                 <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
                 <PuzzleEditor puzzle={puzzle} />
+                <SettingsButton />
             </div>
         )
     }

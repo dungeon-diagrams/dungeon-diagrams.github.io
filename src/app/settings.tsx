@@ -27,8 +27,8 @@ class MenuButton extends Component<any, {open:boolean}> {
         const children = state.open ? props.children : null;
         // TODO: display it in a modal, with dim background also bound to toggle
         return (
-            <div style={{position:'fixed', top:'1em', left:'1em', textAlign:'left'}}>
-                <span style={{cursor:'poiner'}} onClick={this.toggle}>☰</span>
+            <div className="menu-container">
+                <span className="menu-button" onClick={this.toggle}>☰</span>
                 {children}
             </div>
         )
@@ -58,7 +58,7 @@ class ControlPanel extends Component {
     render() {
         const values = {...localStorage};
         return (
-            <div className="control-panel" style={{"text-align": "left"}}>
+            <div className="control-panel">
                 <form onSubmit={this.saveSettings}>
                     <fieldset>
                         <legend>Settings</legend>
