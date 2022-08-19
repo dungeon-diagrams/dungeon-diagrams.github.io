@@ -5,11 +5,10 @@ export function SettingsButton() {
     return (
         <MenuButton>
             <ControlPanel />
-            <br/>
-            <nav>
+            <p>
                 <a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a><br/>
                 <a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a>
-            </nav>
+            </p>
         </MenuButton>
     )
 }
@@ -46,13 +45,15 @@ class ControlPanel extends Component {
         const form = event.target as HTMLFormElement;
         const values = formValues(form);
         for (const [name, value] of Object.entries(values)) {
-            if (value === 'default') {
+            if (value === 'default' || value === '') {
                 localStorage.removeItem(name);
             }
             else {
                 localStorage.setItem(name, value);
             }
         }
+        // TODO: apply a relevant class to the body element
+        // (immediately and on page load)
     }
 
     resetRecords = (event:Event) => {
@@ -67,22 +68,27 @@ class ControlPanel extends Component {
                 <form onSubmit={this.saveSettings}>
                     <fieldset>
                         <legend>Settings</legend>
-                        Color scheme:<br/>
-                        <label><input type="radio" name="preferred-color-scheme" value="default" checked={!values['preferred-color-scheme']} />Default</label><br/>
-                        <label><input type="radio" name="preferred-color-scheme" value="light" checked={values['preferred-color-scheme'] === 'light'} />Light</label><br/>
-                        <label><input type="radio" name="preferred-color-scheme" value="dark" checked={values['preferred-color-scheme'] === 'dark'} />Dark</label>
+                        Color Scheme:<br/>
+                        <label><input type="radio" name="preferred-color-scheme" value="default" checked={!values["preferred-color-scheme"]} /> System setting ({preferredColorScheme() || 'light'})</label><br/>
+                        <label><input type="radio" name="preferred-color-scheme" value="light" checked={values["preferred-color-scheme"] === "light"} /> Light</label><br/>
+                        <label><input type="radio" name="preferred-color-scheme" value="dark" checked={values["preferred-color-scheme"] === "dark"} /> Dark</label>
                         <br/><br/>
                         Contrast:<br/>
-                        <label><input type="radio" name="preferred-contrast" value="default" checked={!values['preferred-contrast']} />Default</label><br/>
-                        <label><input type="radio" name="preferred-contrast" value="less" checked={values['preferred-contrast'] === 'less'} />Less</label><br/>
-                        <label><input type="radio" name="preferred-contrast" value="more" checked={values['preferred-contrast'] === 'more'} />More</label>
+                        <label><input type="radio" name="preferred-contrast" value="default" checked={!values["preferred-contrast"]} /> System setting ({preferredContrast() || 'less'})</label><br/>
+                        <label><input type="radio" name="preferred-contrast" value="less" checked={values["preferred-contrast"] === "less"} /> Less</label><br/>
+                        <label><input type="radio" name="preferred-contrast" value="more" checked={values["preferred-contrast"] === "more"} /> More</label>
+                        <br/><br/>
+                        <label>Favorite Monster:<br/>
+                            <input type="text" name="default-monster-tile" size={1} value={values["default-monster-tile"]}></input>
+                        </label>
                         <br/><br/>
                         <button>Save</button>
                     </fieldset>
                 </form>
-                <form onSubmit={this.resetRecords}>
+                <form onSubmit={this.resetRecords} style={{display:"none"}}>
                     <fieldset>
                         <legend>Records</legend>
+                        <div>🚧 🚜 🚧</div>
                         wins: 99
                         <br/>
                         average time: 01:23
