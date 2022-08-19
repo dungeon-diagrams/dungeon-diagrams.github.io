@@ -1,4 +1,4 @@
-import { h, Component, createRef } from "preact";
+import { h, Component } from "preact";
 import { default as runes } from "runes";
 
 import { Puzzle, EditablePuzzle, Monster, BossMonster, Treasure, Tile } from "./puzzle-model.js";

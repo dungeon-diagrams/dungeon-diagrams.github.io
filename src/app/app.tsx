@@ -4,6 +4,7 @@ import { PuzzleSolver } from './puzzle-view.js';
 import { PuzzleEditor } from './puzzle-editor.js';
 import * as PuzzleString from './puzzle-string.js';
 import { parseQuery } from './html-utils.js';
+import { SettingsButton } from './settings.js';
 
 /*
  idea for a router: use 404.html to serve the main app.
@@ -216,6 +217,7 @@ export function App(query?: string) {
                     <li><a href="?mode=edit">Create New Dungeon</a></li>
                 </ul>
                 <Menu />
+                <SettingsButton />
             </div>
         )
     }

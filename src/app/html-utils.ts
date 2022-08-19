@@ -6,7 +6,7 @@ export function parseQuery(query: string): {[key:string]: any} {
         const parts = item.split('=');
         const key = decodeURIComponent(parts[0]);
         let value: string | string[] | number = decodeURIComponent(parts[1]);
-        if (value.match(/^\d+$/)) {
+        if (value.match(/^-?\d+$/)) {
             value = parseInt(value);
         }
         else if (value.match(/,/)) {
@@ -17,7 +17,7 @@ export function parseQuery(query: string): {[key:string]: any} {
     return params;
 }
 
-export function formValues(form: HTMLElement) {
+export function formValues(form: HTMLElement): {[key:string]: any} {
     const values: {[key:string]: any} = {};
     const inputs = form.querySelectorAll('[name]');
     for (let i = 0; i < inputs.length; i++) {
@@ -40,34 +40,40 @@ export function formValues(form: HTMLElement) {
     return values;
 }
 
+export function css(element: HTMLElement, property:string): string {
+    return window.getComputedStyle(element, null).getPropertyValue(property);
+}
+
+export function glyphSupported(glyph:string) {
+    const supported = document.fonts.check(`${css(document.body, 'font-size')} ${css(document.body, 'font-family')}`, glyph);
+}
+
 export function isTouchScreen() {
     return window.navigator.maxTouchPoints >= 1;
 }
 
-export function prefersColorScheme() {
+export function preferredColorScheme() {
     const storedVal = localStorage.getItem('prefers-color-scheme');
     if (storedVal) {
         return storedVal;
     }
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        return 'dark';
+    for (const theme of ["dark", "light"]) {
+        if (window.matchMedia(`(prefers-color-scheme: ${theme})`).matches) {
+            return theme;
+        }
     }
-    if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-        return 'light';
-    }
-    return 'light';
+    return null;
 }
 
-export function prefersContrast() {
+export function preferredContrast() {
     const storedVal = localStorage.getItem('prefers-contrast');
     if (storedVal) {
         return storedVal;
     }
-    if (window.matchMedia("(prefers-contrast: more)").matches) {
-        return 'more';
-    }
-    if (window.matchMedia("(prefers-contrast: less)").matches) {
-        return 'less';
+    for (const theme of ["more", "less"]) {
+        if (window.matchMedia(`(prefers-contrast: ${theme})`).matches) {
+            return theme;
+        }
     }
     return null;
 }
