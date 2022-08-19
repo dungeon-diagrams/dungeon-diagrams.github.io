@@ -2,18 +2,25 @@
   "name": "dungeons-and-diagrams",
   "description": "Web interface for Dungeons and Diagrams game",
   "version": "1.0.0",
-  "license": "UNLICENSED",
-  "type": "module",
-  "scripts": {
-    "test": "gulp build build-test && mocha dist/test",
-    "clean": "rm -rf dist",
-    "build": "gulp build",
-    "watch": "gulp watch",
-    "serve": "serve dist"
-  },
   "author": {
     "name": "Jesse Clark",
     "email": "jesse@modusponens.org"
+  },
+  "homepage": "https://dungeon-diagrams.github.io/",
+  "repository": "github:dungeon-diagrams/dungeon-diagrams.github.io",
+  "bugs": {
+    "url": "https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues"
+  },
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "pretest": "gulp build build-test",
+    "test": "mocha dist/test",
+    "build": "gulp build",
+    "watch": "gulp watch",
+    "serve": "serve dist",
+    "start": "(serve dist & gulp watch); exit 0"
   },
   "devDependencies": {
     "cjstoesm": "^2.1.2",
