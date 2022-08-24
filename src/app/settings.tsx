@@ -1,5 +1,5 @@
 import { h, Component } from 'preact';
-import { preferredContrast, preferredColorScheme, formValues } from './html-utils.js';
+import { preferredColorScheme, preferredContrast, formValues } from './html-utils.js';
 
 /**
  * @class SettingsManager
@@ -10,40 +10,55 @@ import { preferredContrast, preferredColorScheme, formValues } from './html-util
  * monster.emoji = settings.get('default-monster-glyph');
  */
 class SettingsManager {
+    storage: Storage;
     element: HTMLElement;
 
-    constructor(doc?: HTMLElement) {
+    constructor(storage?: Storage, doc?: HTMLElement) {
+        this.storage = storage || localStorage;
         this.element = doc || document.documentElement;
         // expose current values to DOM
-        for (const [key, value] of Object.entries(localStorage)) {
-            this.element.dataset[this.fixKey(key)] = value;
+        for (const [key, value] of Object.entries(this.storage)) {
+            if (typeof value !== 'object') {
+                this.element.dataset[this.fixKey(key)] = value;
+            }
         }
     }
 
+    values() {
+        return {...this.storage};
+    }
+
     getItem(key: string): any {
-        return localStorage.getItem(key);
+        return this.storage.getItem(key);
     }
 
     removeItem(key: string): void {
         delete this.element.dataset[this.fixKey(key)];
-        return localStorage.removeItem(key);
+        return this.storage.removeItem(key);
     }
 
     setItem(key: string, value: any): void {
-        this.element.dataset[this.fixKey(key)] = value;
-        return localStorage.setItem(key, value);
+        if (typeof value !== 'object') {
+            this.element.dataset[this.fixKey(key)] = value;
+        }
+        return this.storage.setItem(key, value);
     }
 
     fixKey(key: string) {
         return key.replace(/-./g, match => match[1].toUpperCase());
     }
-
-    // TODO: implement Storage interface or subclass LocalStorage
 }
 
-
 /** singleton to access settings methods */
-export const appSettings = new SettingsManager();
+let _appSettings;
+if (typeof window === 'undefined') {
+    // for testability
+    _appSettings = new SettingsManager({} as Storage, {dataset:{}} as HTMLElement);
+}
+else {
+    _appSettings = new SettingsManager();
+}
+export const appSettings = _appSettings;
 
 /* --- UI Components --- */
 
@@ -96,8 +111,6 @@ class ControlPanel extends Component {
                 appSettings.setItem(name, value);
             }
         }
-        // TODO: apply a relevant class to the body element
-        // (immediately and on page load)
     }
 
     resetRecords = (event:Event) => {
@@ -106,7 +119,7 @@ class ControlPanel extends Component {
     }
 
     render() {
-        const values = {...localStorage};
+        const values = appSettings.values();
         return (
             <div className="control-panel">
                 <form onSubmit={this.saveSettings}>

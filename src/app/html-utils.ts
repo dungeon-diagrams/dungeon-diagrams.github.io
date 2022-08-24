@@ -53,10 +53,6 @@ export function isTouchScreen() {
 }
 
 export function preferredColorScheme() {
-    const storedVal = localStorage.getItem('prefers-color-scheme');
-    if (storedVal) {
-        return storedVal;
-    }
     for (const theme of ["dark", "light"]) {
         if (window.matchMedia(`(prefers-color-scheme: ${theme})`).matches) {
             return theme;
@@ -66,10 +62,6 @@ export function preferredColorScheme() {
 }
 
 export function preferredContrast() {
-    const storedVal = localStorage.getItem('prefers-contrast');
-    if (storedVal) {
-        return storedVal;
-    }
     for (const theme of ["more", "less"]) {
         if (window.matchMedia(`(prefers-contrast: ${theme})`).matches) {
             return theme;
