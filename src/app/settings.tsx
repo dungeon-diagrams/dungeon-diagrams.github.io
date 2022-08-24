@@ -1,19 +1,63 @@
 import { h, Component } from 'preact';
 import { preferredContrast, preferredColorScheme, formValues } from './html-utils.js';
 
+/**
+ * @class SettingsManager
+ * A settings manager which makes defaults available to JS and CSS
+ * 
+ * usage:
+ * import { settings } from 'settings.js';
+ * monster.emoji = settings.get('default-monster-glyph');
+ */
+class SettingsManager {
+    element: HTMLElement;
+
+    constructor(doc?: HTMLElement) {
+        this.element = doc || document.documentElement;
+        // expose current values to DOM
+        for (const [key, value] of Object.entries(localStorage)) {
+            this.element.dataset[this.fixKey(key)] = value;
+        }
+    }
+
+    getItem(key: string): any {
+        return localStorage.getItem(key);
+    }
+
+    removeItem(key: string): void {
+        delete this.element.dataset[this.fixKey(key)];
+        return localStorage.removeItem(key);
+    }
+
+    setItem(key: string, value: any): void {
+        this.element.dataset[this.fixKey(key)] = value;
+        return localStorage.setItem(key, value);
+    }
+
+    fixKey(key: string) {
+        return key.replace(/-./g, match => match[1].toUpperCase());
+    }
+
+    // TODO: implement Storage interface or subclass LocalStorage
+}
+
+
+/** singleton to access settings methods */
+export const appSettings = new SettingsManager();
+
+/* --- UI Components --- */
+
 export function SettingsButton() {
     return (
-        <MenuButton>
+        <ExpandableMenu>
             <ControlPanel />
-            <p>
-                <a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a><br/>
-                <a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a>
-            </p>
-        </MenuButton>
+            <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a></p>
+            <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a></p>
+        </ExpandableMenu>
     )
 }
 
-class MenuButton extends Component<any, {open:boolean}> {
+class ExpandableMenu extends Component<any, {open:boolean}> {
     constructor(props:any) {
         super(props);
         this.state = {
@@ -46,10 +90,10 @@ class ControlPanel extends Component {
         const values = formValues(form);
         for (const [name, value] of Object.entries(values)) {
             if (value === 'default' || value === '') {
-                localStorage.removeItem(name);
+                appSettings.removeItem(name);
             }
             else {
-                localStorage.setItem(name, value);
+                appSettings.setItem(name, value);
             }
         }
         // TODO: apply a relevant class to the body element
@@ -79,7 +123,7 @@ class ControlPanel extends Component {
                         <label><input type="radio" name="preferred-contrast" value="more" checked={values["preferred-contrast"] === "more"} /> More</label>
                         <br/><br/>
                         <label>Favorite Monster:<br/>
-                            <input type="text" name="default-monster-tile" size={1} value={values["default-monster-tile"]}></input>
+                            <input type="text" name="default-monster-glyph" size={1} value={values["default-monster-tile"]}></input>
                         </label>
                         <br/><br/>
                         <button>Save</button>

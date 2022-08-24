@@ -1,3 +1,62 @@
+/* variables */
+
+/* technique from https://stackoverflow.com/questions/70845195/define-dark-mode-for-both-a-class-and-a-media-query-without-repeat-css-custom-p */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --light: ;
+        --dark: initial;
+    }
+ }
+ 
+ @media (prefers-color-scheme: light) {
+    :root {
+        --dark: ;
+        --light: initial;
+    }
+ }
+
+:root[data-preferred-color-scheme="light"] {
+    --dark: ;
+    --light: initial;
+}
+
+:root[data-preferred-color-scheme="dark"] {
+    --light: ;
+    --dark: initial;
+}
+
+:root {
+    --low-contrast: initial;
+    --high-contrast: ;
+}
+
+@media print, (prefers-contrast: more) {
+    :root {
+        --low-contrast: ;
+        --high-contrast: initial;
+    }
+}
+ 
+:root[data-preferred-contrast="more"] {
+    --low-contrast: ;
+    --high-contrast: initial;
+}
+
+/* light/dark color scheme */
+
+body, a {
+    background: var(--light, #ddd) var(--dark, #333);
+    color: var(--light, #222) var(--dark, #ccc);
+}
+
+.puzzle-grid td {
+    background: var(--light, #bbb) var(--dark, #666);
+    border: var(--high-contrast, 1px solid #222) var(--low-contrast);
+}
+
+/* layout rules */
+
 * {
     box-sizing: border-box;
 }
@@ -84,14 +143,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 .puzzle-cell[data-tile="Wall"] {
     background-color: rgb(75, 41, 2);
-    color: transparent;
 }
 .puzzle-cell[data-tile="Wall"].too-many-walls {
-    background-color: darkred;
+    background-color: var(--low-contrast, darkred) var(--high-contrast, magenta);
 }
-.puzzle-cell[data-tile="Floor"] {
-    color: transparent;
+.puzzle-cell[data-tile="Floor"],
+.puzzle-cell[data-tile="Wall"] {
+    color: var(--high-contrast, #222) var(--low-contrast, transparent);
 }
+
+
 .puzzle-view.solved .puzzle-cell[data-tile="Monster"],
 .puzzle-view.solved .puzzle-cell[data-tile="BossMonster"] {
     font-size: 90%;
@@ -128,37 +189,3 @@ h1, h2, h3, h4, h5, h6 {
     display: block;
 }
 
-/* light color scheme (default) */
-
-body, a {
-    background: #ddd;
-    color: #222;    
-}
-
-.puzzle-grid td {
-    background: #bbb;
-}
-
-/* dark color scheme */
-
-@media (prefers-color-scheme: dark) {
-    body, a {
-        background: #333;
-        color: #ccc;    
-    }
-
-    .puzzle-grid td {
-        background: #666;
-    }
-}
-
-/* high-contrast color scheme */
-
-@media print, (prefers-contrast: more) {
-    .puzzle-grid td {
-        border: 1px solid #222;
-    }
-    .puzzle-cell {
-        color: #222 !important;
-    }
-}
