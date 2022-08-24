@@ -5,6 +5,8 @@ import * as PuzzleModel from "./puzzle-model.js";
 import { PuzzleGrid } from "./puzzle-view.js";
 import * as PuzzleString from "./puzzle-string.js";
 import * as HTMLUtils from "./html-utils.js";
+import * as Brush from "./brush.js";
+import { appSettings } from "./settings.js";
 
 // debugging
 declare global {
@@ -18,12 +20,14 @@ declare global {
 
 // preload modules
 Object.assign(globalThis, {
-    runes: runes,
-    preact: preact,
+    runes,
+    preact,
     Puzzle: PuzzleModel.Puzzle,
     Tile: PuzzleModel.Tile,
-    PuzzleString: PuzzleString
+    PuzzleString,
+    appSettings
 }, PuzzleModel.TileTypes);
+Brush;
 PuzzleGrid;
 App;
 HTMLUtils;

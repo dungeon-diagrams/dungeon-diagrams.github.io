@@ -1,4 +1,5 @@
 import { TileTypes, Tile, Puzzle, EditablePuzzle } from "./puzzle-model.js";
+import { appSettings } from "./settings.js";
 
 const { Wall, Floor, MarkedFloor, Monster, Treasure } = TileTypes;
 
@@ -99,7 +100,7 @@ export class Brush {
  
  export class MonsterBrush extends Brush {
      tileOrder = {default: [Monster, Floor]};
-     glyph = '🦁';
+     glyph = appSettings.getItem('default-monster-glyph') || '🦁';
 
      getNextTile(prevTile: Tile, eventType: EventType) {
         if (prevTile.toHTML() === this.glyph) {

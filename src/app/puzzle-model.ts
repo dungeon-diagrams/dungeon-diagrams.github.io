@@ -83,7 +83,6 @@ export class Treasure extends FixedTile {
     static pattern = /[t🏆🥇🥈🥉🏅🎖🔮🎁📦💎👑]/iu;
 }
 
-
 export class Monster extends FixedTile {
     ASCII = 'm';
     emoji = '🦁';

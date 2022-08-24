@@ -123,7 +123,7 @@ class ControlPanel extends Component {
                         <label><input type="radio" name="preferred-contrast" value="more" checked={values["preferred-contrast"] === "more"} /> More</label>
                         <br/><br/>
                         <label>Favorite Monster:<br/>
-                            <input type="text" name="default-monster-glyph" size={1} value={values["default-monster-tile"]}></input>
+                            <input type="text" name="default-monster-glyph" size={1} value={values["default-monster-glyph"] || '🦁'}></input>
                         </label>
                         <br/><br/>
                         <button>Save</button>
