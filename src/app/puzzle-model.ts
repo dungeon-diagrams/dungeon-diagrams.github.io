@@ -311,15 +311,6 @@ export class EditablePuzzle extends Puzzle {
         return true;
     }
 
-    setTile(row: number, col: number, newTile: Tile): boolean {
-        if (!this.canEditTile(row, col)) {
-            return false;
-        }
-        this.tiles[row][col] = newTile;
-        this.didChange();
-        return true;
-    }
-
     updateWallTargets() {
         const {rowCounts, colCounts} = this.countWalls();
         this.rowTargets = rowCounts;

@@ -123,7 +123,7 @@ const dailyPuzzles: string[] = [
 3...👑....
 2........
 `,
-`Example Puzzle 1
+`Test Puzzle 1
 ⬜️2️⃣5️⃣3️⃣3️⃣2️⃣3️⃣3️⃣2️⃣
 1️⃣🟫⬜️⬜️⬜️⬜️⬜️⬜️⬜️
 4️⃣⬜️⬜️🟥🟥🟥⬜️🟥⬜️
@@ -134,7 +134,7 @@ const dailyPuzzles: string[] = [
 2️⃣⬜️⬜️⬜️⬜️⬜️🟥⬜️🟫
 5️⃣🟫🟫🟫🟫⬜️⬜️⬜️🟫
 `,
-`Example Puzzle 2
+`Test Puzzle 2
 .25332332
 1#.......
 4..###.#.
@@ -145,7 +145,7 @@ const dailyPuzzles: string[] = [
 2.....#.#
 5####...#
 `,
-`Example Puzzle 3
+`Test Puzzle 3
 ⬜️0️⃣7️⃣1️⃣3️⃣6️⃣2️⃣2️⃣2️⃣
 1️⃣🪱⬜️🐊⬜️⬜️⬜️⬜️⬜️
 3️⃣⬜️⬜️⬜️⬜️⬜️⬜️💎⬜️
