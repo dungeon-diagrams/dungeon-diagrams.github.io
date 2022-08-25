@@ -1,10 +1,13 @@
 {
   "name": "dungeons-and-diagrams",
-  "description": "Web interface for Dungeons and Diagrams game",
+  "title": "Daily Dungeons and Diagrams",
+  "description": "Daily puzzle game - decode hallways, monsters, and treasures",
+  "keywords": ["puzzle", "game", "dungeons", "diagrams", "picross", "nonograms", "hallways", "monsters", "treasures"],
   "version": "1.0.0",
   "author": {
     "name": "Jesse Clark",
-    "email": "jesse@modusponens.org"
+    "email": "jesse@modusponens.org",
+    "twitter": "myhf"
   },
   "homepage": "https://dungeon-diagrams.github.io/",
   "repository": "github:dungeon-diagrams/dungeon-diagrams.github.io",

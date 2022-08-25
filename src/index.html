@@ -1,15 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html prefix="og: https://ogp.me/ns#">
   <head>
     <meta charset="utf-8" />
+    <title>{{ package.title }}</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <link rel="stylesheet" type="text/css" href="style/style.css" />
-    <script type="module" src="app/main.js?v=1"></script>
-    <title>Daily Dungeons and Diagrams</title>
+    <link rel="stylesheet" type="text/css" href="style/style.css?v={{ package.version }}" />
+    <script type="module" src="app/main.js?v={{ package.version }}"></script>
+    {# <link rel="icon" href="" > #}
+    <!-- Open Graph metadata -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ package.title }}" />
+    <meta property="og:description" content="{{ package.description }}">
+    <meta property="og:url" content="{{ package.homepage }}" />
+    {# <meta property="og:image" content="" /> #}
+    <!-- Twitter Card metadata -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@{{ package.author.twitter }}" />
+
+    <!-- Schema.org metadata -->
+    <meta itemprop="name" content="{{ package.title }}" />
+    <meta itemprop="description" content="{{ package.description }}" />
+    <meta itemprop="version" content="{{ package.version }}" />
+    <meta itemprop="keywords" content="{{ package.keywords }}" />
+    {# <meta itemprop="image" content="" /> #}
   </head>
   <body>
     <div id="app">
-      <h1>Daily Dungeons and Diagrams</h1>
+      <h1>{{ package.title }}</h1>
       <noscript>
         <div id="status-display" data-status="Error">This application requires JavaScript. Here are the <a href="http://www.enable-javascript.com/" target="_blank">instructions to enable JavaScript</a> in your web browser.</div>
       </noscript>
@@ -18,7 +36,7 @@
           document.write('<div id="status-display" data-status="Loading">Loading...</div>');
         }
         else {
-          document.write('<div id="status-display" data-status="Error">This application requires a web browser that supports ES2015 script modules.</div>');
+          document.write('<div id="status-display" data-status="Error">Script Modules failed to load in your web browser. Please <a href="{{package.bugs.url}}">report this issue</a>.</div>');
         }
       </script>
     </div>
