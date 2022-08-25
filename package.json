@@ -34,6 +34,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "gulp-nunjucks": "^5.1.0",
     "preact": "^10.10.0",
     "runes": "^0.4.3"
   },
