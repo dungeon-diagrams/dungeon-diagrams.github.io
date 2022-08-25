@@ -1,7 +1,7 @@
 import { default as runes } from 'runes';
-import { Tile, Puzzle, TileTypes, FixedTile } from './puzzle-model.js';
+import { Puzzle, Tile, TileTypes } from './puzzle-model.js';
 
-const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster } = TileTypes;
+const { FixedTile } = TileTypes;
 
 export function parse(spec: string): Puzzle {
     const name = parseName(spec);

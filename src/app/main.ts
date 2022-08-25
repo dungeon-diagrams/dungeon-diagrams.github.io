@@ -2,6 +2,7 @@ import * as preact from "preact";
 import { default as runes } from "runes";
 import { App } from "./app.js";
 import * as PuzzleModel from "./puzzle-model.js";
+import { Tile, TileTypes } from "./tile.js";
 import { PuzzleGrid } from "./puzzle-view.js";
 import * as PuzzleString from "./puzzle-string.js";
 import * as HTMLUtils from "./html-utils.js";
@@ -23,10 +24,10 @@ Object.assign(globalThis, {
     runes,
     preact,
     Puzzle: PuzzleModel.Puzzle,
-    Tile: PuzzleModel.Tile,
+    Tile,
     PuzzleString,
     appSettings
-}, PuzzleModel.TileTypes);
+}, TileTypes);
 Brush;
 PuzzleGrid;
 App;
