@@ -53,6 +53,14 @@ export abstract class Tile {
             return this.ASCII;
         }
     }
+
+    static WalkableTile: (new () => Tile);
+    static FixedTile: (new () => Tile);
+    static Wall: (new () => Tile);
+    static Floor: (new () => Tile);
+    static Monster: (new () => Tile);
+    static BossMonster: (new () => Tile);
+    static Treasure: (new () => Tile);
 }
 
 function css(element: HTMLElement, property:string): string {
@@ -100,3 +108,5 @@ export class BossMonster extends Monster {
 }
 
 export const TileTypes = { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, FixedTile };
+
+Object.assign(Tile, TileTypes);

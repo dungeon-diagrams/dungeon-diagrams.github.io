@@ -1,6 +1,7 @@
 import { Tile, TileTypes } from "./tile.js";
 export { Tile, TileTypes } from "./tile.js";
-export const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, FixedTile } = TileTypes;
+
+const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, FixedTile } = TileTypes;
 
 /**
  * @class Puzzle

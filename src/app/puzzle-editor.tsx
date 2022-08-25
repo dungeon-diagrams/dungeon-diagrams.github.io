@@ -1,9 +1,11 @@
 import { h, Component } from "preact";
 import { default as runes } from "runes";
 
-import { Puzzle, EditablePuzzle, Monster, BossMonster, Treasure } from "./puzzle-model.js";
+import { Puzzle, EditablePuzzle, TileTypes } from "./puzzle-model.js";
 import { PuzzleGrid } from "./puzzle-view.js";
 import { Brush, EraseBrush, MonsterBrush, TreasureBrush, DesignBrush } from "./brush.js";
+
+const { Monster, BossMonster, Treasure } = TileTypes;
 
 type ToolType = "floor" | "wall" | "monster" | "treasure";
 
