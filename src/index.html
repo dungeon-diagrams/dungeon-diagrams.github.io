@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html prefix="og: https://ogp.me/ns#">
+<html prefix="og: https://ogp.me/ns#" itemscope itemtype="https://schema.org/VideoGame">
   <head>
     <meta charset="utf-8" />
     <title>{{ package.title }}</title>
@@ -8,17 +8,16 @@
     <link rel="stylesheet" type="text/css" href="style/style.css?v={{ package.version }}" />
     <script type="module" src="app/main.js?v={{ package.version }}"></script>
     {# <link rel="icon" href="" > #}
-    <!-- Open Graph metadata -->
+    <!-- Open Graph / Twitter metadata -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="{{ package.title }}" />
-    <meta property="og:description" content="{{ package.description }}">
-    <meta property="og:url" content="{{ package.homepage }}" />
-    {# <meta property="og:image" content="" /> #}
-    <!-- Twitter Card metadata -->
+    <meta property="og:title" name="twitter:title" content="{{ package.title }}" />
+    <meta property="og:description" name="twitter:decsription" content="{{ package.description }}">
+    <meta property="og:url" name="twitter:url" content="{{ package.homepage }}" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:creator" content="@{{ package.author.twitter }}" />
+    {# <meta property="og:image" name="twitter:image" content="" /> #}
 
-    <!-- Schema.org metadata -->
+    <!-- Schema.org microdata -->
     <meta itemprop="name" content="{{ package.title }}" />
     <meta itemprop="description" content="{{ package.description }}" />
     <meta itemprop="version" content="{{ package.version }}" />
