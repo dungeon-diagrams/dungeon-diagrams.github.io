@@ -5,6 +5,7 @@ import ts from "gulp-typescript";
 import * as cjstoesm from "cjstoesm";
 import nunjucks from "gulp-nunjucks";
 import { readFile } from "node:fs/promises";
+import rename from 'gulp-rename';
 
 const tsProject = ts.createProject("tsconfig.json");
 
@@ -23,7 +24,8 @@ const paths = {
         "src/**/*.tsx"
     ],
     templates: [
-        "src/**/*.html"
+        "src/**/*.html",
+        "src/**/*.webmanifest"
     ],
     libsCJS: [
         "src/lib/runes.js"
@@ -51,9 +53,16 @@ gulp.task("convert-cjs", async function(cb) {
 
 gulp.task("render-templates", async function(cb){
     const packageJSON = JSON.parse(await readFile("./package.json", "utf8"));
+    const context = {package: packageJSON};
     return (
         gulp.src(paths.templates)
-        .pipe(nunjucks.compile({package: packageJSON}))
+        .pipe(nunjucks.compile(context))
+        .pipe(rename(function(path){
+            if (path.basename === 'manifest') {
+                path.extname = '.webmanifest';
+            }
+            return path;
+        }))
         .pipe(gulp.dest("./dist"))
     );
 });

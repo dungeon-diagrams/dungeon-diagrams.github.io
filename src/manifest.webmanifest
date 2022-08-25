@@ -1,0 +1,15 @@
+{
+    "name": "{{ package.title }}",
+    "short_name": "{{ package.short_name or package.title }}",
+    "description": "{{ package.description }}",
+    "start_url": "{{ package.homepage }}",
+    "display": "fullscreen",
+    "background_color": "#333",
+    "icons": [
+        {
+            "src": "icon.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ]
+}

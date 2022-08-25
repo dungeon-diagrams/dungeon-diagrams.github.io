@@ -1,8 +1,19 @@
 {
   "name": "dungeons-and-diagrams",
+  "short_name": "DD&D",
   "title": "Daily Dungeons and Diagrams",
   "description": "Daily puzzle game - decode hallways, monsters, and treasures",
-  "keywords": ["puzzle", "game", "dungeons", "diagrams", "picross", "nonograms", "hallways", "monsters", "treasures"],
+  "keywords": [
+    "puzzle",
+    "game",
+    "dungeons",
+    "diagrams",
+    "picross",
+    "nonograms",
+    "hallways",
+    "monsters",
+    "treasures"
+  ],
   "version": "1.0.0",
   "author": {
     "name": "Jesse Clark",
@@ -29,6 +40,8 @@
     "cjstoesm": "^2.1.2",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
+    "gulp-nunjucks": "^5.1.0",
+    "gulp-rename": "^2.0.0",
     "gulp-rewrite-imports": "^1.1.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
@@ -37,7 +50,6 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "gulp-nunjucks": "^5.1.0",
     "preact": "^10.10.0",
     "runes": "^0.4.3"
   },
