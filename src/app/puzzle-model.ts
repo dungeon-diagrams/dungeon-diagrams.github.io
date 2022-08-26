@@ -50,7 +50,7 @@ export class Puzzle extends EventTarget {
     didChange() {
         // this should be called once at the end of each 'set' method.
         // but not for each 'update' method.
-        this.dispatchEvent(new Event('change'));
+        this.dispatchEvent(new Event("change"));
     }
 
     [Symbol.iterator](): Iterator<[number, number, Tile]> {
@@ -65,7 +65,7 @@ export class Puzzle extends EventTarget {
         }
     }
 
-    *getTilesAdjacentTo(row:number, col:number, height:number = 1, width:number = 1): Generator<[number, number, Tile]> {
+    *getTilesAdjacentTo(row:number, col:number, height = 1, width = 1): Generator<[number, number, Tile]> {
         for (const r of [row-1, row+height]) {
             for (let c = col; c < col+width; c++) {
                 if (this.isInBounds(r, c)) {
@@ -134,7 +134,7 @@ export class Puzzle extends EventTarget {
         }
         // - each TREASURE is in a treasure room (3x3 block of 8 FLOOR and 1 TREASURE, adjacent to exactly 1 FLOOR and 0 MONSTER)
         // - no 2x2 blocks of FLOOR tiles unless a TREASURE is adjacent (including diagonals)
-        return {solved: true, reason: 'Valid dungeon layout.'};
+        return {solved: true, reason: "Valid dungeon layout."};
     }
 
     isDeadEnd(row:number, col:number): boolean {
@@ -185,14 +185,14 @@ export class Puzzle extends EventTarget {
     }
 
     solvableCopy(): SolvablePuzzle {
-        const other = new SolvablePuzzle({...this})
+        const other = new SolvablePuzzle({...this});
         return other;
     }
 
     editableCopy(): EditablePuzzle {
-         const other = new EditablePuzzle({...this})
-         return other;
-     }
+        const other = new EditablePuzzle({...this});
+        return other;
+    }
 }
 
 export class SolvablePuzzle extends Puzzle {
@@ -222,7 +222,7 @@ export class EditablePuzzle extends Puzzle {
         this.colTargets = colCounts;
     }
 
-    setSize(nRows: number, nCols: number, autoTarget: boolean=false) {
+    setSize(nRows: number, nCols: number, autoTarget=false) {
         this.nRows = nRows;
         this.nCols = nCols;
         const oldTiles = this.tiles;
@@ -242,21 +242,21 @@ export class EditablePuzzle extends Puzzle {
     }
 
     setRowTargets(rowTargets: number[]) {
-        this.rowTargets = rowTargets
+        this.rowTargets = rowTargets;
         if (this.rowTargets.length != this.nRows) {
             this.setSize(this.rowTargets.length, this.nCols);
         }
     }
 
     setColTargets(colTargets: number[]) {
-        this.colTargets = colTargets
+        this.colTargets = colTargets;
         if (this.colTargets.length != this.nCols) {
             this.setSize(this.nRows, this.colTargets.length);
         }
     }
 
     updateMonsters(row:number, col:number, monsterGlyph?: string) {
-        this.getTilesInRect
+        this.getTilesInRect;
         for (const [r, c, tile] of this.getTilesAdjacentTo(row, col)) {
             const deadEnd = this.isDeadEnd(r, c);
             if (deadEnd && !(tile instanceof Monster)) {

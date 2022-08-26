@@ -1,0 +1,58 @@
+{
+    "env": {
+        "browser": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "preact"
+    ],
+    "ignorePatterns": [
+        "src/lib/**/*.js",
+        "test/mocha.js"
+    ],
+    "overrides": [
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "2021",
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "@typescript-eslint"
+    ],
+    "globals": {
+        "globalThis": "readonly"
+    },
+    "rules": {
+        "indent": [
+            "error",
+            4
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "double"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "no-unused-vars": [
+            "warn",
+            {"args": "none"}
+        ],
+        "no-else-return": [
+            "off"
+        ],
+        "quote-props": [
+            "warn",
+            "consistent"
+        ]
+    }
+}

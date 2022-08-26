@@ -1,5 +1,5 @@
-import { h, Component } from 'preact';
-import { preferredColorScheme, preferredContrast, formValues } from './html-utils.js';
+import { h, Component } from "preact";
+import { preferredColorScheme, preferredContrast, formValues } from "./html-utils.js";
 
 /**
  * @class SettingsManager
@@ -18,7 +18,7 @@ class SettingsManager {
         this.element = doc || document.documentElement;
         // expose current values to DOM
         for (const [key, value] of Object.entries(this.storage)) {
-            if (typeof value !== 'object') {
+            if (typeof value !== "object") {
                 this.element.dataset[this.fixKey(key)] = value;
             }
         }
@@ -28,7 +28,7 @@ class SettingsManager {
         return {...this.storage};
     }
 
-    getItem(key: string): any {
+    getItem(key: string): unknown {
         return this.storage.getItem(key);
     }
 
@@ -37,11 +37,11 @@ class SettingsManager {
         return this.storage.removeItem(key);
     }
 
-    setItem(key: string, value: any): void {
-        if (typeof value !== 'object') {
-            this.element.dataset[this.fixKey(key)] = value;
+    setItem(key: string, value?: string | number | boolean | object ): void {
+        if (typeof value !== "object") {
+            this.element.dataset[this.fixKey(key)] = value as string;
         }
-        return this.storage.setItem(key, value);
+        return this.storage.setItem(key, value as string);
     }
 
     fixKey(key: string) {
@@ -51,7 +51,7 @@ class SettingsManager {
 
 /** singleton to access settings methods */
 let _appSettings;
-if (typeof window === 'undefined') {
+if (typeof window === "undefined") {
     // for testability
     _appSettings = new SettingsManager({} as Storage, {dataset:{}} as HTMLElement);
 }
@@ -69,11 +69,13 @@ export function SettingsButton() {
             <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a></p>
             <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a></p>
         </ExpandableMenu>
-    )
+    );
 }
 
-class ExpandableMenu extends Component<any, {open:boolean}> {
-    constructor(props:any) {
+type childrenProps = any;
+
+class ExpandableMenu extends Component<childrenProps, {open:boolean}> {
+    constructor(props:childrenProps) {
         super(props);
         this.state = {
             open: false
@@ -84,9 +86,9 @@ class ExpandableMenu extends Component<any, {open:boolean}> {
         event.preventDefault();
         event.stopPropagation();
         this.setState({open: !this.state.open});
-    }
+    };
 
-    render(props:any, state:{open:boolean}) {
+    render(props:childrenProps, state:{open:boolean}) {
         const children = state.open ? props.children : null;
         // TODO: display it in a modal, with dim background also bound to toggle
         return (
@@ -94,7 +96,7 @@ class ExpandableMenu extends Component<any, {open:boolean}> {
                 <span className="menu-button" onClick={this.toggle}>☰</span>
                 {children}
             </div>
-        )
+        );
     }
 }
 
@@ -104,19 +106,19 @@ class ControlPanel extends Component {
         const form = event.target as HTMLFormElement;
         const values = formValues(form);
         for (const [name, value] of Object.entries(values)) {
-            if (value === 'default' || value === '') {
+            if (value === "default" || value === "") {
                 appSettings.removeItem(name);
             }
             else {
                 appSettings.setItem(name, value);
             }
         }
-    }
+    };
 
     resetRecords = (event:Event) => {
         event.preventDefault();
         // TODO
-    }
+    };
 
     render() {
         const values = appSettings.values();
@@ -125,20 +127,20 @@ class ControlPanel extends Component {
                 <form onSubmit={this.saveSettings}>
                     <fieldset>
                         <legend>Settings</legend>
-                        Color Scheme:<br/>
-                        <label><input type="radio" name="preferred-color-scheme" value="default" checked={!values["preferred-color-scheme"]} /> System setting ({preferredColorScheme() || 'light'})</label><br/>
-                        <label><input type="radio" name="preferred-color-scheme" value="light" checked={values["preferred-color-scheme"] === "light"} /> Light</label><br/>
+                        Color Scheme:<br />
+                        <label><input type="radio" name="preferred-color-scheme" value="default" checked={!values["preferred-color-scheme"]} /> System setting ({preferredColorScheme() || "light"})</label><br />
+                        <label><input type="radio" name="preferred-color-scheme" value="light" checked={values["preferred-color-scheme"] === "light"} /> Light</label><br />
                         <label><input type="radio" name="preferred-color-scheme" value="dark" checked={values["preferred-color-scheme"] === "dark"} /> Dark</label>
-                        <br/><br/>
-                        Contrast:<br/>
-                        <label><input type="radio" name="preferred-contrast" value="default" checked={!values["preferred-contrast"]} /> System setting ({preferredContrast() || 'less'})</label><br/>
-                        <label><input type="radio" name="preferred-contrast" value="less" checked={values["preferred-contrast"] === "less"} /> Less</label><br/>
+                        <br /><br />
+                        Contrast:<br />
+                        <label><input type="radio" name="preferred-contrast" value="default" checked={!values["preferred-contrast"]} /> System setting ({preferredContrast() || "less"})</label><br />
+                        <label><input type="radio" name="preferred-contrast" value="less" checked={values["preferred-contrast"] === "less"} /> Less</label><br />
                         <label><input type="radio" name="preferred-contrast" value="more" checked={values["preferred-contrast"] === "more"} /> More</label>
-                        <br/><br/>
-                        <label>Favorite Monster:<br/>
-                            <input type="text" name="default-monster-glyph" size={1} value={values["default-monster-glyph"] || '🦁'}></input>
+                        <br /><br />
+                        <label>Favorite Monster:<br />
+                            <input type="text" name="default-monster-glyph" size={1} value={values["default-monster-glyph"] || "🦁"} />
                         </label>
-                        <br/><br/>
+                        <br /><br />
                         <button>Save</button>
                     </fieldset>
                 </form>
@@ -147,15 +149,15 @@ class ControlPanel extends Component {
                         <legend>Records</legend>
                         <div>🚧 🚜 🚧</div>
                         wins: 99
-                        <br/>
+                        <br />
                         average time: 01:23
-                        <br/>
+                        <br />
                         streak: 7 days
-                        <br/>
+                        <br />
                         <button>Reset Records</button>
                     </fieldset>
                 </form>
             </div>
-        )
+        );
     }
 }

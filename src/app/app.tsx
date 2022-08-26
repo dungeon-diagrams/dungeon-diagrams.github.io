@@ -1,10 +1,10 @@
-import { h } from 'preact';
-import { Puzzle, EditablePuzzle } from './puzzle-model.js';
-import { PuzzleSolver } from './puzzle-view.js';
-import { PuzzleEditor } from './puzzle-editor.js';
-import * as PuzzleString from './puzzle-string.js';
-import { parseQuery } from './html-utils.js';
-import { SettingsButton } from './settings.js';
+import { h } from "preact";
+import { Puzzle, EditablePuzzle } from "./puzzle-model.js";
+import { PuzzleSolver } from "./puzzle-view.js";
+import { PuzzleEditor } from "./puzzle-editor.js";
+import * as PuzzleString from "./puzzle-string.js";
+import { parseQuery } from "./html-utils.js";
+import { SettingsButton } from "./settings.js";
 
 /*
  idea for a router: use 404.html to serve the main app.
@@ -14,6 +14,7 @@ import { SettingsButton } from './settings.js';
  /puzzle/?r=424121&c=312512&t=0,5&m=4,5,5,0#?state=.x+.t.|
 */
 
+/* eslint indent: 0 */
 const dailyPuzzles: string[] = [
 `Example Dungeon
 .424121
@@ -166,7 +167,7 @@ href="?puzzle=(shareable string)"
 */
 
 export function App(query?: string) {
-    query ||= document.location.search
+    query ||= document.location.search;
     const params = parseQuery(query);
     const puzzleString = params.puzzle as string;
     const puzzleID = params.puzzle_id as number;
@@ -179,7 +180,7 @@ export function App(query?: string) {
     }
     if (puzzle) {
         puzzle = puzzle.solvableCopy();
-        Object.assign(globalThis, {puzzle: puzzle});
+        Object.assign(globalThis, {puzzle});
         return (
             <div id="app" className="app">
                 <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
@@ -188,16 +189,16 @@ export function App(query?: string) {
             </div>
         );
     }
-    else if (params.mode === 'edit') {
+    else if (params.mode === "edit") {
         puzzle = new EditablePuzzle({name:"Untitled Dungeon", colTargets:[0,0,0,0,0,0,0,0], rowTargets:[0,0,0,0,0,0,0,0], tiles: []});
-        Object.assign(globalThis, {puzzle: puzzle});
+        Object.assign(globalThis, {puzzle});
         return (
             <div id="app" className="app">
                 <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
                 <PuzzleEditor puzzle={puzzle} />
                 <SettingsButton />
             </div>
-        )
+        );
     }
     else {
         const navLinks = [];
@@ -207,7 +208,7 @@ export function App(query?: string) {
             navLinks.push(<li className="puzzle-list">
                 <a href={PuzzleString.toURI(puzzle)}>{puzzle.name}</a>
                 <pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
-            </li>)
+            </li>);
         }
         return (
             <div id="app" className="app">
@@ -220,6 +221,6 @@ export function App(query?: string) {
                 </ul>
                 <SettingsButton />
             </div>
-        )
+        );
     }
 }

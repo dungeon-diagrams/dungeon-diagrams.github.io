@@ -18,7 +18,7 @@ export function PuzzleSolver(props: {puzzle: Puzzle}) {
     const brush = new SolveBrush();
     return (
         <PuzzleGrid {...{puzzle, brush}} />
-    )
+    );
 }
 
 /**
@@ -42,9 +42,9 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
     updatePuzzle = (event: Event)=>{
         const puzzle = event.target as Puzzle;
         this.setState({
-            puzzle: puzzle
+            puzzle
         });
-    }
+    };
 
     updateSize = (event?: Event)=>{
         this.setState({
@@ -52,28 +52,28 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                 width: window.innerWidth,
                 height: window.innerHeight
             }
-        })
-    }
+        });
+    };
 
     componentDidMount() {
-        this.state.puzzle.addEventListener('change', this.updatePuzzle);
-        window.addEventListener('resize', this.updateSize);
-        window.addEventListener('blur', this.strokeEnd);
-        window.addEventListener('mouseup', this.strokeEnd);
+        this.state.puzzle.addEventListener("change", this.updatePuzzle);
+        window.addEventListener("resize", this.updateSize);
+        window.addEventListener("blur", this.strokeEnd);
+        window.addEventListener("mouseup", this.strokeEnd);
     }
 
     componentWillUnmount() {
-        this.state.puzzle.removeEventListener('change', this.updatePuzzle);
-        window.removeEventListener('resize', this.updateSize);
-        window.removeEventListener('blur', this.strokeEnd);
-        window.removeEventListener('mouseup', this.strokeEnd);
+        this.state.puzzle.removeEventListener("change", this.updatePuzzle);
+        window.removeEventListener("resize", this.updateSize);
+        window.removeEventListener("blur", this.strokeEnd);
+        window.removeEventListener("mouseup", this.strokeEnd);
     }
 
     getTile(x: number, y: number): [number, number, Tile | null] | [null, null, null] {
         const targetEl = document.elementFromPoint(x, y) as HTMLElement | null;
         if (targetEl?.classList.contains("puzzle-cell")) {
-            const row = parseInt(targetEl.dataset.row || '');
-            const col = parseInt(targetEl.dataset.col || '');
+            const row = parseInt(targetEl.dataset.row || "", 10);
+            const col = parseInt(targetEl.dataset.col || "", 10);
             const tile = this.state.puzzle.getTile(row, col);
             return [row, col, tile];
         }
@@ -85,12 +85,12 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
         if (this.props.brush.activeTile) {
             return;
         }
-        const eventType = event.button == 2 ? 'rightClick': 'leftClick';
+        const eventType = event.button == 2 ? "rightClick": "leftClick";
         const [row, col, tile] = this.getTile(event.clientX, event.clientY);
         if (tile != null) {
             this.props.brush.strokeStart(this.props.puzzle, row, col, eventType);
         }
-    }
+    };
 
     mouseMove = (event: MouseEvent) => {
         if (this.props.brush.activeTile) {
@@ -100,7 +100,7 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                 this.props.brush.strokeMove(this.props.puzzle, row, col);
             }
         }
-    }
+    };
 
     strokeEnd = (event: Event) => {
         if (this.props.brush.activeTile) {
@@ -108,14 +108,14 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                 this.props.brush.strokeEnd(this.props.puzzle);
             }, 100);
         }
-    }
+    };
 
     touchStart = (event: TouchEvent) => {
         event.preventDefault();
         if (this.props.brush.activeTile) {
             return;
         }
-        const eventType = 'touch';
+        const eventType = "touch";
         for (let i = 0; i < event.targetTouches.length; i++) {
             const touch = event.targetTouches[i];
             const [row, col, tile] = this.getTile(touch.clientX, touch.clientY);
@@ -123,7 +123,7 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                 this.props.brush.strokeStart(this.props.puzzle, row, col, eventType);
             }
         }
-    }
+    };
 
     touchMove = (event: TouchEvent) => {
         if (this.props.brush.activeTile) {
@@ -135,13 +135,13 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                 }
             }
         }
-    }
+    };
 
     touchEnd = (event: TouchEvent) => {
         if (event.targetTouches.length == 0) {
             this.strokeEnd(event);
         }
-    }
+    };
 
     render() {
         const puzzle = this.state.puzzle;
@@ -157,7 +157,7 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
         // const gridWidth = (cellSize+3) * (puzzle.nCols + 1) - 4;
 
         return (
-            <div className={`puzzle-view ${solved?'solved':'unsolved'}`}>
+            <div className={`puzzle-view ${solved?"solved":"unsolved"}`}>
                 <h2>
                     <span className='solved-marker'> ⭐️ </span>
                     <a href={PuzzleString.toURI(puzzle)}>{puzzle.name}</a>
@@ -182,40 +182,40 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                 >
                     <tbody>
                         <tr>
-                            <th></th>
+                            <th />
                             {puzzle.colTargets.map((count, col) => (
-                                <th className={`puzzle-wall-target ${colStatus[col]}`} data-col={col}>
+                                <th key={col} className={`puzzle-wall-target ${colStatus[col]}`} data-col={col}>
                                     {count}
                                 </th>
                             ))}
                         </tr>
                         {puzzle.tiles.map((rowTiles, row)=>(
-                            <tr>
+                            <tr key={row}>
                                 <th className={`puzzle-wall-target ${rowStatus[row]}`} data-row={row}>
                                     {puzzle.rowTargets[row]}&nbsp;
                                 </th>
                                 {rowTiles.map((tile, col)=>(
-                                    <PuzzleCell row={row} col={col} tile={tile} puzzle={puzzle} rowStatus={rowStatus[row]} colStatus={colStatus[col]} />
+                                    <PuzzleCell key={col} row={row} col={col} tile={tile} puzzle={puzzle} rowStatus={rowStatus[row]} colStatus={colStatus[col]} />
                                 ))}
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-        )
+        );
     }
 }
 
 function * getWallStatus(current: number[], expected: number[]) {
     for (let i = 0; i < current.length; i++) {
         if (current[i] < expected[i]) {
-            yield 'too-few-walls';
+            yield "too-few-walls";
         }
         else if (current[i] > expected[i]) {
-            yield 'too-many-walls';
+            yield "too-many-walls";
         }
         else {
-            yield 'correct-walls';
+            yield "correct-walls";
         }
     }
 }
@@ -244,7 +244,7 @@ export function PuzzleCell(props: CellProps) {
         >
             {props.tile.toHTML()}
         </td>
-    )
+    );
 }
 
 function stopEvent(event: Event) {

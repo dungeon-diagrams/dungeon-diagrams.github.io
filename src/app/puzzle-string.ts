@@ -1,5 +1,5 @@
-import { default as runes } from 'runes';
-import { Puzzle, Tile, TileTypes } from './puzzle-model.js';
+import { default as runes } from "runes";
+import { Puzzle, Tile, TileTypes } from "./puzzle-model.js";
 
 const { FixedTile } = TileTypes;
 
@@ -19,7 +19,7 @@ export function parseRowCounts(spec: string): number[] {
     const counts = [];
     const specRows = spec.trim().split(/[\n,!]/).slice(2);
     for (const specRow of specRows) {
-        counts.push(parseInt(specRow));
+        counts.push(parseInt(specRow, 10)); // TODO: support other number glyphs
     }
     return counts;
 }
@@ -28,7 +28,7 @@ export function parseColCounts(spec: string): number[] {
     const counts = [];
     const specRow = runes(spec.trim().split(/[\n,!]/)[1]).slice(1);
     for (const specCol of specRow) {
-        counts.push(parseInt(specCol));
+        counts.push(parseInt(specCol, 10)); // TODO: support other number glyphs
     }
     return counts;
 }
@@ -48,7 +48,7 @@ export function parseTiles(spec: string) {
 
 export function toASCII(puzzle: Puzzle): string {
     const lines: string[] = [puzzle.name];
-    lines.push('.' + puzzle.colTargets.join(''));
+    lines.push(`.${  puzzle.colTargets.join("")}`);
     let i = 0;
     for (const row of puzzle.tiles) {
         const rowStrings = [];
@@ -56,14 +56,14 @@ export function toASCII(puzzle: Puzzle): string {
         for (const tile of row) {
             rowStrings.push(tile.ASCII);
         }
-        lines.push(rowStrings.join(''))
+        lines.push(rowStrings.join(""));
     }
-    return lines.join('\n');
+    return lines.join("\n");
 }
 
 export function toEmoji(puzzle: Puzzle): string {
     const lines: string[] = [puzzle.name];
-    lines.push('⬜️' + puzzle.colTargets.map(emojiNumber).join(''));
+    lines.push(`⬜️${  puzzle.colTargets.map(emojiNumber).join("")}`);
     let i = 0;
     for (const row of puzzle.tiles) {
         const rowStrings = [];
@@ -71,15 +71,15 @@ export function toEmoji(puzzle: Puzzle): string {
         for (const tile of row) {
             rowStrings.push(tile.emoji);
         }
-        lines.push(rowStrings.join(''))
+        lines.push(rowStrings.join(""));
     }
-    return lines.join('\n');
+    return lines.join("\n");
 }
 
 export function toURI(puzzle: Puzzle, includeState=false): string {
-    let uri = '?puzzle=' + encodeURIComponent(toUnsolvedURI(puzzle));
+    let uri = `?puzzle=${  encodeURIComponent(toUnsolvedURI(puzzle))}`;
     if (includeState) {
-        uri += '#?state=' + encodeURIComponent(toStateURI(puzzle));
+        uri += `#?state=${  encodeURIComponent(toStateURI(puzzle))}`;
     }
     return uri;
 }
@@ -88,9 +88,9 @@ export function toUnsolvedURI(puzzle: Puzzle): string {
     return toPuzzleURI(puzzle, false);
 }
 
-export function toPuzzleURI(puzzle: Puzzle, includeState:boolean = true): string {
+export function toPuzzleURI(puzzle: Puzzle, includeState = true): string {
     const lines: string[] = [puzzle.name];
-    lines.push('.' + puzzle.colTargets.join(''));
+    lines.push(`.${  puzzle.colTargets.join("")}`);
     let i = 0;
     for (const row of puzzle.tiles) {
         const rowStrings = [];
@@ -103,20 +103,20 @@ export function toPuzzleURI(puzzle: Puzzle, includeState:boolean = true): string
                 rowStrings.push(unsolvedTileURI(tile));
             }
         }
-        lines.push(rowStrings.join('').replace(/\.*$/, ''));
+        lines.push(rowStrings.join("").replace(/\.*$/, ""));
     }
-    return lines.join('!');
+    return lines.join("!");
 }
 
 export function toStateURI(puzzle: Puzzle): string {
     return (puzzle.tiles.map((row)=>(
-        row.map(tileURI).join('').replace(/\.*$/, '')
-    )).join('!'));
+        row.map(tileURI).join("").replace(/\.*$/, "")
+    )).join("!"));
 }
 
 export function unsolvedTileURI(tile: Tile): string {
     if (!(tile instanceof FixedTile)) {
-        return '.';
+        return ".";
     }
     else {
         return tile.emoji;
@@ -133,7 +133,7 @@ export function tileURI(tile: Tile): string {
 }
 
 export function emojiNumber(n: number): string {
-    const table = ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+    const table = ["0️⃣","1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟"];
     if (n < table.length) {
         return table[n];
     }

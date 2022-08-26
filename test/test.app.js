@@ -1,11 +1,11 @@
-import { App } from '../app/app.js';
+import { App } from "../app/app.js";
 
-describe('App Component', ()=>{
-    it('should render the home page without errors', ()=>{
-        App('?');
-    })
+describe("App Component", ()=>{
+    it("should render the home page without errors", ()=>{
+        App("?");
+    });
 
-    it('should render a puzzle without errors', ()=>{
-        App('?puzzle_id=0');
-    })
-})
+    it("should render a puzzle without errors", ()=>{
+        App("?puzzle_id=0");
+    });
+});

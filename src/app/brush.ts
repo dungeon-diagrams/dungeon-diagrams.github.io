@@ -27,15 +27,15 @@ const { Wall, Floor, MarkedFloor, Monster, Treasure } = TileTypes;
  *   toggles the tile if it is already the target
  * 
  */
- export type EventType = "leftClick" | "rightClick" | "touch" | "default";
+export type EventType = "leftClick" | "rightClick" | "touch" | "default";
+export type TileType = (new () => Tile);
 
- export interface EventTileMap {
-     leftClick?: Function[];
-     rightClick?: Function[];
-     touch?: Function[];
-     default: Function[];
- }
- 
+export interface EventTileMap {
+    leftClick?: TileType[];
+    rightClick?: TileType[];
+    touch?: TileType[];
+    default: TileType[];
+}
 
 export class Brush {
     tileOrder: EventTileMap = {
@@ -44,16 +44,16 @@ export class Brush {
     activeTile: Tile | null = null;
     glyph: string | null = null;
 
-    constructor(tileOrder?: Function[]) {
+    constructor(tileOrder?: TileType[]) {
         if (tileOrder) {
             this.tileOrder.default = tileOrder;
         }
     }
 
-    getNextTile(prevTile:Tile, eventType:EventType) {
-        const order:Function[] = this.tileOrder[eventType] || this.tileOrder.default;
-        const index = order.indexOf(prevTile.constructor);
-        const nextType = order[(index + 1) % order.length] as (new () => Tile);
+    getNextTile(prevTile:Tile, eventType:EventType): TileType {
+        const order:TileType[] = this.tileOrder[eventType] || this.tileOrder.default;
+        const index = order.indexOf(prevTile.constructor as TileType);
+        const nextType = order[(index + 1) % order.length];
         return nextType;
     }
 
@@ -94,15 +94,15 @@ export class Brush {
     }
 }
 
- export class EraseBrush extends Brush {
-     tileOrder = {default: [Floor]};
- }
+export class EraseBrush extends Brush {
+    tileOrder = {default: [Floor]};
+}
  
- export class MonsterBrush extends Brush {
-     tileOrder = {default: [Monster, Floor]};
-     glyph = appSettings.getItem('default-monster-glyph') || '🦁';
+export class MonsterBrush extends Brush {
+    tileOrder = {default: [Monster, Floor]};
+    glyph = appSettings.getItem("default-monster-glyph") as string || "🦁";
 
-     getNextTile(prevTile: Tile, eventType: EventType) {
+    getNextTile(prevTile: Tile, eventType: EventType) {
         if (prevTile.toHTML() === this.glyph) {
             return Floor;
         }
@@ -110,47 +110,46 @@ export class Brush {
             return Monster;
         }
     }
- }
- 
- export class TreasureBrush extends Brush {
-     tileOrder = {default: [Treasure, Floor]};
-     glyph = '💎';
- }
- 
- export class DesignBrush extends Brush {
-     tileOrder = {default: [Wall, Floor]};
- 
-     autoMonster = true;
-     autoTarget = true;
- 
-     didPaint(puzzle:EditablePuzzle, row:number, col:number) {
-         if (this.autoMonster) {
-             puzzle.updateMonsters(row, col);
-             puzzle.didChange();
-         }
-         if (this.autoTarget) {
-             puzzle.updateWallTargets();
-             puzzle.didChange();
-         }
-     }
- }
- 
- export class SolveBrush extends Brush {
-     tileOrder = {
-         leftClick: [Wall, Floor],
-         rightClick: [MarkedFloor, Floor],
-         default: [Wall, MarkedFloor, Floor]
-     }
+}
 
-     shouldPaint(puzzle:Puzzle, row:number, col:number) {
+export class TreasureBrush extends Brush {
+    tileOrder = {default: [Treasure, Floor]};
+    glyph = "💎";
+}
+
+export class DesignBrush extends Brush {
+    tileOrder = {default: [Wall, Floor]};
+
+    autoMonster = true;
+    autoTarget = true;
+
+    didPaint(puzzle:EditablePuzzle, row:number, col:number) {
+        if (this.autoMonster) {
+            puzzle.updateMonsters(row, col);
+            puzzle.didChange();
+        }
+        if (this.autoTarget) {
+            puzzle.updateWallTargets();
+            puzzle.didChange();
+        }
+    }
+}
+
+export class SolveBrush extends Brush {
+    tileOrder = {
+        leftClick: [Wall, Floor],
+        rightClick: [MarkedFloor, Floor],
+        default: [Wall, MarkedFloor, Floor]
+    };
+
+    shouldPaint(puzzle:Puzzle, row:number, col:number) {
         return (!puzzle.isSolved().solved);
-     }
- 
-     strokeEnd(puzzle: Puzzle) {
-         this.activeTile = null;
-         if (puzzle.isSolved().solved) {
-             puzzle.unmarkFloors();
-         }
-     }
- }
- 
+    }
+
+    strokeEnd(puzzle: Puzzle) {
+        this.activeTile = null;
+        if (puzzle.isSolved().solved) {
+            puzzle.unmarkFloors();
+        }
+    }
+}

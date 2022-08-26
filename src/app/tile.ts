@@ -14,10 +14,10 @@
  *       Treasure
  */
 export abstract class Tile {
-    ASCII: string = '_'; // should be encodable as a URI with no escape
-    emoji: string = '🌫'; // should be square
+    ASCII = "_"; // should be encodable as a URI with no escape
+    emoji = "🌫"; // should be square
     HTML?: string;
-    static pattern: RegExp = /.|[\?_-]/;
+    static pattern = /.|[\?_-]/;
 
     setGlyph(glyph: string) {
         if (glyph) {
@@ -44,7 +44,7 @@ export abstract class Tile {
 
     toHTML() {
         const glyph = this.HTML || this.emoji;
-        const supported = document.fonts.check(`${css(document.body, 'font-size')} ${css(document.body, 'font-family')}`, glyph);
+        const supported = document.fonts.check(`${css(document.body, "font-size")} ${css(document.body, "font-family")}`, glyph);
         if (supported) {
             return glyph;
         }
@@ -70,39 +70,39 @@ export abstract class WalkableTile extends Tile { }
 export abstract class FixedTile extends WalkableTile { }
 
 export class Floor extends WalkableTile {
-    ASCII = '.';
-    emoji = '⬜️';
+    ASCII = ".";
+    emoji = "⬜️";
     static pattern = /\p{White_Space}|[\.·🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️]/iu;
 }
 
 export class MarkedFloor extends Floor {
-    ASCII = 'x';
-    emoji = '🔳';
-    HTML = '×';
+    ASCII = "x";
+    emoji = "🔳";
+    HTML = "×";
     static pattern = /[x✖️×✖️x╳⨯⨉❌⊘🚫💠❖]/iu;
 }
 
 export class Wall extends Tile {
-    ASCII = '*';
-    emoji = '🟫';
+    ASCII = "*";
+    emoji = "🟫";
     static pattern = /[*#O◯◌⭕️🪨🟥🟧🟨🟩🟦🟪🟫]/iu;
 }
 
 export class Treasure extends FixedTile {
-    ASCII = 'T';
-    emoji = '💎';
+    ASCII = "T";
+    emoji = "💎";
     static pattern = /[t🏆🥇🥈🥉🏅🎖🔮🎁📦💎👑]/iu;
 }
 
 export class Monster extends FixedTile {
-    ASCII = 'm';
-    emoji = '🦁';
+    ASCII = "m";
+    emoji = "🦁";
     static pattern = /[a-su-wyz☺︎☹☻♜♝♞♟♖♗♘♙☃️⛄️🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🦠😈👿👹👺🤡👻💀☠️👽👾🤖🎃🧛🧟🧞🧜🧚🗿🛸]/u;
 }
 
 export class BossMonster extends Monster {
-    ASCII = 'M';
-    emoji = '🐲';
+    ASCII = "M";
+    emoji = "🐲";
     static pattern = /[A-SU-WYZ♚♛♔♕🦖🦕🐊🐉🐲🧊]/u;
 }
 

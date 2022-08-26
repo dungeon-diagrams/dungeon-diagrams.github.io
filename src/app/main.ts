@@ -9,13 +9,14 @@ import * as HTMLUtils from "./html-utils.js";
 import * as Brush from "./brush.js";
 import { appSettings } from "./settings.js";
 
+type runesFunc = (s:string)=>string[];
+
 // debugging
 declare global {
     interface Window {
-        runes: Function;
+        runes: runesFunc;
         preact: object;
-        puzzle: any;
-        test: any;
+        puzzle: PuzzleModel.Puzzle;
     }
 }
 
@@ -37,17 +38,22 @@ export function init() {
     try {
         preact.render(App(), document.body, document.getElementById("app") as Element);
     }
-    catch (e: any) {
+    catch (e: unknown) {
         console.error(e);
         const statusDisplay = document.getElementById("status-display");
         if (statusDisplay) {
             statusDisplay.dataset.status = "Error";
-            statusDisplay.innerText = `${e.name || "Error"}: ${e.message || e}`
+            if (e instanceof Error) {
+                statusDisplay.innerText = `${e.name}: ${e.message}`;
+            }
+            else {
+                statusDisplay.innerText = `Error: ${e}`;
+            }
         }
     }
 }
 
-if (typeof(document) !== 'undefined') {
+if (typeof(document) !== "undefined") {
     if (document.readyState === "loading") {
         window.addEventListener("DOMContentLoaded", init);
     }
