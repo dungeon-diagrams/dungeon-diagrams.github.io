@@ -6,7 +6,6 @@ import * as cjstoesm from "cjstoesm";
 import nunjucks from "gulp-nunjucks";
 import { readFile } from "node:fs/promises";
 import rename from "gulp-rename";
-import compile from "gulp-typescript";
 
 const tsProject = ts.createProject("tsconfig.json");
 

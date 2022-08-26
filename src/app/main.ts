@@ -4,6 +4,7 @@ import { App } from "./app.js";
 import * as PuzzleModel from "./puzzle-model.js";
 import { Tile, TileTypes } from "./tile.js";
 import { PuzzleGrid } from "./puzzle-view.js";
+import { PuzzleEditor } from "./puzzle-editor.js";
 import * as PuzzleString from "./puzzle-string.js";
 import * as HTMLUtils from "./html-utils.js";
 import * as Brush from "./brush.js";
@@ -31,6 +32,7 @@ Object.assign(globalThis, {
 }, TileTypes);
 Brush;
 PuzzleGrid;
+PuzzleEditor;
 App;
 HTMLUtils;
 
