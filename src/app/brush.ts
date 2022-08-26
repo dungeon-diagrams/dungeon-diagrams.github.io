@@ -58,6 +58,7 @@ export class Brush {
     }
 
     shouldPaint(puzzle:Puzzle, row:number, col:number) {
+        // subclasses should override this to delegate
         return true;
     }
 
@@ -147,9 +148,9 @@ export class SolveBrush extends Brush {
     }
 
     strokeEnd(puzzle: Puzzle) {
-        this.activeTile = null;
         if (puzzle.isSolved().solved) {
             puzzle.unmarkFloors();
         }
+        super.strokeEnd(puzzle);
     }
 }
