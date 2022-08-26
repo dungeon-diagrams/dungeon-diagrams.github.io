@@ -1,7 +1,8 @@
+import {describe, expect, test} from '@jest/globals';
 import "../app/main.js";
 
 describe("Web Application", ()=> {
-    it("should load in a browser", function(){
+    test("should load in a browser", function(){
         if (typeof window === "undefined") {
             this.skip();
         }
