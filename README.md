@@ -31,3 +31,15 @@ npm run watch
 ```bash
 npm run serve
 ```
+
+### Notable Implementation Features
+
+- The `Tile` class is a self-contained export. All subclasses and utility methods are static properties of the base class.
+
+- The `Puzzle` class uses mutable subclasses so that an IDE can detect that most editing methods are not available on the base class.
+
+- The `PuzzleGrid` component calculates its size dynamically, and sets that size with an inline `<style>` element targeting its own descendents.
+
+- All app-specific values in `index.html` and `manifest.webmanifest` are taken from `package.json`.
+
+- Modules are preloaded in `main.js`, so the entire app loads in 3 round-trip times. It is possible to preload them directly in `index.html` for 2 round-trip times, but this increases file size as it requires listing each module twice to support all browsers. Rendering the complete list of modules into the HTML template could be a viable optimization.

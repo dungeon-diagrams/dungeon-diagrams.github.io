@@ -1,6 +1,5 @@
 /**
- * @class Tile
- * Hierarchical representation of tile types.
+ * @class Tile - Hierarchical representation of tile types.
  * Use Tile.parse(glyph) to construct a Tile with an arbitrary glyph.
  * Class hierarchy:
  * Tile
@@ -110,3 +109,5 @@ export class BossMonster extends Monster {
 export const TileTypes = { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, FixedTile };
 
 Object.assign(Tile, TileTypes);
+
+export default Tile;
