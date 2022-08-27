@@ -1,4 +1,4 @@
-// import {describe, expect, test} from '@jest/globals';
+import {describe, expect, test} from '@jest/globals';
 import { App } from "../app/app.js";
 
 describe("App Component", ()=>{

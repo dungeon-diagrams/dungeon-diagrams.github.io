@@ -29,7 +29,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf dist",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --verbose test",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --verbose src",
     "build": "gulp build",
     "watch": "gulp watch",
     "serve": "serve dist",

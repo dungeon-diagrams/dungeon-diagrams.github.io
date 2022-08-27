@@ -14,14 +14,12 @@ const paths = {
         "src/**/*.css",
         "src/**/*.module.js",
         "src/**/*.js.map",
+        "src/lib/*.js",
         "src/**/*.txt"
     ],
-    tests: [
-        "test/**/*"
-    ],
     typescript: [
-        "src/**/*.ts",
-        "src/**/*.tsx"
+        "src/**/!(*.test).ts",
+        "src/**/!(*.test).tsx"
     ],
     templates: [
         "src/**/*.html",
@@ -108,22 +106,6 @@ export function watchTypescript() {
 }
 watchTypescript.displayName = "watch-typescript";
 gulp.task(watchTypescript);
-
-export function buildTest(cb) {
-    return (
-        gulp.src(paths.tests, { since: gulp.lastRun(buildTest) })
-        .pipe(gulp.dest("dist/test/"))
-    );
-}
-buildTest.displayName = "build-test";
-buildTest.description = "Copy test code to dist for running in a browser";
-gulp.task(buildTest);
-
-export function watchTest() {
-    gulp.watch(paths.tests, { ignoreInitial: false }, buildTest);
-}
-watchTest.displayName = "watch-test";
-gulp.task(watchTest);
 
 export const build = gulp.parallel(
     copyStatic,
