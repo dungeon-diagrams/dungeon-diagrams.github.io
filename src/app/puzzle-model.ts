@@ -82,6 +82,26 @@ export class Puzzle extends EventTarget {
         }
     }
 
+    *getConnectedTiles(row:number, col:number): Generator<[number, number, Tile]> {
+        const visited = new Set();
+        const toVisit = [[row, col, this.tiles[row][col]]];
+        while (toVisit.length > 0) {
+            const loc = toVisit.shift() as [number, number, Tile];
+            const [r, c, t] = loc;
+            const id = `${r},${c}`;
+            if (visited.has(id)) {
+                continue;
+            }
+            visited.add(id);
+            yield loc;
+            for (const nextLoc of this.getTilesAdjacentTo(r, c)) {
+                if (nextLoc[2] instanceof WalkableTile) {
+                    toVisit.push(nextLoc);
+                }
+            }
+        }
+    }
+
     isInBounds(row:number, col:number): boolean {
         return (row >= 0 && row < this.nRows && col >= 0 && col < this.nCols);
     }
@@ -121,6 +141,9 @@ export class Puzzle extends EventTarget {
             return {solved: false, reason: "Column wall counts do not match targets."};
         }
         // - all non-WALL tiles are connected
+        if (!this.isConnected()) {
+            return {solved: false, reason: "Hallways are not connected."};
+        }
         for (const [row, col, tile] of this) {
             // - each MONSTER is in a dead end (adjacent to exactly 1 FLOOR)
             const deadEnd = this.isDeadEnd(row, col);
@@ -160,6 +183,18 @@ export class Puzzle extends EventTarget {
             }
         }
         return {rowCounts, colCounts};
+    }
+
+    isConnected(): boolean {
+        const halls = [...this].filter(([row, col, tile])=>(
+            tile instanceof WalkableTile
+        ));
+        if (halls.length == 0) {
+            return true;
+        }
+        const firstHall = halls[0];
+        const connectedHalls = [...this.getConnectedTiles(firstHall[0], firstHall[1])]
+        return (connectedHalls.length === halls.length);
     }
 
     unsolve(): Puzzle {
