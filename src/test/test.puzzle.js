@@ -6,7 +6,7 @@ describe("Puzzle Model", ()=>{
         const puzzle = PuzzleString.parse("Test Puzzle 1!.25332332!1!4!2!2...👑..🐀!3!4.....🐍!2!5");
         const {solved, reason} = puzzle.isSolved();
         if (solved) {
-            throw new Error(`incorrectly thought an unsolved puzzle was solved: ${reason}`);
+            throw new Error(`incorrectly thought an unsolved puzzle was solved: ${puzzle.name}: ${reason}`);
         }
     });
 
@@ -14,13 +14,13 @@ describe("Puzzle Model", ()=>{
         const puzzle = PuzzleString.parse("Example Dungeon!.424121!3***..💎!1*!2*.*!5*.****!1....*🐲!2🦁**");
         const {solved, reason} = puzzle.isSolved();
         if (!solved) {
-            throw new Error(`incorrectly thought a solved puzzle was unsolved: ${reason}`);
+            throw new Error(`incorrectly thought a solved puzzle was unsolved: ${puzzle.name}: ${reason}`);
         }
     });
 
     it("should detect disconnected halls", function(){
         const puzzle = PuzzleString.parse(
-            `Test Puzzle
+            `Test Puzzle 1
             .030
             1m*m
             1.*.
@@ -29,13 +29,13 @@ describe("Puzzle Model", ()=>{
         );
         const {solved, reason} = puzzle.isSolved();
         if (solved) {
-            throw new Error(`incorrectly thought disconnected halls were solved: ${reason}`);
+            throw new Error(`incorrectly thought disconnected halls were solved: ${puzzle.name}: ${reason}`);
         }
     });
 
     it("should detect wide halls", function(){
         const puzzle = PuzzleString.parse(
-            `Test Puzzle 1
+            `Test Puzzle 2
             .002
             1..*
             1..*
@@ -44,13 +44,30 @@ describe("Puzzle Model", ()=>{
         );
         const {solved, reason} = puzzle.isSolved();
         if (solved) {
-            throw new Error(`incorrectly allowed a wide hall: ${reason}`);
+            throw new Error(`incorrectly allowed a wide hall: ${puzzle.name}: ${reason}`);
+        }
+    });
+
+    it("should detect wide halls outside treasure rooms", function(){
+        const puzzle = PuzzleString.parse(
+            `Test Puzzle 3
+            .02222
+            3..***
+            3..***
+            1.*t..
+            0.....
+            1m*...
+            `
+        );
+        const {solved, reason} = puzzle.isSolved();
+        if (solved) {
+            throw new Error(`incorrectly allowed a wide hall: ${puzzle.name}: ${reason}`);
         }
     });
 
     it("should detect valid treasure rooms", function(){
         const puzzle = PuzzleString.parse(
-            `Test Puzzle 1
+            `Test Puzzle 4
             .11132
             2...**
             2...**
@@ -60,7 +77,33 @@ describe("Puzzle Model", ()=>{
         );
         const {solved, reason} = puzzle.isSolved();
         if (!solved) {
-            throw new Error(`incorrectly disallowed a valid treasure room: ${reason}`);
+            throw new Error(`incorrectly disallowed a valid treasure room: ${puzzle.name}: ${reason}`);
+        }
+    });
+
+    it("should detect invalid treasure rooms", function(){
+        const puzzle5 = PuzzleString.parse(
+            `Test Puzzle 5
+            .11132
+            2....m
+            2...**
+            0..t..
+            4****m
+            `
+        );
+        const puzzle6 = PuzzleString.parse(
+            `Test Puzzle 6
+            .030
+            1.t.
+            1.*.
+            1m*m
+            `
+        );
+        for (const puzzle of [puzzle5, puzzle6]) {
+            const {solved, reason} = puzzle.isSolved();
+            if (solved) {
+                throw new Error(`incorrectly allowed an invalid treasure room: ${puzzle.name}: ${reason}`);
+            }
         }
     });
 });

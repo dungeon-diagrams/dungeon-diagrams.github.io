@@ -156,33 +156,43 @@ export class Puzzle extends EventTarget {
             }
             // - no 2x2 blocks of FLOOR tiles unless a TREASURE is adjacent (including diagonals)
             if (this.isWideHall(row, col)) {
-                return {solved: false, reason: `Hallway too wide: (${row}, ${col})`};
+                if (!this.isTreasureRoom(row, col)) {
+                    return {solved: false, reason: `Hallway too wide: (${row}, ${col})`};
+                }
+            }
+            // - each TREASURE is in a treasure room (3x3 block of 8 FLOOR and 1 TREASURE, adjacent to exactly 1 FLOOR and 0 MONSTER)
+            if (tile instanceof Treasure && !this.isTreasureRoom(row, col)) {
+                return {solved: false, reason: `Treasure not in proper room: (${row}, ${col})`};
             }
         }
-        // - each TREASURE is in a treasure room (3x3 block of 8 FLOOR and 1 TREASURE, adjacent to exactly 1 FLOOR and 0 MONSTER)
         return {solved: true, reason: "Valid dungeon layout."};
     }
 
     isWideHall(row:number, col:number): boolean {
-        let walkableCount = 0;
-        let treasureCount = 0;
-        for (const [r, c, tile] of this.getTilesInRect(row, col, 2, 2)) {
-            walkableCount += Number(tile instanceof WalkableTile);
-        }
-        for (const [r, c, tile] of this.getTilesInRect(row-1, col-1, 4, 4)) {
-            treasureCount += Number(tile instanceof Treasure);
-        }
+        const walkableCount = countInstances(WalkableTile, this.getTilesInRect(row, col, 2, 2));
+        const treasureCount = countInstances(Treasure, this.getTilesAdjacentTo(row-1, col-1, 2, 2));
         return (walkableCount === 4 && treasureCount === 0);
+    }
+
+    isTreasureRoom(row:number, col:number) {
+        for (const [r, c, tile] of this.getTilesInRect(row-2, col-2, 3, 3)) {
+            const room = this.getTilesInRect(r, c, 3, 3);
+            const roomFloors = countInstances(Floor, room);
+            // const treasures = countInstances(Treasure, room);
+            const boundary = this.getTilesAdjacentTo(r, c, 3, 3);
+            const boundaryFloors = countInstances(Floor, boundary);
+            if (roomFloors === 8 && boundaryFloors === 1) {
+                return true;
+            }
+        }
+        return false;
     }
 
     isDeadEnd(row:number, col:number): boolean {
         if (this.tiles[row][col] instanceof Wall) {
             return false;
         }
-        let walkableCount = 0;
-        for (const [r, c, tile] of this.getTilesAdjacentTo(row, col)) {
-            walkableCount += Number(tile instanceof WalkableTile);
-        }
+        let walkableCount = countInstances(WalkableTile, this.getTilesAdjacentTo(row, col));
         return (walkableCount === 1);
     }
 
@@ -332,4 +342,12 @@ function arrayEqual<T>(a1: Array<T>, a2: Array<T>): boolean {
         }
     }
     return true;
+}
+
+function countInstances(ofType: typeof Tile, a: Iterable<[number, number, Tile]>) {
+    let count = 0;
+    for (const [row, col, tile] of a) {
+        count += Number(tile instanceof ofType)
+    }
+    return count;
 }
