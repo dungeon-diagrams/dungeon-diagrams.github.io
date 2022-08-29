@@ -18,8 +18,10 @@
       mocha.globals(['runes', 'preact', 'puzzle', 'Puzzle', 'Tile', 'TileString', 'PuzzleString', 'appSettings', 'Floor', 'MarkedFloor', 'Wall', 'Treasure', 'Monster', 'BossMonster', 'WalkableTile', 'FixedTile']);
       mocha.checkLeaks();
     </script>
-    <script type="module" src="test.app.js"></script>
     <script type="module" src="test.main.js"></script>
+    <script type="module" src="test.app.js"></script>
+    <script type="module" src="test.puzzle-string.js"></script>
+    <script type="module" src="test.puzzle.js"></script>
     <script type="module" class="mocha-exec">
       mocha.run();
     </script>

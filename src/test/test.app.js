@@ -1,6 +1,6 @@
 import { App } from "../app/app.js";
 
-describe("App Component", ()=>{
+describe("App Component (router)", ()=>{
     it("should render the home page without errors", ()=>{
         App("?");
     });

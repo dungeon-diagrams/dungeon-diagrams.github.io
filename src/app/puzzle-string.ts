@@ -26,8 +26,8 @@ export function parseRowCounts(spec: string): number[] {
 
 export function parseColCounts(spec: string): number[] {
     const counts = [];
-    const specRow = runes(spec.trim().split(/[\n,!]/)[1]).slice(1);
-    for (const specCol of specRow) {
+    const specCols = runes(spec.trim().split(/[\n,!]/)[1].trim()).slice(1);
+    for (const specCol of specCols) {
         counts.push(parseInt(specCol, 10)); // TODO: support other number glyphs
     }
     return counts;
@@ -38,7 +38,7 @@ export function parseTiles(spec: string) {
     const specRows = spec.trim().split(/[\n,!]/).slice(2);
     for (const specRow of specRows) {
         const rowTiles: Tile[] = [];
-        for (const specTile of runes(specRow).slice(1)) {
+        for (const specTile of runes(specRow.trim()).slice(1)) {
             rowTiles.push(Tile.parse(specTile));
         }
         tiles.push(rowTiles);
