@@ -108,6 +108,7 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
             const glyph = glyphs[glyphs.length-1];
             if (glyph.match(Monster.pattern) || glyph.match(BossMonster.pattern)) {
                 this.brushes.monster.glyph = glyph;
+                this.brushes.wall.monsterGlyph = glyph;
                 this.setState({monsterGlyph:glyph, tool: "monster"});
             }
         }

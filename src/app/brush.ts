@@ -103,7 +103,7 @@ export class MonsterBrush extends Brush {
     tileOrder = {default: [Monster, Floor]};
     glyph = appSettings.getItem("default-monster-glyph") as string || "🦁";
 
-    getNextTile(prevTile: Tile, eventType: EventType) {
+    getNextTile(prevTile:Tile, eventType:EventType) {
         if (prevTile.toHTML() === this.glyph) {
             return Floor;
         }
@@ -120,13 +120,14 @@ export class TreasureBrush extends Brush {
 
 export class DesignBrush extends Brush {
     tileOrder = {default: [Wall, Floor]};
+    monsterGlyph = appSettings.getItem("default-monster-glyph") as string || "🦁";
 
     autoMonster = true;
     autoTarget = true;
 
     didPaint(puzzle:EditablePuzzle, row:number, col:number) {
         if (this.autoMonster) {
-            puzzle.updateMonsters(row, col);
+            puzzle.updateMonsters(row, col, this.monsterGlyph);
             puzzle.didChange();
         }
         if (this.autoTarget) {
