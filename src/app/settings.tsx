@@ -47,18 +47,34 @@ class SettingsManager {
     fixKey(key: string) {
         return key.replace(/-./g, match => match[1].toUpperCase());
     }
+
+    static singleton?: SettingsManager;
+
+    static getSingleton() {
+        if (!SettingsManager.singleton) {
+            let storage;
+            if (typeof localStorage === "undefined") {
+                storage = {};
+            }
+            else {
+                storage = localStorage;
+            }
+            let element;
+            if (typeof document === "undefined") {
+                element = {dataset:{}};
+            }
+            else {
+                element = document.documentElement;
+            }
+            SettingsManager.singleton = new SettingsManager(storage as Storage, element as HTMLElement);
+        }
+        return SettingsManager.singleton;
+    }
 }
 
 /** singleton to access settings methods */
-let _appSettings;
-if (typeof window === "undefined") {
-    // for testability
-    _appSettings = new SettingsManager({} as Storage, {dataset:{}} as HTMLElement);
-}
-else {
-    _appSettings = new SettingsManager();
-}
-export const appSettings = _appSettings;
+
+export const appSettings = SettingsManager.getSingleton();
 
 /* --- UI Components --- */
 

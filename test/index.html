@@ -15,7 +15,7 @@
 
     <script class="mocha-init">
       mocha.setup('bdd');
-      mocha.globals(['runes', 'preact', 'Puzzle', 'Tile', 'TileString', 'PuzzleString', 'FLOOR', 'WALL', 'TREASURE', 'MONSTER', 'puzzle']);
+      mocha.globals(['runes', 'preact', 'puzzle', 'Puzzle', 'Tile', 'TileString', 'PuzzleString', 'appSettings', 'Floor', 'MarkedFloor', 'Wall', 'Treasure', 'Monster', 'BossMonster', 'WalkableTile', 'FixedTile']);
       mocha.checkLeaks();
     </script>
     <script type="module" src="test.app.js"></script>

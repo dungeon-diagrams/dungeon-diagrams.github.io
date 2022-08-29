@@ -10,12 +10,10 @@ import * as HTMLUtils from "./html-utils.js";
 import * as Brush from "./brush.js";
 import { appSettings } from "./settings.js";
 
-type runesFunc = (s:string)=>string[];
-
 // debugging
 declare global {
     interface Window {
-        runes: runesFunc;
+        runes: ((s:string)=>string[]);
         preact: object;
         puzzle: PuzzleModel.Puzzle;
     }
