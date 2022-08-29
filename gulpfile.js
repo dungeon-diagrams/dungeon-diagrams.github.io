@@ -11,22 +11,22 @@ const tsProject = ts.createProject("tsconfig.json");
 
 const paths = {
     static: [
-        "src/*.*",
         "src/!(test)/**/*.css",
         "src/!(test)/**/*.module.js",
         "src/!(test)/**/*.js.map",
-        "src/!(test)/**/*.txt"
+        "src/**/*.txt"
     ],
     typescript: [
-        "src/**/!(*.test).ts",
-        "src/**/!(*.test).tsx"
+        "src/**/!(*test*).ts",
+        "src/**/!(*test*).tsx"
     ],
     tests: [
         "src/test/**/*"
     ],
     templates: [
+        "src/*.html",
         "src/!(test)/**/*.html",
-        "src/!(test)/**/*.webmanifest"
+        "src/**/*.webmanifest"
     ],
     libsCJS: [
         "src/lib/runes.js"
