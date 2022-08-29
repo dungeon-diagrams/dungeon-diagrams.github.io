@@ -14,14 +14,15 @@ const paths = {
         "src/**/*.css",
         "src/**/*.module.js",
         "src/**/*.js.map",
+        "src/lib/*.js",
         "src/**/*.txt"
     ],
-    tests: [
-        "test/**/*"
-    ],
     typescript: [
-        "src/**/*.ts",
-        "src/**/*.tsx"
+        "src/**/!(*.test).ts",
+        "src/**/!(*.test).tsx"
+    ],
+    tests: [
+        "src/test/**/*"
     ],
     templates: [
         "src/**/*.html",
@@ -29,17 +30,18 @@ const paths = {
     ],
     libsCJS: [
         "src/lib/runes.js"
-    ]
+    ],
+    dist: "dist"
 };
 
 export function copyStatic(cb) {
     return (
         gulp.src(paths.static, { since: gulp.lastRun(copyStatic) })
-        .pipe(gulp.dest("dist"))
+        .pipe(gulp.dest(paths.dist))
     );
 }
 copyStatic.displayName = "copy-static";
-copyStatic.description = "Copy static files (css, robots.txt, vendor libraries)"
+copyStatic.description = "Copy static files (css, robots.txt, vendor libraries)";
 gulp.task(copyStatic);
 
 export function watchStatic() {
@@ -51,7 +53,7 @@ gulp.task(watchStatic);
 export async function convertCJS(cb) {
     const result = await cjstoesm.transform({
         input: paths.libsCJS,
-        outDir: "dist/lib/"
+        outDir: paths.dist + "/lib/"
     });
     cb();
 }
@@ -71,7 +73,7 @@ export async function renderTemplates(cb) {
             }
             return path;
         }))
-        .pipe(gulp.dest("./dist"))
+        .pipe(gulp.dest(paths.dist))
     );
 }
 renderTemplates.displayName = "render-templates";
@@ -96,11 +98,11 @@ export function compileTypescript() {
             }
         }))
         .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("./dist"))
+        .pipe(gulp.dest(paths.dist))
     );
 }
 compileTypescript.displayName = "compile-typescript";
-compileTypescript.description = "Compile TypeScript source to JavaScript"
+compileTypescript.description = "Compile TypeScript source to JavaScript";
 gulp.task(compileTypescript);
 
 export function watchTypescript() {
@@ -112,7 +114,7 @@ gulp.task(watchTypescript);
 export function buildTest(cb) {
     return (
         gulp.src(paths.tests, { since: gulp.lastRun(buildTest) })
-        .pipe(gulp.dest("dist/test/"))
+        .pipe(gulp.dest(paths.dist+"/test/"))
     );
 }
 buildTest.displayName = "build-test";
