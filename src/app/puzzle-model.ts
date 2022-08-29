@@ -154,10 +154,25 @@ export class Puzzle extends EventTarget {
             if (!(tile instanceof Monster) && deadEnd) {
                 return {solved: false, reason: `Some dead end has no monster: (${row}, ${col}).`};
             }
+            // - no 2x2 blocks of FLOOR tiles unless a TREASURE is adjacent (including diagonals)
+            if (this.isWideHall(row, col)) {
+                return {solved: false, reason: `Hallway too wide: (${row}, ${col})`};
+            }
         }
         // - each TREASURE is in a treasure room (3x3 block of 8 FLOOR and 1 TREASURE, adjacent to exactly 1 FLOOR and 0 MONSTER)
-        // - no 2x2 blocks of FLOOR tiles unless a TREASURE is adjacent (including diagonals)
         return {solved: true, reason: "Valid dungeon layout."};
+    }
+
+    isWideHall(row:number, col:number): boolean {
+        let walkableCount = 0;
+        let treasureCount = 0;
+        for (const [r, c, tile] of this.getTilesInRect(row, col, 2, 2)) {
+            walkableCount += Number(tile instanceof WalkableTile);
+        }
+        for (const [r, c, tile] of this.getTilesInRect(row-1, col-1, 4, 4)) {
+            treasureCount += Number(tile instanceof Treasure);
+        }
+        return (walkableCount === 4 && treasureCount === 0);
     }
 
     isDeadEnd(row:number, col:number): boolean {

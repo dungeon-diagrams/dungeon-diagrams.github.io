@@ -32,4 +32,35 @@ describe("Puzzle Model", ()=>{
             throw new Error(`incorrectly thought disconnected halls were solved: ${reason}`);
         }
     });
+
+    it("should detect wide halls", function(){
+        const puzzle = PuzzleString.parse(
+            `Test Puzzle 1
+            .002
+            1..*
+            1..*
+            0..m
+            `
+        );
+        const {solved, reason} = puzzle.isSolved();
+        if (solved) {
+            throw new Error(`incorrectly allowed a wide hall: ${reason}`);
+        }
+    });
+
+    it("should detect valid treasure rooms", function(){
+        const puzzle = PuzzleString.parse(
+            `Test Puzzle 1
+            .11132
+            2...**
+            2...**
+            0..t..
+            4****m
+            `
+        );
+        const {solved, reason} = puzzle.isSolved();
+        if (!solved) {
+            throw new Error(`incorrectly disallowed a valid treasure room: ${reason}`);
+        }
+    });
 });
