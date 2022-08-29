@@ -108,7 +108,7 @@ class ExpandableMenu extends Component<childrenProps, {open:boolean}> {
         const children = state.open ? props.children : null;
         // TODO: display it in a modal, with dim background also bound to toggle
         return (
-            <div className="menu-container">
+            <div className={`menu-container ${state.open ? 'open' : 'closed'}`}>
                 <span className="menu-button" onClick={this.toggle}>☰</span>
                 {children}
             </div>
