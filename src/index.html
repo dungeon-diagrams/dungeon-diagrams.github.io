@@ -3,12 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <title>{{ package.title }}</title>
-    <link rel="manifest" href="manifest.webmanifest">
-
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+
+    <link rel="manifest" href="manifest.json" />
+    <link type="application/json+oembed" href="oembed.json" />
     <link rel="stylesheet" type="text/css" href="style/style.css?v={{ package.version }}" />
     <script type="module" src="app/main.js?v={{ package.version }}"></script>
     {# <link rel="icon" href="" > #}
+
     <!-- Open Graph / Twitter metadata -->
     <meta property="og:type" content="website" />
     <meta property="og:title" name="twitter:title" content="{{ package.title }}" />
@@ -17,7 +19,6 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:creator" content="@{{ package.author.twitter }}" />
     {# <meta property="og:image" name="twitter:image" content="" /> #}
-
     <!-- Schema.org microdata -->
     <meta itemprop="name" content="{{ package.title }}" />
     <meta itemprop="description" content="{{ package.description }}" />

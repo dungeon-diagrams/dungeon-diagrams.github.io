@@ -26,7 +26,7 @@ const paths = {
     templates: [
         "src/*.html",
         "src/!(test)/**/*.html",
-        "src/**/*.webmanifest"
+        "src/**/*.nunjucks"
     ],
     libsCJS: [
         "src/lib/runes.js"
@@ -68,8 +68,9 @@ export async function renderTemplates(cb) {
         gulp.src(paths.templates)
         .pipe(nunjucks.compile(context))
         .pipe(rename(function(path){
-            if (path.basename === "manifest") {
-                path.extname = ".webmanifest";
+            if (path.basename.match(/\.json$/i)) {
+                path.extname = ".json";
+                path.basename = path.basename.replace(/\.json$/i, '');
             }
             return path;
         }))
