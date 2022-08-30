@@ -14,7 +14,8 @@ const paths = {
         "src/!(test)/**/*.css",
         "src/!(test)/**/*.module.js",
         "src/!(test)/**/*.js.map",
-        "src/**/*.txt"
+        "src/**/*.txt",
+        "src/**/es-module-shims.js"
     ],
     typescript: [
         "src/**/!(*test*).ts",

@@ -53,6 +53,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "es-module-shims": "^1.5.17",
     "preact": "^10.10.0",
     "runes": "^0.4.3"
   },
