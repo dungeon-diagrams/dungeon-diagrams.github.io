@@ -6,8 +6,8 @@ import { preferredColorScheme, preferredContrast, formValues } from "./html-util
  * A settings manager which makes defaults available to JS and CSS
  * 
  * usage:
- * import { settings } from 'settings.js';
- * monster.emoji = settings.get('default-monster-glyph');
+ * import { settings } from "settings.js";
+ * monster.emoji = settings.get("default-monster-glyph");
  */
 class SettingsManager {
     storage: Storage;
@@ -108,7 +108,7 @@ class ExpandableMenu extends Component<childrenProps, {open:boolean}> {
         const children = state.open ? props.children : null;
         // TODO: display it in a modal, with dim background also bound to toggle
         return (
-            <div className={`menu-container ${state.open ? 'open' : 'closed'}`}>
+            <div className={`menu-container ${state.open ? "open" : "closed"}`}>
                 <span className="menu-button" onClick={this.toggle}>☰</span>
                 {children}
             </div>

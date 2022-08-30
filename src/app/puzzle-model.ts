@@ -192,7 +192,7 @@ export class Puzzle extends EventTarget {
         if (this.tiles[row][col] instanceof Wall) {
             return false;
         }
-        let walkableCount = countInstances(WalkableTile, this.getTilesAdjacentTo(row, col));
+        const walkableCount = countInstances(WalkableTile, this.getTilesAdjacentTo(row, col));
         return (walkableCount === 1);
     }
 
@@ -218,7 +218,7 @@ export class Puzzle extends EventTarget {
             return true;
         }
         const firstHall = halls[0];
-        const connectedHalls = [...this.getConnectedTiles(firstHall[0], firstHall[1])]
+        const connectedHalls = [...this.getConnectedTiles(firstHall[0], firstHall[1])];
         return (connectedHalls.length === halls.length);
     }
 
@@ -347,7 +347,7 @@ function arrayEqual<T>(a1: Array<T>, a2: Array<T>): boolean {
 function countInstances(ofType: typeof Tile, a: Iterable<[number, number, Tile]>) {
     let count = 0;
     for (const [row, col, tile] of a) {
-        count += Number(tile instanceof ofType)
+        count += Number(tile instanceof ofType);
     }
     return count;
 }
