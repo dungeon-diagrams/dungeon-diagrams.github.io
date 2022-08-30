@@ -1,6 +1,6 @@
 {
+    "version": "1.0",
     "type": "link",
-    "version": "{{ package.version }}",
     "title": "{{ package.title }}",
     "url": "{{ package.homepage }}",
     "provider_name": "{{ package.description }}"
