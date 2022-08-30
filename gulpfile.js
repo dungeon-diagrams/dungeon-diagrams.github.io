@@ -6,6 +6,11 @@ import * as cjstoesm from "cjstoesm";
 import nunjucks from "gulp-nunjucks";
 import { readFile } from "node:fs/promises";
 import rename from "gulp-rename";
+let eslint;
+try {
+    eslint = (await import("gulp-eslint")).default;
+}
+catch {}
 
 const tsProject = ts.createProject("tsconfig.json");
 
@@ -87,6 +92,23 @@ export function watchTemplates() {
 watchTemplates.displayName = "watch-templates";
 gulp.task(watchTemplates);
 
+export function lint() {
+    return (
+        gulp.src(paths.typescript, { since: gulp.lastRun(lint) })
+        .pipe(eslint())
+        .pipe(eslint.format())
+    );
+}
+lint.displayName = "lint";
+lint.description = "Report code style issues";
+gulp.task(lint);
+
+export function watchLint() {
+    gulp.watch(paths.typescript, { ignoreInitial: false }, lint);
+}
+watchLint.displayName = "watch-lint";
+gulp.task(watchLint);
+
 export function compileTypescript() {
     return (
         tsProject.src()
@@ -143,7 +165,7 @@ export const watch = gulp.parallel(
     watchTypescript,
     watchStatic,
     watchTemplates,
-    watchTest
+    watchTest,
 );
 watch.displayName = "watch";
 watch.description = "Continuously rebuild files when they change";
