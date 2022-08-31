@@ -88,8 +88,8 @@ export function SettingsButton() {
         <ExpandableMenu>
             <ControlPanel />
             <br />
-            <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a></p>
-            <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a></p>
+            <p><a target="_blank" href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a></p>
+            <p><a target="_blank" href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a></p>
         </ExpandableMenu>
     );
 }
