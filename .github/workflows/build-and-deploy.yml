@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+# Ensures that only one deploy task per branch/environment will run at a time.
+concurrency:
+  group: environment-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   # Build job
   build:
@@ -13,6 +18,7 @@ jobs:
 
     env:
       NODE_VERSION: 16.x
+      BUILD_VERSION: ${{ github.run_number }}
     
     steps:
     - uses: actions/checkout@v3
@@ -25,7 +31,7 @@ jobs:
     - name: Build
       run: |
         npm install
-        env BUILD_VERSION="${{ github.run_number }}" npm run build
+        npm run build
 
     - name: Test with Node.js
       run: |
