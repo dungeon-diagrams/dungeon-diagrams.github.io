@@ -1,5 +1,7 @@
 import { h, Component } from "preact";
+import { default as runes } from "runes";
 import { preferredColorScheme, preferredContrast, formValues } from "./html-utils.js";
+import { Tile, Monster } from "./tile.js";
 
 /**
  * @class SettingsManager
@@ -94,23 +96,14 @@ export function SettingsButton() {
 
 type childrenProps = any;
 
-/*
-
-ExpandableMenu
-
-- display an open-button at this element's location
-- open-button sets state to ".open.transitioning"
-    - menu-screen appears and begins to fade in
-    - menu-contents animate into view
-- when transition ends:
-    - remove ".transitioning" class
-- clicking on background or close-button sets state to "closing". when closing:
-    - menu-screen begins to fade out
-    - menu-contents animate out of view
-- when closing transition ends:
-    - state becomes "closed"
-
-*/
+/**
+ * @class ExpandableMenu -
+ * state machine that supports css transitions with the following phases:
+ * .menu-container.closed
+ * .menu-container.open.transitioning
+ * .menu-container.open
+ * .menu-container.closed.transitioning
+ */
 
 class ExpandableMenu extends Component<childrenProps, {open:boolean, transitioning:boolean}> {
     constructor(props:childrenProps) {
@@ -137,20 +130,12 @@ class ExpandableMenu extends Component<childrenProps, {open:boolean, transitioni
     };
 
     render(props:childrenProps, state:{open:boolean, transitioning:boolean}) {
-        let menuScreen = null;
-        if (state.open) {
-            menuScreen = (
-                <div className="menu-contents" onClick={(event)=>{event.stopPropagation()}}>
-                    {props.children}
-                </div>
-            );
-        }
         return (
             <div className={`menu-container ${state.open ? "open" : "closed"} ${state.transitioning ? "transitioning" : ""}`}>
                 <span className="menu-button" onClick={this.toggle}>{state.open ? "⨉" : "☰"}</span>
                 <div className="menu-screen" onClick={this.toggle} onTransitionEnd={this.transitionEnd}>
                     <div className="menu-contents" onClick={(event)=>{event.stopPropagation()}}>
-                        {props.children}
+                        {this.props.children}
                     </div>
                 </div>
             </div>
@@ -167,10 +152,22 @@ class ControlPanel extends Component {
             if (value === "default" || value === "") {
                 appSettings.removeItem(name);
             }
+            else if (name === "default-monster-glyph") {
+                const glyphs = runes(value);
+                const glyph = glyphs[glyphs.length-1];
+                const tile = Tile.parse(glyph);
+                if (tile instanceof Monster) {
+                    appSettings.setItem(name, tile.toHTML());
+                }
+                else {
+                    appSettings.removeItem(name);
+                }
+            }
             else {
                 appSettings.setItem(name, value);
             }
         }
+        this.setState({});
     };
 
     resetRecords = (event:Event) => {
@@ -182,7 +179,7 @@ class ControlPanel extends Component {
         const values = appSettings.values();
         return (
             <div className="control-panel">
-                <form onChange={this.saveSettings}>
+                <form onChange={this.saveSettings} onKeyUp={this.saveSettings}>
                     <fieldset>
                         <legend>Settings</legend>
                         Color Scheme:<br />

@@ -21,11 +21,9 @@ export abstract class Tile {
 
     setGlyph(glyph: string) {
         if (glyph) {
-            if (glyph.match(/\p{ASCII}/u)) {
+			this.emoji = glyph;
+            if (!glyph.match(/\P{ASCII}/u)) {
                 this.ASCII = glyph;
-            }
-            else {
-                this.emoji = glyph;
             }
         }
     }
@@ -103,7 +101,7 @@ export class Monster extends FixedTile {
 export class BossMonster extends Monster {
     ASCII = "M";
     emoji = "🐲";
-    static pattern = /[A-SU-WYZ♚♛♔♕🦖🦕🐊🐉🐲🧊]/u;
+    static pattern = /[A-SU-WYZ@♚♛♔♕🦖🦕🐊🐉🐲🧊]/u;
 }
 
 export const TileTypes = { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, FixedTile };

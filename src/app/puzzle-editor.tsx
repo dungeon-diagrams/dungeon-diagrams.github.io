@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
 import { default as runes } from "runes";
 
-import { Puzzle, EditablePuzzle, TileTypes } from "./puzzle-model.js";
+import { Puzzle, EditablePuzzle, Tile, TileTypes } from "./puzzle-model.js";
 import { PuzzleGrid } from "./puzzle-view.js";
 import { Brush, EraseBrush, MonsterBrush, TreasureBrush, DesignBrush } from "./brush.js";
 
@@ -106,7 +106,8 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
         else if (input.name === "monsterGlyph") {
             const glyphs = runes(input.value);
             const glyph = glyphs[glyphs.length-1];
-            if (glyph.match(Monster.pattern) || glyph.match(BossMonster.pattern)) {
+			const tile = Tile.parse(glyph);
+			if (tile instanceof Monster) {
                 this.brushes.monster.glyph = glyph;
                 this.brushes.wall.monsterGlyph = glyph;
                 this.setState({monsterGlyph:glyph, tool: "monster"});
