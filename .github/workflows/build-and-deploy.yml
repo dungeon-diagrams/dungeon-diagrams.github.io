@@ -13,9 +13,6 @@ jobs:
 
     env:
       NODE_VERSION: 16.x
-      GITHUB_RUN_ID: ${{ github.run_id }}
-      GITHUB_RUN_NUMBER: ${{ github.run_number }}
-      GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
     
     steps:
     - uses: actions/checkout@v3
@@ -28,7 +25,7 @@ jobs:
     - name: Build
       run: |
         npm install
-        env BUILD_VERSION="${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}" npm run build
+        env BUILD_VERSION="${{ github.run_number }}" npm run build
 
     - name: Test with Node.js
       run: |
