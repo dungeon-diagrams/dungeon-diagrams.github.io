@@ -110,7 +110,7 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1em;
     margin: 3em;
     top: -100vh;
-    transition: top 300ms ease-out;
+    transition: top 300ms ease-in-out;
 }
 .menu-container.open .menu-contents {
     top: 0;

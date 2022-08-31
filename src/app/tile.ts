@@ -77,7 +77,7 @@ export class MarkedFloor extends Floor {
     ASCII = "x";
     emoji = "🔳";
     HTML = "×";
-    static pattern = /[x✖️×✖️x╳⨯⨉❌⊘🚫💠❖]/iu;
+    static pattern = /[xX×✖️╳⨯⨉❌⊘🚫💠❖]/iu;
 }
 
 export class Wall extends Tile {
