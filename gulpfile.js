@@ -64,7 +64,10 @@ gulp.task(convertCJS);
 
 export async function renderTemplates(cb) {
     const packageJSON = JSON.parse(await readFile("./package.json", "utf8"));
-    const context = {package: packageJSON};
+    const context = {
+        package: packageJSON,
+        env: process.env
+    };
     return (
         gulp.src(paths.templates)
         .pipe(nunjucks.compile(context))

@@ -7,9 +7,9 @@
 
     <link rel="manifest" href="manifest.json" />
     <link rel="alternate" type="application/json+oembed" href="oembed.json" />
-    <link rel="stylesheet" type="text/css" href="style/style.css?v={{ package.version }}" />
+    <link rel="stylesheet" type="text/css" href="style/style.css?v={{ env.BUILD_VERSION or package.version }}" />
     <script async nomodule src="lib/es-module-shims.js"></script>
-    <script type="module" src="app/main.js?v={{ package.version }}"></script>
+    <script type="module" src="app/main.js?v={{ env.BUILD_VERSION or package.version }}"></script>
     {# <link rel="icon" href="" > #}
 
     <!-- Open Graph / Twitter metadata -->
