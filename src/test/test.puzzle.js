@@ -3,7 +3,7 @@ import * as PuzzleString from "../app/puzzle-string.js";
 
 describe("Puzzle Model", ()=>{
     it("should detect a completely unsolved puzzle", function(){
-        const puzzle = PuzzleString.parse("Test Puzzle 1!.25332332!1!4!2!2...👑..🐀!3!4.....🐍!2!5");
+        const puzzle = PuzzleString.parse("Unsolved Puzzle!.25332332!1!4!2!2...👑..🐀!3!4.....🐍!2!5");
         const {solved, reason} = puzzle.isSolved();
         if (solved) {
             throw new Error(`incorrectly thought an unsolved puzzle was solved: ${puzzle.name}: ${reason}`);
@@ -11,7 +11,7 @@ describe("Puzzle Model", ()=>{
     });
 
     it("should detect a correctly solved puzzle", function(){
-        const puzzle = PuzzleString.parse("Example Dungeon!.424121!3***..💎!1*!2*.*!5*.****!1....*🐲!2🦁**");
+        const puzzle = PuzzleString.parse("Solved Puzzle!.424121!3***..💎!1*!2*.*!5*.****!1....*🐲!2🦁**");
         const {solved, reason} = puzzle.isSolved();
         if (!solved) {
             throw new Error(`incorrectly thought a solved puzzle was unsolved: ${puzzle.name}: ${reason}`);
@@ -20,7 +20,7 @@ describe("Puzzle Model", ()=>{
 
     it("should detect disconnected halls", function(){
         const puzzle = PuzzleString.parse(
-            `Test Puzzle 1
+            `Invalid Disconnected Halls
             .030
             1m*m
             1.*.
@@ -35,7 +35,7 @@ describe("Puzzle Model", ()=>{
 
     it("should detect wide halls", function(){
         const puzzle = PuzzleString.parse(
-            `Test Puzzle 2
+            `Invalid Wide Halls
             .002
             1..*
             1..*
@@ -50,7 +50,7 @@ describe("Puzzle Model", ()=>{
 
     it("should detect wide halls outside treasure rooms", function(){
         const puzzle = PuzzleString.parse(
-            `Test Puzzle 3
+            `Invalid Wide Halls 2
             .02222
             3..***
             3..***
@@ -67,7 +67,7 @@ describe("Puzzle Model", ()=>{
 
     it("should detect valid treasure rooms", function(){
         const puzzle = PuzzleString.parse(
-            `Test Puzzle 4
+            `Valid Treasure Room
             .11132
             2...**
             2...**
@@ -83,7 +83,7 @@ describe("Puzzle Model", ()=>{
 
     it("should detect invalid treasure rooms", function(){
         const puzzle5 = PuzzleString.parse(
-            `Test Puzzle 5
+            `Invalid Treasure Room with 2 exits
             .11132
             2....m
             2...**
@@ -92,7 +92,7 @@ describe("Puzzle Model", ()=>{
             `
         );
         const puzzle6 = PuzzleString.parse(
-            `Test Puzzle 6
+            `Invalid Treasure outside Treasure Room
             .030
             1.t.
             1.*.
