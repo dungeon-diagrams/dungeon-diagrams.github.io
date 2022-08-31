@@ -1,8 +1,8 @@
 {
-    "name": "{{ package.title }}",
-    "short_name": "{{ package.short_name or package.title }}",
-    "description": "{{ package.description }}",
-    "start_url": "{{ package.homepage }}",
+    "name": {{ package.title | dump | safe }},
+    "short_name": {{ package.short_name | dump | safe or package.title | dump | safe}},
+    "description": {{ package.description | dump | safe }},
+    "start_url": {{ package.homepage | dump | safe }},
     "display": "fullscreen",
     "background_color": "#333",
     "icons": [

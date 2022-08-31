@@ -1,7 +1,7 @@
 {
     "version": "1.0",
     "type": "link",
-    "title": "{{ package.title }}",
-    "url": "{{ package.homepage }}",
-    "provider_name": "{{ package.description }}"
+    "title": {{ package.title | dump | safe }},
+    "url": {{ package.homepage | dump | safe }},
+    "provider_name": {{ package.description | dump | safe }}
 }
