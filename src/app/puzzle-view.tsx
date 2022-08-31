@@ -1,4 +1,5 @@
 import { h, Component } from "preact";
+import { findParent } from "./html-utils.js";
 import { Puzzle, Tile } from "./puzzle-model.js";
 import { Brush, SolveBrush } from "./brush.js";
 import * as PuzzleString from "./puzzle-string.js";
@@ -71,9 +72,10 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
 
     getTile(x: number, y: number): [number, number, Tile | null] | [null, null, null] {
         const targetEl = document.elementFromPoint(x, y) as HTMLElement | null;
-        if (targetEl?.classList.contains("puzzle-cell")) {
-            const row = parseInt(targetEl.dataset.row || "", 10);
-            const col = parseInt(targetEl.dataset.col || "", 10);
+        const tileEl = findParent(targetEl, ".puzzle-cell");
+        if (tileEl) {
+            const row = parseInt(tileEl.dataset.row || "", 10);
+            const col = parseInt(tileEl.dataset.col || "", 10);
             const tile = this.state.puzzle.getTile(row, col);
             return [row, col, tile];
         }
