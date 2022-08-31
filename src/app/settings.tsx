@@ -53,20 +53,20 @@ class SettingsManager {
     static getSingleton() {
         if (!SettingsManager.singleton) {
             let storage = {};
-			try {
-				storage = localStorage;
-			}
-			catch (e) {
-				try {
-					storage = sessionStorage;
-				}
-				catch (e) {}
-			}
+            try {
+                storage = localStorage;
+            }
+            catch (e) {
+                try {
+                    storage = sessionStorage;
+                }
+                catch (e) {}
+            }
             let element;
-			try {
-				element = document.documentElement;
-			}
-			catch (e) {
+            try {
+                element = document.documentElement;
+            }
+            catch (e) {
                 element = {dataset:{}};
             }
             SettingsManager.singleton = new SettingsManager(storage as Storage, element as HTMLElement);
@@ -86,37 +86,73 @@ export function SettingsButton() {
         <ExpandableMenu>
             <ControlPanel />
             <br />
-            <fieldset>
-                <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a></p>
-                <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a></p>
-            </fieldset>
+            <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a></p>
+            <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a></p>
         </ExpandableMenu>
     );
 }
 
 type childrenProps = any;
 
-class ExpandableMenu extends Component<childrenProps, {open:boolean}> {
+/*
+
+ExpandableMenu
+
+- display an open-button at this element's location
+- open-button sets state to ".open.transitioning"
+    - menu-screen appears and begins to fade in
+    - menu-contents animate into view
+- when transition ends:
+    - remove ".transitioning" class
+- clicking on background or close-button sets state to "closing". when closing:
+    - menu-screen begins to fade out
+    - menu-contents animate out of view
+- when closing transition ends:
+    - state becomes "closed"
+
+*/
+
+class ExpandableMenu extends Component<childrenProps, {open:boolean, transitioning:boolean}> {
     constructor(props:childrenProps) {
         super(props);
         this.state = {
-            open: false
+            open: false,
+            transitioning: false
         };
     }
 
     toggle = (event:Event) => {
         event.preventDefault();
         event.stopPropagation();
-        this.setState({open: !this.state.open});
+        this.setState({
+            open: !this.state.open,
+            transitioning: true
+        });
     };
 
-    render(props:childrenProps, state:{open:boolean}) {
-        const children = state.open ? props.children : null;
-        // TODO: display it in a modal, with dim background also bound to toggle
+    transitionEnd = (event:Event) => {
+        if ((event.target as HTMLElement).classList.contains("menu-screen")) {
+            this.setState({transitioning: false});
+        }
+    };
+
+    render(props:childrenProps, state:{open:boolean, transitioning:boolean}) {
+        let menuScreen = null;
+        if (state.open) {
+            menuScreen = (
+                <div className="menu-contents" onClick={(event)=>{event.stopPropagation()}}>
+                    {props.children}
+                </div>
+            );
+        }
         return (
-            <div className={`menu-container ${state.open ? "open" : "closed"}`}>
-                <span className="menu-button" onClick={this.toggle}>☰</span>
-                {children}
+            <div className={`menu-container ${state.open ? "open" : "closed"} ${state.transitioning ? "transitioning" : ""}`}>
+                <span className="menu-button" onClick={this.toggle}>{state.open ? "⨉" : "☰"}</span>
+                <div className="menu-screen" onClick={this.toggle} onTransitionEnd={this.transitionEnd}>
+                    <div className="menu-contents" onClick={(event)=>{event.stopPropagation()}}>
+                        {props.children}
+                    </div>
+                </div>
             </div>
         );
     }

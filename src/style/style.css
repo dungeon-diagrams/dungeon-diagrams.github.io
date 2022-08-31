@@ -79,13 +79,43 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1em;
     text-align: left;
 }
-.menu-container.open {
-    background: var(--light, #ddd) var(--dark, #333);
-}
 .menu-button {
     cursor: pointer;
     user-select: none;
 }
+.menu-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 0;
+    /* overflow: hidden; */
+    text-align: center;
+    cursor: pointer;
+    transition: background 500ms linear;
+}
+.menu-container.open > .menu-screen,
+.menu-container.closed.transitioning > .menu-screen {
+    width: 100vw;
+    height: 100vh;
+}
+.menu-container.open > .menu-screen {
+    background: rgba(0,0,0,0.5);
+}
+.menu-contents {
+    position: relative;
+    display: inline-block;
+    cursor: initial;
+    text-align: left;
+    background: var(--light, #ddd) var(--dark, #333);
+    padding: 1em;
+    margin: 3em;
+    top: -100vh;
+    transition: top 300ms ease-out;
+}
+.menu-container.open .menu-contents {
+    top: 0;
+}
+
 
 /* puzzle components */
 

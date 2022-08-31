@@ -183,9 +183,9 @@ export function App(query?: string) {
         Object.assign(globalThis, {puzzle});
         return (
             <div id="app" className="app">
+                <SettingsButton />
                 <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
                 <PuzzleSolver puzzle={puzzle} />
-                <SettingsButton />
             </div>
         );
     }
@@ -194,9 +194,9 @@ export function App(query?: string) {
         Object.assign(globalThis, {puzzle});
         return (
             <div id="app" className="app">
+                <SettingsButton />
                 <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
                 <PuzzleEditor puzzle={puzzle} />
-                <SettingsButton />
             </div>
         );
     }
@@ -212,6 +212,7 @@ export function App(query?: string) {
         }
         return (
             <div id="app" className="app">
+                <SettingsButton />
                 <h1>Daily Dungeons and Diagrams</h1>
                 <ul>
                     {navLinks}
@@ -219,7 +220,6 @@ export function App(query?: string) {
                 <ul>
                     <li><a href="?mode=edit">Create New Dungeon</a></li>
                 </ul>
-                <SettingsButton />
             </div>
         );
     }
