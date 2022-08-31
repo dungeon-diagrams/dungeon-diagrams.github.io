@@ -27,15 +27,15 @@ jobs:
         npm install
         npm run build
 
+    - name: Test with Node.js
+      run: |
+        npm test
+
     - name: Upload a Build Artifact
       uses: actions/upload-pages-artifact@v1.0.1
       with:
         path: "./dist"
         retention-days: 7
-
-    - name: Test with Node.js
-      run: |
-        npm test
 
   # Deploy job
   deploy:
