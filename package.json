@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "es-module-shims": "^1.5.17",
+    "mocha-dark": "^8.3.2",
     "preact": "^10.10.0",
     "runes": "^0.4.3"
   },
