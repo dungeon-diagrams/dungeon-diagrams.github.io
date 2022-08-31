@@ -52,19 +52,22 @@ class SettingsManager {
 
     static getSingleton() {
         if (!SettingsManager.singleton) {
-            let storage;
-            if (typeof localStorage === "undefined") {
-                storage = {};
-            }
-            else {
-                storage = localStorage;
-            }
+            let storage = {};
+			try {
+				storage = localStorage;
+			}
+			catch (e) {
+				try {
+					storage = sessionStorage;
+				}
+				catch (e) {}
+			}
             let element;
-            if (typeof document === "undefined") {
+			try {
+				element = document.documentElement;
+			}
+			catch (e) {
                 element = {dataset:{}};
-            }
-            else {
-                element = document.documentElement;
             }
             SettingsManager.singleton = new SettingsManager(storage as Storage, element as HTMLElement);
         }
