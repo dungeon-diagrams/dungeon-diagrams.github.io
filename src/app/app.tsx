@@ -1,5 +1,5 @@
-import { h } from "preact";
-import { Puzzle, EditablePuzzle } from "./puzzle-model.js";
+import { h, Fragment } from "preact";
+import { Puzzle } from "./puzzle-model.js";
 import { PuzzleSolver } from "./puzzle-view.js";
 import { PuzzleEditor } from "./puzzle-editor.js";
 import * as PuzzleString from "./puzzle-string.js";
@@ -178,27 +178,16 @@ export function App(query?: string) {
     else if (puzzleID || puzzleID === 0) {
         puzzle = PuzzleString.parse(dailyPuzzles[puzzleID]);
     }
-    if (puzzle) {
+    
+	let page;
+	if (params.mode === "edit") {
+        puzzle ||= new Puzzle({name:"Untitled Dungeon", colTargets:[0,0,0,0,0,0,0,0], rowTargets:[0,0,0,0,0,0,0,0], tiles: []});
+		puzzle = puzzle.editableCopy();
+		page = <PuzzleEditor puzzle={puzzle} />;
+	}
+    else if (puzzle) {
         puzzle = puzzle.solvableCopy();
-        Object.assign(globalThis, {puzzle});
-        return (
-            <div id="app" className="app">
-                <SettingsButton />
-                <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
-                <PuzzleSolver puzzle={puzzle} />
-            </div>
-        );
-    }
-    else if (params.mode === "edit") {
-        puzzle = new EditablePuzzle({name:"Untitled Dungeon", colTargets:[0,0,0,0,0,0,0,0], rowTargets:[0,0,0,0,0,0,0,0], tiles: []});
-        Object.assign(globalThis, {puzzle});
-        return (
-            <div id="app" className="app">
-                <SettingsButton />
-                <h1><a href=".">Daily Dungeons and Diagrams</a></h1>
-                <PuzzleEditor puzzle={puzzle} />
-            </div>
-        );
+		page = <PuzzleSolver puzzle={puzzle} />;
     }
     else {
         const navLinks = [];
@@ -210,17 +199,22 @@ export function App(query?: string) {
                 <pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
             </li>);
         }
-        return (
-            <div id="app" className="app">
-                <SettingsButton />
-                <h1>Daily Dungeons and Diagrams</h1>
-                <ul>
-                    {navLinks}
-                </ul>
-                <ul>
-                    <li><a href="?mode=edit">Create New Dungeon</a></li>
-                </ul>
-            </div>
-        );
+		page = (<>
+			<ul>
+				{navLinks}
+			</ul>
+			<ul>
+				<li><a href="?mode=edit">Create New Dungeon</a></li>
+			</ul>
+		</>);
     }
+
+	Object.assign(globalThis, {puzzle});
+	return (
+		<div id="app" className="app">
+			<SettingsButton />
+			<h1><a href=".">Daily Dungeons and Diagrams</a></h1>
+			{page}
+		</div>
+	)
 }

@@ -40,15 +40,18 @@ export function init() {
     }
     catch (e: unknown) {
         console.error(e);
-        const statusDisplay = document.getElementById("status-display");
-        if (statusDisplay) {
-            statusDisplay.dataset.status = "Error";
-            if (e instanceof Error) {
-                statusDisplay.innerText = `${e.name}: ${e.message}`;
-            }
-            else {
-                statusDisplay.innerText = `Error: ${e}`;
-            }
+        let statusDisplay = document.getElementById("status-display");
+        if (!statusDisplay) {
+            statusDisplay = document.createElement("div");
+            statusDisplay.id = "status-display";
+            document.body.appendChild(statusDisplay);
+        }
+        statusDisplay.dataset.status = "Error";
+        if (e instanceof Error) {
+            statusDisplay.innerText = `${e.name}: ${e.message}`;
+        }
+        else {
+            statusDisplay.innerText = `Error: ${e}`;
         }
     }
 }

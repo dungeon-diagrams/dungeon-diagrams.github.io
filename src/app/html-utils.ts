@@ -55,27 +55,40 @@ export function css(element: HTMLElement, property:string): string {
 }
 
 export function glyphSupported(glyph:string) {
-    return document.fonts.check(`${css(document.body, "font-size")} ${css(document.body, "font-family")}`, glyph);
+    try {
+        return document.fonts.check(`${css(document.body, "font-size")} ${css(document.body, "font-family")}`, glyph);
+    }
+    catch (e) {
+        return false;
+    }
 }
 
 export function isTouchScreen() {
-    return window.navigator.maxTouchPoints >= 1;
+    return navigator.maxTouchPoints >= 1;
 }
 
 export function preferredColorScheme() {
-    for (const theme of ["dark", "light"]) {
-        if (window.matchMedia(`(prefers-color-scheme: ${theme})`).matches) {
-            return theme;
+    try {
+        for (const theme of ["dark", "light"]) {
+            if (window.matchMedia(`(prefers-color-scheme: ${theme})`).matches) {
+                return theme;
+            }
         }
+    }
+    catch (e) {  
     }
     return null;
 }
 
 export function preferredContrast() {
-    for (const theme of ["more", "less"]) {
-        if (window.matchMedia(`(prefers-contrast: ${theme})`).matches) {
-            return theme;
+    try {
+        for (const theme of ["more", "less"]) {
+            if (window.matchMedia(`(prefers-contrast: ${theme})`).matches) {
+                return theme;
+            }
         }
+    }
+    catch (e) {
     }
     return null;
 }
