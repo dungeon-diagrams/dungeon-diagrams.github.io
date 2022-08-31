@@ -82,8 +82,11 @@ export function SettingsButton() {
     return (
         <ExpandableMenu>
             <ControlPanel />
-            <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a></p>
-            <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a></p>
+            <br />
+            <fieldset>
+                <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io">Source Code</a></p>
+                <p><a href="https://github.com/dungeon-diagrams/dungeon-diagrams.github.io/issues">Feedback</a></p>
+            </fieldset>
         </ExpandableMenu>
     );
 }
@@ -119,8 +122,8 @@ class ExpandableMenu extends Component<childrenProps, {open:boolean}> {
 class ControlPanel extends Component {
     saveSettings = (event:Event) => {
         event.preventDefault();
-        const form = event.target as HTMLFormElement;
-        const values = formValues(form);
+        const form = event.target as HTMLElement;
+        const values = formValues(form.parentElement as HTMLElement);
         for (const [name, value] of Object.entries(values)) {
             if (value === "default" || value === "") {
                 appSettings.removeItem(name);
@@ -140,7 +143,7 @@ class ControlPanel extends Component {
         const values = appSettings.values();
         return (
             <div className="control-panel">
-                <form onSubmit={this.saveSettings}>
+                <form onChange={this.saveSettings}>
                     <fieldset>
                         <legend>Settings</legend>
                         Color Scheme:<br />
@@ -156,8 +159,6 @@ class ControlPanel extends Component {
                         <label>Favorite Monster:<br />
                             <input type="text" name="default-monster-glyph" size={1} value={values["default-monster-glyph"] || "🦁"} />
                         </label>
-                        <br /><br />
-                        <button>Save</button>
                     </fieldset>
                 </form>
                 <form onSubmit={this.resetRecords} style={{display:"none"}}>
