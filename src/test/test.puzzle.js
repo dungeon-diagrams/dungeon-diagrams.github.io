@@ -18,6 +18,36 @@ describe("Puzzle Model", ()=>{
         }
     });
 
+    it("should detect valid dead ends", function(){
+        const puzzle = PuzzleString.parse(
+            `Valid Dead Ends
+            .3223
+            4****
+            2*mm*
+            4****
+            `
+        );
+        const {solved, reason} = puzzle.isSolved();
+        if (!solved) {
+            throw new Error(`incorrectly thought dead ends were unsolved: ${puzzle.name}: ${reason}`);
+        }
+    });
+
+    it("should detect invalid dead ends", function(){
+        const puzzle = PuzzleString.parse(
+            `Invalid Dead Ends
+            .3223
+            4****
+            2*.m*
+            4****
+            `
+        );
+        const {solved, reason} = puzzle.isSolved();
+        if (solved) {
+            throw new Error(`incorrectly thought dead ends were solved: ${puzzle.name}: ${reason}`);
+        }
+    });
+
     it("should detect disconnected halls", function(){
         const puzzle = PuzzleString.parse(
             `Invalid Disconnected Halls
