@@ -133,7 +133,7 @@ class ExpandableMenu extends Component<childrenProps, {open:boolean, transitioni
         return (
             <div className={`menu-container ${state.open ? "open" : "closed"} ${state.transitioning ? "transitioning" : ""}`}>
                 <span className="menu-button" onClick={this.toggle}>{!state.open || state.transitioning ? "☰" : "✖️" }</span>
-                <div className="menu-screen" onClick={this.toggle} onTransitionEnd={this.transitionEnd}>
+                <div className="menu-screen" onClick={state.open ? this.toggle : undefined } onTransitionEnd={this.transitionEnd}>
                     <div className="menu-contents" onClick={(event)=>{event.stopPropagation()}}>
                         {this.props.children}
                     </div>

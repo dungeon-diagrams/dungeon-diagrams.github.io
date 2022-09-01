@@ -87,8 +87,8 @@ h1, h2, h3, h4, h5, h6 {
     position: fixed;
     top: 0;
     left: 0;
-    height: 0;
-    /* overflow: hidden; */
+    max-height: 0;
+    overflow: hidden;
     text-align: center;
     cursor: pointer;
     transition: background 500ms linear;
@@ -97,6 +97,7 @@ h1, h2, h3, h4, h5, h6 {
 .menu-container.closed.transitioning > .menu-screen {
     width: 100vw;
     height: 100vh;
+    max-height: 100vh;
 }
 .menu-container.open > .menu-screen {
     background: rgba(0,0,0,0.5);
