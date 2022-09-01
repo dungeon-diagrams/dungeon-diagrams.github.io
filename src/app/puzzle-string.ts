@@ -12,7 +12,8 @@ export function parse(spec: string): Puzzle {
 }
 
 export function parseName(spec: string): string {
-    return spec.trim().split(/[\n,!]/)[0];
+    const nameLine = spec.trim().split(/[\n,!]/)[0];
+	return nameLine.replace(/[\s_+]+/g, ' ');
 }
 
 export function parseRowCounts(spec: string): number[] {
@@ -89,7 +90,7 @@ export function toUnsolvedURI(puzzle: Puzzle): string {
 }
 
 export function toPuzzleURI(puzzle: Puzzle, includeState = true): string {
-    const lines: string[] = [puzzle.name];
+    const lines: string[] = [puzzle.name.replace(/\s/g, '_')];
     lines.push(`.${  puzzle.colTargets.join("")}`);
     let i = 0;
     for (const row of puzzle.tiles) {
