@@ -16,12 +16,18 @@
 export abstract class Tile {
     ASCII = "_"; // should be encodable as a URI with no escape
     emoji = "🌫"; // should be square
+	glyph?: string;
     HTML?: string;
     static pattern = /.|[\?_-]/;
 
     setGlyph(glyph: string) {
         if (glyph) {
-			this.emoji = glyph;
+			if (glyph != this.ASCII) {
+				this.glyph = glyph;
+			}
+			if (glyph.match(/\p{Emoji}/u)) {
+				this.emoji = glyph;
+			}
             if (!glyph.match(/\P{ASCII}/u)) {
                 this.ASCII = glyph;
             }
@@ -41,7 +47,7 @@ export abstract class Tile {
     }
 
     toHTML() {
-        const glyph = this.HTML || this.emoji;
+        const glyph = this.HTML || this.glyph || this.emoji;
         const supported = document.fonts.check(`${css(document.body, "font-size")} ${css(document.body, "font-family")}`, glyph);
         if (supported) {
             return glyph;

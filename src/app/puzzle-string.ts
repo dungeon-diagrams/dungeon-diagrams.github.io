@@ -78,9 +78,9 @@ export function toEmoji(puzzle: Puzzle): string {
 }
 
 export function toURI(puzzle: Puzzle, includeState=false): string {
-    let uri = `?puzzle=${  encodeURIComponent(toUnsolvedURI(puzzle))}`;
+    let uri = `?puzzle=${ encodeURIComponent(toUnsolvedURI(puzzle)) }`;
     if (includeState) {
-        uri += `#?state=${  encodeURIComponent(toStateURI(puzzle))}`;
+        uri += `#?state=${ encodeURIComponent(toStateURI(puzzle)) }`;
     }
     return uri;
 }

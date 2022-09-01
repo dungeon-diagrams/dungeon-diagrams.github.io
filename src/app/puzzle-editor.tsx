@@ -104,17 +104,17 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
             puzzle.setColTargets(input.value.split(",").map((s:string)=>parseInt(s, 10)));
         }
         else if (input.name === "monsterGlyph") {
-            const glyphs = runes(input.value);
+            const glyphs = runes(input.value || "m");
             const glyph = glyphs[glyphs.length-1];
 			const tile = Tile.parse(glyph);
 			if (tile instanceof Monster) {
                 this.brushes.monster.glyph = glyph;
                 this.brushes.wall.monsterGlyph = glyph;
-                this.setState({monsterGlyph:glyph, tool: "monster"});
+                this.setState({monsterGlyph:tile.toHTML(), tool: "monster"});
             }
         }
         else if (input.name === "treasureGlyph") {
-            const glyphs = runes(input.value);
+            const glyphs = runes(input.value || "t");
             const glyph = glyphs[glyphs.length-1];
             if (glyph.match(Treasure.pattern)) {
                 this.brushes.treasure.glyph = glyph;
