@@ -90,7 +90,7 @@ export function toUnsolvedURI(puzzle: Puzzle): string {
 }
 
 export function toPuzzleURI(puzzle: Puzzle, includeState = true): string {
-    const lines: string[] = [puzzle.name.replace(/\s/g, '_')];
+    const lines: string[] = [puzzle.name.replace(/[\s!]/g, '_')];
     lines.push(`.${  puzzle.colTargets.join("")}`);
     let i = 0;
     for (const row of puzzle.tiles) {
