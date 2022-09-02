@@ -23,7 +23,7 @@ Every monster is in a dead-end, and every dead-end has a monster.
 
 Every treasure is in a 3x3 room with exactly one exit.  
 (The treasure can be anywhere in the room.)  
-(Types of treasures: `💎👑💍🏆🥇🥈🥉🏅🎖🔮🎁📦tT`)
+(Types of treasures: `💎👑💍🏆🥇🥈🥉🏅🎖🔮🎁📦🔑🗝tT`)
 
     ⬜️0️⃣5️⃣2️⃣2️⃣2️⃣4️⃣0️⃣    ⬜️0️⃣5️⃣2️⃣2️⃣2️⃣4️⃣0️⃣
     5️⃣🐀⬜️⬜️⬜️⬜️⬜️🐀    5️⃣🐀🟫🟫🟫🟫🟫🐀

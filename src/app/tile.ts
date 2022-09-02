@@ -95,7 +95,7 @@ export class Wall extends Tile {
 export class Treasure extends FixedTile {
     ASCII = "T";
     emoji = "💎";
-    static pattern = /[t💎👑💍🏆🥇🥈🥉🏅🎖🔮🎁📦]/iu;
+    static pattern = /[t💎👑💍🏆🥇🥈🥉🏅🎖🔮🎁📦🔑🗝]/iu;
 }
 
 export class Monster extends FixedTile {
