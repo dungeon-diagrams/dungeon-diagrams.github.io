@@ -3,6 +3,45 @@
 A single-page web application that serves daily shareable puzzles. Decode hallways, monsters, and treasures.
 
 
+### Instructions to Play
+
+Fill in the walls of the dungeon.
+
+The number of walls in each row/column is written at the side.
+
+    ⬜️1️⃣2️⃣3️⃣           ⬜️1️⃣2️⃣3️⃣
+    1️⃣⬜️🐍⬜️           1️⃣⬜️🐍🟫
+    2️⃣🐍⬜️⬜️           2️⃣🐍🟫🟫
+    3️⃣⬜️⬜️⬜️           3️⃣🟫🟫🟫
+
+Every monster is in a dead-end, and every dead-end has a monster.
+
+    ⬜️1️⃣0️⃣1️⃣           ⬜️1️⃣0️⃣1️⃣
+    0️⃣🐀⬜️🐀           0️⃣🐀⬜️🐀
+    2️⃣⬜️⬜️⬜️           2️⃣🟫⬜️🟫
+    0️⃣🐀⬜️🐀           0️⃣🐀⬜️🐀
+
+Every treasure is in a 3x3 room with exactly one exit.  
+(The treasure can be anywhere in the room.)  
+(Types of treasures: `💎👑💍🏆🥇🥈🥉🏅🎖🔮🎁📦tT`)
+
+    ⬜️0️⃣5️⃣2️⃣2️⃣2️⃣4️⃣0️⃣    ⬜️0️⃣5️⃣2️⃣2️⃣2️⃣4️⃣0️⃣
+    5️⃣🐀⬜️⬜️⬜️⬜️⬜️🐀    5️⃣🐀🟫🟫🟫🟫🟫🐀
+    2️⃣⬜️⬜️⬜️⬜️⬜️⬜️⬜️    2️⃣⬜️🟫⬜️⬜️⬜️🟫⬜️
+    1️⃣⬜️⬜️⬜️💎⬜️⬜️⬜️    1️⃣⬜️🟫⬜️💎⬜️⬜️⬜️
+    2️⃣⬜️⬜️⬜️⬜️⬜️⬜️⬜️    2️⃣⬜️🟫⬜️⬜️⬜️🟫⬜️
+    5️⃣⬜️⬜️⬜️⬜️⬜️⬜️⬜️    5️⃣⬜️🟫🟫🟫🟫🟫⬜️
+    0️⃣⬜️⬜️⬜️⬜️⬜️⬜️⬜️    0️⃣⬜️⬜️⬜️⬜️⬜️⬜️⬜️
+
+
+All halls and rooms are connected to each other.  
+(Connections are only vertical and horizontal, not diagonal.)
+
+There are no 2x2 open spaces outside of a treasure room.
+
+
+
+
 ### Motivation
 
 The goal of this project is to create elegant examples of readable modern web code in a minimalist style.
