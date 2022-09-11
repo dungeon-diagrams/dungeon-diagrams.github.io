@@ -3,7 +3,18 @@ import * as PuzzleString from "../app/puzzle-string.js";
 
 describe("Puzzle Model", ()=>{
     it("should detect a completely unsolved puzzle", function(){
-        const puzzle = PuzzleString.parse("Unsolved Puzzle!.25332332!1!4!2!2...👑..🐀!3!4.....🐍!2!5");
+        const puzzle = PuzzleString.parse(
+            `Unsolved Puzzle
+            .25332332
+            1........
+            4........
+            2........
+            2...👑..🐀.
+            3........
+            4.....🐍..
+            2........
+            5........`
+        );
         const {solved, reason} = puzzle.isSolved();
         if (solved) {
             throw new Error(`incorrectly thought an unsolved puzzle was solved: ${puzzle.name}: ${reason}`);
@@ -11,7 +22,16 @@ describe("Puzzle Model", ()=>{
     });
 
     it("should detect a correctly solved puzzle", function(){
-        const puzzle = PuzzleString.parse("Solved Puzzle!.424121!3***..💎!1*!2*.*!5*.****!1....*🐲!2🦁**");
+        const puzzle = PuzzleString.parse(
+            `Solved Puzzle
+            .424121
+            3***..t
+            1*.....
+            2*.*...
+            5*.****
+            1....*M
+            2m**...`
+        );
         const {solved, reason} = puzzle.isSolved();
         if (!solved) {
             throw new Error(`incorrectly thought a solved puzzle was unsolved: ${puzzle.name}: ${reason}`);
