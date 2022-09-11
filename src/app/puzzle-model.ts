@@ -1,7 +1,7 @@
 import { Tile, TileTypes } from "./tile.js";
 export { Tile, TileTypes } from "./tile.js";
 
-const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, FixedTile } = TileTypes;
+const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile } = TileTypes;
 
 /**
  * @class Puzzle
@@ -225,7 +225,7 @@ export class Puzzle extends EventTarget {
     unsolve(): Puzzle {
         // TODO: don't mutate original array
         for (const [row, col, tile] of this) {
-            if (!(tile instanceof FixedTile)) {
+            if (tile.solvable) {
                 this.tiles[row][col] = new Floor();
             }
         }
@@ -261,7 +261,7 @@ export class SolvablePuzzle extends Puzzle {
             return false;
         }
         const oldTile = this.tiles[row][col];
-        if (oldTile instanceof FixedTile) {
+        if (!oldTile.solvable) {
             return false;
         }
         return true;

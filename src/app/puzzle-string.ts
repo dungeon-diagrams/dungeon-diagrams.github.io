@@ -1,7 +1,5 @@
 import { default as runes } from "runes";
-import { Puzzle, Tile, TileTypes } from "./puzzle-model.js";
-
-const { FixedTile } = TileTypes;
+import { Puzzle, Tile } from "./puzzle-model.js";
 
 export function parse(spec: string): Puzzle {
     const name = parseName(spec);
@@ -117,7 +115,7 @@ export function toStateURI(puzzle: Puzzle): string {
 }
 
 export function unsolvedTileURI(tile: Tile): string {
-    if (!(tile instanceof FixedTile)) {
+    if (tile.solvable) {
         return ".";
     }
     else {
@@ -126,7 +124,7 @@ export function unsolvedTileURI(tile: Tile): string {
 }
 
 export function tileURI(tile: Tile): string {
-    if (!(tile instanceof FixedTile)) {
+    if (tile.solvable) {
         return tile.ASCII;
     }
     else {

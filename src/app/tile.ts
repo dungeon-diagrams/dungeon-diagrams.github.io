@@ -1,3 +1,5 @@
+type TileClassType = (new () => Tile);
+
 /**
  * @class Tile - Hierarchical representation of tile types.
  * Use Tile.parse(glyph) to construct a Tile with an arbitrary glyph.
@@ -7,17 +9,17 @@
  *   WalkableTile
  *     Floor
  *       MarkedFloor
- *       RoomFloor (not implemented)
- *     FixedTile
- *       Monster
- *         BossMonster
- *       Treasure
+ *       Room
+ *     Monster
+ *       BossMonster
+ *     Treasure
  */
 export abstract class Tile {
     ASCII = "_"; // should be encodable as a URI with no escape
     emoji = "🌫"; // should be square
 	glyph?: string;
     HTML?: string;
+	solvable = true;
     static pattern = /.|[\?_-]/;
 
     setGlyph(glyph: string) {
@@ -57,21 +59,26 @@ export abstract class Tile {
         }
     }
 
-    static WalkableTile: (new () => Tile);
-    static FixedTile: (new () => Tile);
-    static Wall: (new () => Tile);
-    static Floor: (new () => Tile);
-    static Monster: (new () => Tile);
-    static BossMonster: (new () => Tile);
-    static Treasure: (new () => Tile);
+    static Wall: TileClassType;
+    static WalkableTile: TileClassType;
+    static Floor: TileClassType;
+    static Room: TileClassType;
+    static Monster: TileClassType;
+    static BossMonster: TileClassType;
+    static Treasure: TileClassType;
 }
 
 function css(element: HTMLElement, property:string): string {
     return window.getComputedStyle(element, null).getPropertyValue(property);
 }
 
+export class Wall extends Tile {
+    ASCII = "*";
+    emoji = "🟫";
+    static pattern = /[*#O◯◌⭕️🪨🟥🟧🟨🟩🟦🟪🟫]/iu;
+}
+
 export abstract class WalkableTile extends Tile { }
-export abstract class FixedTile extends WalkableTile { }
 
 export class Floor extends WalkableTile {
     ASCII = ".";
@@ -86,31 +93,30 @@ export class MarkedFloor extends Floor {
     static pattern = /[xX×✖️╳⨯⨉❌⊘🚫💠❖]/iu;
 }
 
-export class Wall extends Tile {
-    ASCII = "*";
-    emoji = "🟫";
-    static pattern = /[*#O◯◌⭕️🪨🟥🟧🟨🟩🟦🟪🟫]/iu;
-}
+export abstract class Room extends Floor { }
 
-export class Treasure extends FixedTile {
+export class Treasure extends WalkableTile {
     ASCII = "T";
     emoji = "💎";
     static pattern = /[t💎👑💍🏆🥇🥈🥉🏅🎖🔮🎁📦🔑🗝]/iu;
+	solvable = false;
 }
 
-export class Monster extends FixedTile {
+export class Monster extends WalkableTile {
     ASCII = "m";
     emoji = "🦁";
     static pattern = /[a-su-wyz☺︎☹☻♜♝♞♟♖♗♘♙☃️⛄️🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🦠😈👿👹👺🤡👻💀☠️👽👾🤖🎃🧛🧟🧞🧜🧚🗿🛸]/u;
+	solvable = false;
 }
 
 export class BossMonster extends Monster {
     ASCII = "M";
     emoji = "🐲";
     static pattern = /[A-SU-WYZ@♚♛♔♕🦖🦕🐊🐉🐲🧊]/u;
+	solvable = false;
 }
 
-export const TileTypes = { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, FixedTile };
+export const TileTypes = { Wall, WalkableTile, Floor, MarkedFloor, Room, Treasure, Monster, BossMonster };
 
 Object.assign(Tile, TileTypes);
 
