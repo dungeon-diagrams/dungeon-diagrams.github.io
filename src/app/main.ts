@@ -9,6 +9,7 @@ import * as PuzzleString from "./puzzle-string.js";
 import * as HTMLUtils from "./html-utils.js";
 import * as Brush from "./brush.js";
 import { appSettings } from "./settings.js";
+import * as PuzzleGenerator from "./puzzle-generator.js";
 
 // debugging
 declare global {
@@ -26,7 +27,8 @@ Object.assign(globalThis, {
     Puzzle: PuzzleModel.Puzzle,
     Tile,
     PuzzleString,
-    appSettings
+    appSettings,
+    PuzzleGenerator
 }, TileTypes);
 Brush;
 PuzzleGrid;

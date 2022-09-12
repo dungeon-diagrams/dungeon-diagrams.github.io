@@ -127,7 +127,7 @@ export class DesignBrush extends Brush {
 
     didPaint(puzzle:EditablePuzzle, row:number, col:number) {
         if (this.autoMonster) {
-            puzzle.updateMonsters(row, col, this.monsterGlyph);
+            puzzle.updateMonsters(row, col, 1, 1, this.monsterGlyph);
             puzzle.didChange();
         }
         if (this.autoTarget) {

@@ -65,7 +65,7 @@ export class Puzzle extends EventTarget {
         }
     }
 
-    *getTilesAdjacentTo(row:number, col:number, height=1, width=1): Generator<[number, number, Tile]> {
+    *getTilesAdjacentTo(row:number, col:number, height:number=1, width:number=1): Generator<[number, number, Tile]> {
         for (const r of [row-1, row+height]) {
             for (let c = col; c < col+width; c++) {
                 if (this.isInBounds(r, c)) {
@@ -315,8 +315,8 @@ export class EditablePuzzle extends Puzzle {
         }
     }
 
-    updateMonsters(row:number, col:number, monsterGlyph?: string) {
-        for (const list of [this.getTilesInRect(row, col, 1, 1), this.getTilesAdjacentTo(row, col)]) {
+    updateMonsters(row:number, col:number, height:number=1, width:number=1, monsterGlyph?: string) {
+        for (const list of [this.getTilesInRect(row, col, height, width), this.getTilesAdjacentTo(row, col, width, height)]) {
             for (const [r, c, tile] of list) {
                 const deadEnd = this.isDeadEnd(r, c);
                 if (deadEnd && !(tile instanceof Monster)) {

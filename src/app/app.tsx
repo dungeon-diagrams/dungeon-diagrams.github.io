@@ -5,6 +5,7 @@ import { PuzzleEditor } from "./puzzle-editor.js";
 import * as PuzzleString from "./puzzle-string.js";
 import { parseQuery } from "./html-utils.js";
 import { SettingsButton } from "./settings.js";
+import { generatePuzzle, getDayNumber } from "./puzzle-generator.js";
 
 /*
  idea for a router: use 404.html to serve the main app.
@@ -15,7 +16,7 @@ import { SettingsButton } from "./settings.js";
 */
 
 /* eslint indent: 0 */
-const dailyPuzzles: string[] = [
+const examplePuzzles: string[] = [
 `Example Dungeon
 .424121
 3.....t
@@ -170,13 +171,14 @@ export function App(query?: string) {
     query ||= document.location.search;
     const params = parseQuery(query);
     const puzzleString = params.puzzle as string;
-    const puzzleID = params.puzzle_id as number;
+    const dayNum = params.day as number;
     let puzzle;
     if (puzzleString) {
         puzzle = PuzzleString.parse(puzzleString);
     }
-    else if (puzzleID || puzzleID === 0) {
-        puzzle = PuzzleString.parse(dailyPuzzles[puzzleID]);
+    else if (dayNum || dayNum === 0) {
+        puzzle = generatePuzzle(dayNum);
+		puzzle.unsolve();
     }
     
 	let page;
@@ -191,7 +193,7 @@ export function App(query?: string) {
     }
     else {
         const navLinks = [];
-        for (const puzzleString of dailyPuzzles) {
+        for (const puzzleString of examplePuzzles) {
             const puzzle = PuzzleString.parse(puzzleString);
             puzzle.unsolve();
             navLinks.push(<li className="puzzle-list">
@@ -199,9 +201,22 @@ export function App(query?: string) {
                 <pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
             </li>);
         }
+		const dayLinks = [];
+		for (let i=1; i<getDayNumber(); i++) {
+			const puzzle = generatePuzzle(i);
+			puzzle.unsolve();
+			// dayLinks.push(<li><a href={`?day=${i}`}>Daily Dungeon {i}</a></li>)
+            dayLinks.push(<li className="puzzle-list">
+                <a href={PuzzleString.toURI(puzzle)}>{puzzle.name}</a>
+                <pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
+            </li>);
+		}
 		page = (<>
 			<ul>
 				{navLinks}
+			</ul>
+			<ul>
+				{dayLinks}
 			</ul>
 			<ul>
 				<li><a href="?mode=edit">Create New Dungeon</a></li>
