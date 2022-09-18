@@ -1,11 +1,11 @@
 import { h, Fragment } from "preact";
-import { Puzzle } from "./puzzle-model.js";
+import { EditablePuzzle, Puzzle, SolvablePuzzle } from "./puzzle-model.js";
 import { PuzzleSolver } from "./puzzle-view.js";
 import { PuzzleEditor } from "./puzzle-editor.js";
 import * as PuzzleString from "./puzzle-string.js";
 import { parseQuery } from "./html-utils.js";
 import { SettingsButton } from "./settings.js";
-import { generatePuzzle, getDayNumber } from "./puzzle-generator.js";
+import { PuzzleGenerator, generatePuzzle, getDayNumber } from "./puzzle-generator.js";
 
 /*
  idea for a router: use 404.html to serve the main app.
@@ -177,18 +177,25 @@ export function App(query?: string) {
         puzzle = PuzzleString.parse(puzzleString);
     }
     else if (dayNum || dayNum === 0) {
-        puzzle = generatePuzzle(dayNum);
-		puzzle.unsolve();
+		const generator = new PuzzleGenerator(dayNum);
+		Object.assign(globalThis, {generator});
+        puzzle = generator.generate();
+		// puzzle.unsolve();
     }
     
 	let page;
 	if (params.mode === "edit") {
         puzzle ||= new Puzzle({name:"Untitled Dungeon", colTargets:[0,0,0,0,0,0,0,0], rowTargets:[0,0,0,0,0,0,0,0], tiles: []});
-		puzzle = puzzle.editableCopy();
-		page = <PuzzleEditor puzzle={puzzle} />;
+		if (!(puzzle instanceof EditablePuzzle)) {
+			puzzle = puzzle.editableCopy();
+		}
+		page = <PuzzleEditor puzzle={puzzle as EditablePuzzle} />;
 	}
     else if (puzzle) {
-        puzzle = puzzle.solvableCopy();
+		if (!(puzzle instanceof SolvablePuzzle)) {
+			puzzle = puzzle.solvableCopy();
+		}
+        puzzle.unsolve();
 		page = <PuzzleSolver puzzle={puzzle} />;
     }
     else {
@@ -205,9 +212,8 @@ export function App(query?: string) {
 		for (let i=1; i<getDayNumber(); i++) {
 			const puzzle = generatePuzzle(i);
 			puzzle.unsolve();
-			// dayLinks.push(<li><a href={`?day=${i}`}>Daily Dungeon {i}</a></li>)
             dayLinks.push(<li className="puzzle-list">
-                <a href={PuzzleString.toURI(puzzle)}>{puzzle.name}</a>
+                <a href={`?day=${i}`}>Daily Dungeon {i}</a>
                 <pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
             </li>);
 		}

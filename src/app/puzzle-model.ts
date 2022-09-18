@@ -345,7 +345,7 @@ function arrayEqual<T>(a1: Array<T>, a2: Array<T>): boolean {
     return true;
 }
 
-function countInstances(ofType: typeof Tile, a: Iterable<[number, number, Tile]>) {
+export function countInstances(ofType: typeof Tile, a: Iterable<[number, number, Tile]>) {
     let count = 0;
     for (const [row, col, tile] of a) {
         count += Number(tile instanceof ofType);

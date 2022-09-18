@@ -51,26 +51,82 @@ export function getDayNumber(date?:Date) {
     return Math.floor(dayOffset);
 }
 
-export function generatePuzzle(seed?:number, nRows:number=8, nCols:number=8) {
-    if (typeof seed === "undefined") {
-        seed = getDayNumber();
-    }
-    const rng = new RNG(seed);
+export class PuzzleGenerator {
+    seed: number;
+    rng: RNG;
+    cosmeticRNG: RNG;
+    puzzle: EditablePuzzle;
 
-    const tiles = [];
-    for (let row = 0; row < nRows; row++) {
-        const rowTiles = [];
-        for (let col = 0; col < nCols; col++) {
-            rowTiles.push(new Tile.Wall());
+    constructor(seed?:number, nRows:number=8, nCols:number=8) {
+        if (typeof seed === "undefined") {
+            seed = getDayNumber();
         }
-        tiles.push(rowTiles);
+        this.seed = seed;
+        this.rng = new RNG(seed);
+        this.cosmeticRNG = new RNG(seed);
+
+        this.puzzle = this.initializeGrid(`Daily Dungeon ${seed}`, nRows, nCols);
     }
-    const rowTargets = new Array(nRows);
-    const colTargets = new Array(nCols);
-    const puzzle = new EditablePuzzle({name: `Daily Dungeon ${seed}`, rowTargets, colTargets, tiles });
-    const cursor = [rng.randInt(nRows), rng.randInt(nCols)]
-    puzzle.setTile(cursor[0], cursor[1], new Hall());
-    puzzle.updateWallTargets();
-    puzzle.updateMonsters(0,0,nRows,nCols);
-    return puzzle;
+
+    initializeGrid(name:string, nRows:number=8, nCols:number=8): EditablePuzzle {
+        const tiles = [];
+        for (let row = 0; row < nRows; row++) {
+            const rowTiles = [];
+            for (let col = 0; col < nCols; col++) {
+                rowTiles.push(new Wall());
+            }
+            tiles.push(rowTiles);
+        }
+        const rowTargets = new Array(nRows);
+        const colTargets = new Array(nCols);
+        const puzzle = new EditablePuzzle({name, rowTargets, colTargets, tiles});
+        return puzzle;
+    }
+
+    placeRoom(row:number, col:number) {
+        const { puzzle, rng } = this;
+
+        for (let r=row; r<row+3; r++) {
+            for (let c=col; c<col+3; c++) {
+                puzzle.setTile(r, c, new Room());
+            }
+        }
+        puzzle.setTile(row+rng.randInt(3), col+rng.randInt(3), new Treasure());
+    }
+
+    makeMaze(nRows:number=8, nCols:number=8) {
+        const { seed, rng, cosmeticRNG, puzzle } = this;
+
+        /*
+        maze generation algorithm:
+
+        Prim's algorithm or depth-first search - can start anywhere
+        Kruskal's algorithm - can handle arbitrary number of rooms
+        Wilson's algorithm (Loop-erased random walk) - unbiased shape
+        all loopless mazes would need to be extended to include loops
+        */
+        // rng.randInt(puzzle.nRows-3), rng.randInt(puzzle.nCols-3)
+
+        const cursor = [rng.randInt(nRows), rng.randInt(nCols)]
+        puzzle.setTile(cursor[0], cursor[1], new Hall());
+    }
+
+    finalizePuzzle() {
+        const { puzzle } = this;
+
+        puzzle.updateWallTargets();
+        puzzle.updateMonsters(0, 0, puzzle.nRows, puzzle.nCols);
+    }
+
+    generate(): Puzzle {
+        this.makeMaze();
+        this.finalizePuzzle();
+        return this.puzzle;
+    }
 }
+
+export function generatePuzzle(seed?:number, nRows:number=8, nCols:number=8): Puzzle {
+    const generator = new PuzzleGenerator(seed, nRows, nCols);
+    return generator.generate();
+}
+
