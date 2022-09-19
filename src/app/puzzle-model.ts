@@ -123,14 +123,14 @@ export class Puzzle extends EventTarget {
     }
 
     canEditTile(row:number, col:number) {
-        if (!this.isInBounds(row, col)) {
-            return false;
-        }
         // subclasses override this to add permissions
         return false;
     }
 
     setTile(row:number, col:number, newTile:Tile): boolean {
+        if (!this.isInBounds(row, col)) {
+            return false;
+        }
         if (!this.canEditTile(row, col)) {
             return false;
         }
@@ -260,9 +260,6 @@ export class Puzzle extends EventTarget {
 
 export class SolvablePuzzle extends Puzzle {
     canEditTile(row: number, col: number) {
-        if (!this.isInBounds(row, col)) {
-            return false;
-        }
         const oldTile = this.tiles[row][col];
         if (!oldTile.solvable) {
             return false;
@@ -273,9 +270,6 @@ export class SolvablePuzzle extends Puzzle {
 
 export class EditablePuzzle extends Puzzle {
     canEditTile(row: number, col: number) {
-        if (!this.isInBounds(row, col)) {
-            return false;
-        }
         return true;
     }
 
