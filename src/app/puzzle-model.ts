@@ -20,37 +20,46 @@ export class Puzzle extends EventTarget {
     nCols: number;
     rowTargets: number[];
     colTargets: number[];
-    tiles: Tile[][];
+    tiles: ReadonlyArray<ReadonlyArray<Tile>>;
+    hasChanged = false;
 
-    constructor({name, rowTargets, colTargets, tiles}: {name: string, rowTargets: number[], colTargets: number[], tiles: Tile[][]}) {
+    constructor({name, rowTargets, colTargets, tiles}: {name: string, rowTargets: number[], colTargets: number[], tiles: ReadonlyArray<ReadonlyArray<Tile>>}) {
         super();
         this.name = name;
         this.rowTargets = rowTargets;
         this.nRows = this.rowTargets.length;
         this.colTargets = colTargets;
         this.nCols = this.colTargets.length;
-        this.updateTiles(tiles);
+        this.setAllTiles(tiles);
         this.tiles ||= [];
     }
 
-    updateTiles(newTiles: Tile[][]) {
-        this.tiles = [];
+    setAllTiles(newTiles:ReadonlyArray<ReadonlyArray<Tile>>) {
+        const tiles:Array<Array<Tile>> = [];
         for (let row = 0; row < this.nRows; row++) {
-            this.tiles.push([]);
+            tiles.push([]);
             for (let col = 0; col < this.nCols; col++) {
                 let newTile;
                 if (newTiles[row]) {
                     newTile = newTiles[row][col];
                 }
-                this.tiles[row].push(newTile || new Floor());
+                tiles[row].push(newTile || new Floor());
             }
         }
+        this.tiles = tiles;
+        this.didChange();
     }
 
     didChange() {
-        // this should be called once at the end of each 'set' method.
-        // but not for each 'update' method.
-        this.dispatchEvent(new Event("change"));
+        this.hasChanged = true;
+        setTimeout(this.dispatchChange, 1);
+    }
+
+    dispatchChange = () => {
+        if (this.hasChanged) {
+            this.hasChanged = false;
+            this.dispatchEvent(new Event("change"));
+        }
     }
 
     [Symbol.iterator](): Iterator<[number, number, Tile]> {
@@ -125,7 +134,7 @@ export class Puzzle extends EventTarget {
         if (!this.canEditTile(row, col)) {
             return false;
         }
-        this.tiles[row][col] = newTile;
+        (this.tiles as Array<Array<Tile>>)[row][col] = newTile;
         this.didChange();
         return true;
     }
@@ -222,26 +231,20 @@ export class Puzzle extends EventTarget {
         return (connectedHalls.length === halls.length);
     }
 
-    unsolve(): Puzzle {
-        // TODO: don't mutate original array
+    unsolve() {
         for (const [row, col, tile] of this) {
             if (tile.solvable) {
-                this.tiles[row][col] = new Floor();
+                this.setTile(row, col, new Floor());
             }
         }
-        this.didChange();
-        return this;
     }
 
-    unmarkFloors(): Puzzle {
-        // TODO: don't mutate original array
+    unmarkFloors() {
         for (const [row, col, tile] of this) {
             if (tile instanceof MarkedFloor) {
-                this.tiles[row][col] = new Floor();
+                this.setTile(row, col, new Floor());
             }
         }
-        this.didChange();
-        return this;
     }
 
     solvableCopy(): SolvablePuzzle {
@@ -280,13 +283,14 @@ export class EditablePuzzle extends Puzzle {
         const {rowCounts, colCounts} = this.countWalls();
         this.rowTargets = rowCounts;
         this.colTargets = colCounts;
+        this.didChange();
     }
 
     setSize(nRows: number, nCols: number, autoTarget=false) {
         this.nRows = nRows;
         this.nCols = nCols;
         const oldTiles = this.tiles;
-        this.updateTiles(oldTiles);
+        this.setAllTiles(oldTiles);
         while (this.rowTargets.length < nRows) {
             this.rowTargets.push(0);
         }
@@ -306,6 +310,7 @@ export class EditablePuzzle extends Puzzle {
         if (this.rowTargets.length != this.nRows) {
             this.setSize(this.rowTargets.length, this.nCols);
         }
+        this.didChange();
     }
 
     setColTargets(colTargets: number[]) {
@@ -313,6 +318,7 @@ export class EditablePuzzle extends Puzzle {
         if (this.colTargets.length != this.nCols) {
             this.setSize(this.nRows, this.colTargets.length);
         }
+        this.didChange();
     }
 
     updateMonsters(row:number, col:number, height:number=1, width:number=1, monsterGlyph?: string) {
@@ -320,13 +326,13 @@ export class EditablePuzzle extends Puzzle {
             for (const [r, c, tile] of list) {
                 const deadEnd = this.isDeadEnd(r, c);
                 if (deadEnd && !(tile instanceof Monster)) {
-                    this.tiles[r][c] = new Monster();
+                    this.setTile(r, c, new Monster());
                     if (monsterGlyph) {
                         this.tiles[r][c].setGlyph(monsterGlyph);
                     }
                 }
                 else if ((tile instanceof Monster) && !deadEnd) {
-                    this.tiles[r][c] = new Floor();
+                    this.setTile(r, c, new Floor());
                 }
             }
         }
