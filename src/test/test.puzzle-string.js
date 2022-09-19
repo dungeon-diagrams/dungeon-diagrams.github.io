@@ -1,4 +1,4 @@
-import { Puzzle } from "../app/puzzle-model.js";
+import { Puzzle } from "../app/puzzle.js";
 import * as PuzzleString from "../app/puzzle-string.js";
 
 describe("Puzzle Serializer", ()=>{

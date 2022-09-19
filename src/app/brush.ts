@@ -1,4 +1,4 @@
-import { Puzzle, EditablePuzzle, Tile, TileTypes } from "./puzzle-model.js";
+import { Puzzle, EditablePuzzle, Tile, TileTypes } from "./puzzle.js";
 import { appSettings } from "./settings.js";
 
 const { Wall, Floor, MarkedFloor, Monster, Treasure } = TileTypes;

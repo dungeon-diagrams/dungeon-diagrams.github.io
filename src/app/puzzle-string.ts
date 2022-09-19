@@ -1,5 +1,5 @@
 import { default as runes } from "runes";
-import { Puzzle, Tile } from "./puzzle-model.js";
+import { Puzzle, Tile } from "./puzzle.js";
 
 export function parse(spec: string): Puzzle {
     const name = parseName(spec);

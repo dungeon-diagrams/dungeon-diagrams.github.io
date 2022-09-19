@@ -1,4 +1,4 @@
-import { Puzzle, EditablePuzzle, Tile, TileTypes } from "./puzzle-model.js";
+import { Puzzle, EditablePuzzle, Tile, TileTypes, countInstances } from "./puzzle.js";
 const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, Room, Hall } = TileTypes;
 
 type fraction = number;

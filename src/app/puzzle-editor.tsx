@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
 import { default as runes } from "runes";
 
-import { Puzzle, EditablePuzzle, Tile, TileTypes } from "./puzzle-model.js";
+import { Puzzle, EditablePuzzle, Tile, TileTypes } from "./puzzle.js";
 import { PuzzleGrid } from "./puzzle-view.js";
 import { Brush, EraseBrush, MonsterBrush, TreasureBrush, DesignBrush } from "./brush.js";
 

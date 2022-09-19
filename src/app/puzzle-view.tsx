@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import { findParent } from "./html-utils.js";
-import { Puzzle, Tile } from "./puzzle-model.js";
+import { Puzzle, Tile } from "./puzzle.js";
 import { Brush, SolveBrush } from "./brush.js";
 import * as PuzzleString from "./puzzle-string.js";
 

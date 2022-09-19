@@ -1,7 +1,7 @@
 import * as preact from "preact";
 import { default as runes } from "runes";
 import { App } from "./app.js";
-import * as PuzzleModel from "./puzzle-model.js";
+import { Puzzle } from "./puzzle.js";
 import { Tile, TileTypes } from "./tile.js";
 import { PuzzleGrid } from "./puzzle-view.js";
 import { PuzzleEditor } from "./puzzle-editor.js";
@@ -16,7 +16,7 @@ declare global {
     interface Window {
         runes: ((s:string)=>string[]);
         preact: object;
-        puzzle: PuzzleModel.Puzzle;
+        puzzle: Puzzle;
     }
 }
 
@@ -24,7 +24,7 @@ declare global {
 Object.assign(globalThis, {
     runes,
     preact,
-    Puzzle: PuzzleModel.Puzzle,
+    Puzzle,
     Tile,
     PuzzleString,
     appSettings,

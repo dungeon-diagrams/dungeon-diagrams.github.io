@@ -1,5 +1,5 @@
 import { h, Fragment } from "preact";
-import { EditablePuzzle, Puzzle, SolvablePuzzle } from "./puzzle-model.js";
+import { EditablePuzzle, Puzzle, SolvablePuzzle } from "./puzzle.js";
 import { PuzzleSolver } from "./puzzle-view.js";
 import { PuzzleEditor } from "./puzzle-editor.js";
 import * as PuzzleString from "./puzzle-string.js";
