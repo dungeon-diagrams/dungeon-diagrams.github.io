@@ -1,4 +1,4 @@
-import { Tile, TileTypes } from "./tile.js";
+import { Tile, TileTypes, TileClassType } from "./tile.js";
 export { Tile, TileTypes } from "./tile.js";
 
 const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile } = TileTypes;
@@ -37,7 +37,7 @@ export class Puzzle extends EventTarget {
         this.tiles ||= [];
     }
 
-    setAllTiles(newTiles:ReadonlyArray<ReadonlyArray<Tile>>) {
+    setAllTiles(newTiles:ReadonlyArray<ReadonlyArray<Tile>>, defaultTile:TileClassType=Floor) {
         const tiles:Array<Array<Tile>> = [];
         for (let row = 0; row < this.nRows; row++) {
             tiles.push([]);
@@ -46,7 +46,7 @@ export class Puzzle extends EventTarget {
                 if (newTiles[row]) {
                     newTile = newTiles[row][col];
                 }
-                tiles[row].push(newTile || new Floor());
+                tiles[row].push(newTile || new defaultTile());
             }
         }
         this.tiles = tiles;
@@ -126,7 +126,7 @@ export class Puzzle extends EventTarget {
         return this.tiles[row][col];
     }
 
-    canEditTile(index:tileIndex) {
+    canEditTile(index:tileIndex): boolean {
         // subclasses override this to add permissions
         return false;
     }

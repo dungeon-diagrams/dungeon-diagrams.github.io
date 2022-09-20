@@ -77,16 +77,7 @@ export class PuzzleGenerator {
     initializeGrid() {
         const { puzzle } = this;
         const { nRows, nCols } = puzzle;
-
-        const tiles = [];
-        for (let row = 0; row < nRows; row++) {
-            const rowTiles = [];
-            for (let col = 0; col < nCols; col++) {
-                rowTiles.push(new Wall());
-            }
-            tiles.push(rowTiles);
-        }
-        puzzle.setAllTiles(tiles);
+        puzzle.setAllTiles([], Wall);
     }
 
     placeRoom([row, col]:tileIndex) {

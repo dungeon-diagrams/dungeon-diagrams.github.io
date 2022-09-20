@@ -1,4 +1,4 @@
-type TileClassType = (new () => Tile);
+export type TileClassType = (new () => Tile);
 
 /**
  * @class Tile - Hierarchical representation of tile types.
