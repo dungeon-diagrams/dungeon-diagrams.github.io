@@ -34,7 +34,9 @@ export class RNG {
     }
 
     randInt(n:number):number {
-        return Math.floor(this.random() * n);
+        const i = Math.floor(this.random() * n);
+        // console.log(`RNG: ${i}/${n}`);
+        return i;
     }
 
     *[Symbol.iterator]() {
@@ -65,10 +67,17 @@ export class PuzzleGenerator {
         this.rng = new RNG(seed);
         this.cosmeticRNG = new RNG(seed);
 
-        this.puzzle = this.initializeGrid(`Daily Dungeon ${seed}`, nRows, nCols);
+        const name = `Daily Dungeon ${seed}`;
+        const rowTargets = new Array(nRows);
+        const colTargets = new Array(nCols);
+        this.puzzle = new EditablePuzzle({name, rowTargets, colTargets, tiles:[]});
+        this.initializeGrid();
     }
 
-    initializeGrid(name:string, nRows:number=8, nCols:number=8): EditablePuzzle {
+    initializeGrid() {
+        const { puzzle } = this;
+        const { nRows, nCols } = puzzle;
+
         const tiles = [];
         for (let row = 0; row < nRows; row++) {
             const rowTiles = [];
@@ -77,10 +86,7 @@ export class PuzzleGenerator {
             }
             tiles.push(rowTiles);
         }
-        const rowTargets = new Array(nRows);
-        const colTargets = new Array(nCols);
-        const puzzle = new EditablePuzzle({name, rowTargets, colTargets, tiles});
-        return puzzle;
+        puzzle.setAllTiles(tiles);
     }
 
     placeRoom(row:number, col:number) {
@@ -92,6 +98,23 @@ export class PuzzleGenerator {
             }
         }
         puzzle.setTile(row+rng.randInt(3), col+rng.randInt(3), new Treasure());
+    }
+
+    placeRandomRoom() {
+        const { puzzle, rng } = this;
+
+        const row = rng.randInt(puzzle.nRows-3);
+        const col = rng.randInt(puzzle.nCols-3);
+        const region = puzzle.getTilesInRect(row-1, col-1, 5, 5);
+        const nFloors = countInstances(WalkableTile, region);
+
+        if (nFloors === 0) {
+            this.placeRoom(row, col);
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
 
     makeMaze(nRows:number=8, nCols:number=8) {
@@ -119,6 +142,15 @@ export class PuzzleGenerator {
     }
 
     generate(): Puzzle {
+        let nRooms = 0;
+        const maxTries = 1 + this.rng.randInt(100);
+        // console.log(`trying ${maxTries} times to place ${2} rooms`);
+        for (let tries = 0; tries < maxTries; tries++) {
+            nRooms += this.placeRandomRoom();
+            if (nRooms >= 2) {
+                break;
+            }
+        }
         this.makeMaze();
         this.finalizePuzzle();
         return this.puzzle;
