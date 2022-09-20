@@ -4,31 +4,34 @@ import { Puzzle, Tile } from "./puzzle.js";
 import { Brush, SolveBrush } from "./brush.js";
 import * as PuzzleString from "./puzzle-string.js";
 
-interface PuzzleGridProps {
+interface PuzzleViewProps {
     puzzle: Puzzle;
     brush: Brush;
 }
 
-interface PuzzleGridState {
+interface PuzzleViewState {
     puzzle: Puzzle;
     size: {width: number, height: number};
 }
 
+/**
+ * @class PuzzleSolver - a PuzzleView that uses a SolveBrush to place walls, floors, and marked floors.
+ */
 export function PuzzleSolver(props: {puzzle: Puzzle}) {
     const { puzzle } = props;
     const brush = new SolveBrush();
     return (
-        <PuzzleGrid {...{puzzle, brush}} />
+        <PuzzleView {...{puzzle, brush}} />
     );
 }
 
 /**
- * PuzzleGrid displays a Puzzle.
+ * @class PuzzleView - component for interacting with a puzzle.
  * It scales tiles to the available space and converts events
  * from mouse or touchscreen into [row, tile] coordinates.
  * A Brush object performs painting operations on those coordinates.
  */
-export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
+export class PuzzleView extends Component<PuzzleViewProps, PuzzleViewState> {
     constructor(props: {puzzle: Puzzle}) {
         super();
         this.state = {
@@ -197,7 +200,7 @@ export class PuzzleGrid extends Component<PuzzleGridProps, PuzzleGridState> {
                                     {puzzle.rowTargets[row]}&nbsp;
                                 </th>
                                 {rowTiles.map((tile, col)=>(
-                                    <PuzzleCell key={col} row={row} col={col} tile={tile} puzzle={puzzle} rowStatus={rowStatus[row]} colStatus={colStatus[col]} />
+                                    <TileView key={col} row={row} col={col} tile={tile} puzzle={puzzle} rowStatus={rowStatus[row]} colStatus={colStatus[col]} />
                                 ))}
                             </tr>
                         ))}
@@ -222,7 +225,7 @@ function * getWallStatus(current: number[], expected: number[]) {
     }
 }
 
-interface CellProps {
+interface TileViewProps {
     row: number;
     col: number;
     tile: Tile;
@@ -232,11 +235,11 @@ interface CellProps {
 }
 
 /**
- * A PuzzleCell is a view of a single Tile.
+ * @class TileView - component to display a single Tile within a PuzzleGrid.
  * clicking (touching) a cell begins a drag with the next tile type.
  * each cell touched with that drag converts to the drag's tile type if possible.
  */
-export function PuzzleCell(props: CellProps) {
+export function TileView(props: TileViewProps) {
     return (
         <td className={`puzzle-cell ${props.rowStatus} ${props.colStatus}`}
             data-tile={props.tile.constructor.name}

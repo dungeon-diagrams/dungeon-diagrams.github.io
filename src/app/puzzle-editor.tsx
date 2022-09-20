@@ -2,7 +2,7 @@ import { h, Component } from "preact";
 import { default as runes } from "runes";
 
 import { Puzzle, EditablePuzzle, Tile, TileTypes } from "./puzzle.js";
-import { PuzzleGrid } from "./puzzle-view.js";
+import { PuzzleView } from "./puzzle-view.js";
 import { Brush, EraseBrush, MonsterBrush, TreasureBrush, DesignBrush } from "./brush.js";
 
 const { Monster, BossMonster, Treasure } = TileTypes;
@@ -22,6 +22,12 @@ interface PuzzleEditorState {
     treasureGlyph: string;
 }
 
+/**
+ * @class PuzzleEditor - component for designing a puzzle.
+ * Puzzle Properties (name, size) are edited in one pane.
+ * A Brush is selected and configured in another pane.
+ * The selected brush is used by a PuzzleView.
+ */
 export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState> {
     brushes = {
         floor: new EraseBrush(),
@@ -191,7 +197,7 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
                         </label>
                     </fieldset>
                 </div>
-                <PuzzleGrid puzzle={this.state.puzzle} brush={brush} />
+                <PuzzleView puzzle={this.state.puzzle} brush={brush} />
             </div>
         );
     }

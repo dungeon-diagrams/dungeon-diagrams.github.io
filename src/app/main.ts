@@ -3,7 +3,7 @@ import { default as runes } from "runes";
 import { App } from "./app.js";
 import { Puzzle } from "./puzzle.js";
 import { Tile, TileTypes } from "./tile.js";
-import { PuzzleGrid } from "./puzzle-view.js";
+import { PuzzleView } from "./puzzle-view.js";
 import { PuzzleEditor } from "./puzzle-editor.js";
 import * as PuzzleString from "./puzzle-string.js";
 import * as HTMLUtils from "./html-utils.js";
@@ -31,7 +31,7 @@ Object.assign(globalThis, {
     PuzzleGenerator
 }, TileTypes);
 Brush;
-PuzzleGrid;
+PuzzleView;
 PuzzleEditor;
 App;
 HTMLUtils;
