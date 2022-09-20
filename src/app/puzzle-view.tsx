@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import { findParent } from "./html-utils.js";
-import { Puzzle, Tile, tileIndex } from "./puzzle.js";
+import { Puzzle, Tile, tileCoords } from "./puzzle.js";
 import { Brush, SolveBrush } from "./brush.js";
 import * as PuzzleString from "./puzzle-string.js";
 
@@ -73,7 +73,7 @@ export class PuzzleView extends Component<PuzzleViewProps, PuzzleViewState> {
         window.removeEventListener("mouseup", this.strokeEnd);
     }
 
-    getTile(x: number, y: number): [tileIndex, Tile | null] | [null, null] {
+    getTile(x: number, y: number): [tileCoords, Tile | null] | [null, null] {
         const targetEl = document.elementFromPoint(x, y) as HTMLElement | null;
         const tileEl = findParent(targetEl, ".puzzle-cell");
         if (tileEl) {

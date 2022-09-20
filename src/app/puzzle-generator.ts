@@ -1,4 +1,4 @@
-import { Puzzle, EditablePuzzle, Tile, TileTypes, countInstances, tileIndex, tileSize } from "./puzzle.js";
+import { Puzzle, EditablePuzzle, Tile, TileTypes, countInstances, tileCoords, tileSize } from "./puzzle.js";
 const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, RoomFloor, HallFloor } = TileTypes;
 
 type fraction = number;
@@ -80,7 +80,7 @@ export class PuzzleGenerator {
         puzzle.setAllTiles([], Wall);
     }
 
-    placeRoom([row, col]:tileIndex) {
+    placeRoom([row, col]:tileCoords) {
         const { puzzle, rng } = this;
 
         for (let r=row; r<row+3; r++) {
@@ -121,7 +121,7 @@ export class PuzzleGenerator {
         */
         // rng.randInt(puzzle.nRows-3), rng.randInt(puzzle.nCols-3)
 
-        const cursor: tileIndex = [rng.randInt(nRows), rng.randInt(nCols)]
+        const cursor: tileCoords = [rng.randInt(nRows), rng.randInt(nCols)]
         puzzle.setTile(cursor, new HallFloor());
     }
 

@@ -1,4 +1,4 @@
-import { Puzzle, EditablePuzzle, Tile, TileTypes, tileIndex } from "./puzzle.js";
+import { Puzzle, EditablePuzzle, Tile, TileTypes, tileCoords } from "./puzzle.js";
 import { appSettings } from "./settings.js";
 
 const { Wall, Floor, MarkedFloor, Monster, Treasure } = TileTypes;
@@ -57,12 +57,12 @@ export class Brush {
         return nextType;
     }
 
-    shouldPaint(puzzle:Puzzle, index:tileIndex) {
+    shouldPaint(puzzle:Puzzle, index:tileCoords) {
         // subclasses should override this to delegate
         return true;
     }
 
-    paintTile(puzzle:Puzzle, index:tileIndex) {
+    paintTile(puzzle:Puzzle, index:tileCoords) {
         if (this.activeTile && this.shouldPaint(puzzle, index)) {
             const result = puzzle.setTile(index, this.activeTile);
             if (result) {
@@ -71,12 +71,12 @@ export class Brush {
         }
     }
 
-    didPaint(puzzle:Puzzle, index:tileIndex) {
+    didPaint(puzzle:Puzzle, index:tileCoords) {
         // subclasses should override this to run a proc
         undefined;
     }
 
-    strokeStart(puzzle:Puzzle, index:tileIndex, eventType:EventType) {
+    strokeStart(puzzle:Puzzle, index:tileCoords, eventType:EventType) {
         const prevTile = puzzle.getTile(index) as Tile;
         const nextType = this.getNextTile(prevTile, eventType);
         this.activeTile = new nextType();
@@ -86,7 +86,7 @@ export class Brush {
         this.paintTile(puzzle, index);
     }
 
-    strokeMove(puzzle:Puzzle, index:tileIndex) {
+    strokeMove(puzzle:Puzzle, index:tileCoords) {
         this.paintTile(puzzle, index);
     }
 
@@ -125,7 +125,7 @@ export class DesignBrush extends Brush {
     autoMonster = true;
     autoTarget = true;
 
-    didPaint(puzzle:EditablePuzzle, index:tileIndex) {
+    didPaint(puzzle:EditablePuzzle, index:tileCoords) {
         if (this.autoMonster) {
             puzzle.updateMonsters(index, [1, 1], this.monsterGlyph);
         }
@@ -142,7 +142,7 @@ export class SolveBrush extends Brush {
         default: [Wall, MarkedFloor, Floor]
     };
 
-    shouldPaint(puzzle:Puzzle, index:tileIndex) {
+    shouldPaint(puzzle:Puzzle, index:tileCoords) {
         return (!puzzle.isSolved().solved);
     }
 

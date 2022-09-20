@@ -3,8 +3,12 @@ export { Tile, TileTypes } from "./tile.js";
 
 const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile } = TileTypes;
 
-export type tileIndex = [number, number];
+export type tileCoords = [number, number];
 export type tileSize = [number, number];
+
+function coord([row, col]:tileCoords) {
+    return `(${row}, ${col})`;
+}
 
 /**
  * @class Puzzle
@@ -66,11 +70,11 @@ export class Puzzle extends EventTarget {
         }
     }
 
-    [Symbol.iterator](): Iterator<[tileIndex, Tile]> {
-        return this.getTilesInRect([0, 0], [this.nRows, this.nCols]) as Iterator<[tileIndex, Tile]>;
+    [Symbol.iterator](): Iterator<[tileCoords, Tile]> {
+        return this.getTilesInRect([0, 0], [this.nRows, this.nCols]) as Iterator<[tileCoords, Tile]>;
     }
 
-    *getTilesInRect([row, col]:tileIndex, [height, width]:tileSize): Generator<[tileIndex, Tile]> {
+    *getTilesInRect([row, col]:tileCoords, [height, width]:tileSize): Generator<[tileCoords, Tile]> {
         for (let r = Math.max(0, row); r < Math.min(this.nRows, row+height); r++) {
             for (let c = Math.max(0, col); c < Math.min(this.nCols, col+width); c++) {
                 yield [[r, c], this.tiles[r][c]];
@@ -78,7 +82,7 @@ export class Puzzle extends EventTarget {
         }
     }
 
-    *getTilesAdjacentTo([row, col]:tileIndex, [height, width]:tileSize=[1,1]): Generator<[tileIndex, Tile]> {
+    *getTilesAdjacentTo([row, col]:tileCoords, [height, width]:tileSize=[1,1]): Generator<[tileCoords, Tile]> {
         for (const r of [row-1, row+height]) {
             for (let c = col; c < col+width; c++) {
                 if (this.isInBounds([r, c])) {
@@ -95,13 +99,13 @@ export class Puzzle extends EventTarget {
         }
     }
 
-    *getConnectedTiles(index:tileIndex): Generator<[tileIndex, Tile]> {
+    *getConnectedTiles(index:tileCoords): Generator<[tileCoords, Tile]> {
         const visited = new Set();
         const toVisit = [[index, this.getTile(index)]];
         while (toVisit.length > 0) {
-            const loc = toVisit.shift() as [tileIndex, Tile];
+            const loc = toVisit.shift() as [tileCoords, Tile];
             const [i, t] = loc;
-            const id = i.join(',');
+            const id = coord(i);
             if (visited.has(id)) {
                 continue;
             }
@@ -115,11 +119,11 @@ export class Puzzle extends EventTarget {
         }
     }
 
-    isInBounds([row, col]:tileIndex): boolean {
+    isInBounds([row, col]:tileCoords): boolean {
         return (row >= 0 && row < this.nRows && col >= 0 && col < this.nCols);
     }
 
-    getTile(index:tileIndex): Tile | null {
+    getTile(index:tileCoords): Tile | null {
         if (!this.isInBounds(index)) {
             return null;
         }
@@ -127,12 +131,12 @@ export class Puzzle extends EventTarget {
         return this.tiles[row][col];
     }
 
-    canEditTile(index:tileIndex): boolean {
+    canEditTile(index:tileCoords): boolean {
         // subclasses override this to add permissions
         return false;
     }
 
-    setTile(index:tileIndex, newTile:Tile): boolean {
+    setTile(index:tileCoords, newTile:Tile): boolean {
         if (!this.isInBounds(index)) {
             return false;
         }
@@ -159,37 +163,37 @@ export class Puzzle extends EventTarget {
         if (!this.isConnected()) {
             return {solved: false, reason: "Hallways are not connected."};
         }
-        for (const [[row, col], tile] of this) {
+        for (const [index, tile] of this) {
             // - each MONSTER is in a dead end (adjacent to exactly 1 FLOOR)
-            const deadEnd = this.isDeadEnd([row, col]);
+            const deadEnd = this.isDeadEnd(index);
             if ((tile instanceof Monster) && !deadEnd) {
-                return {solved: false, reason: `Some monster is not in a dead end: (${row}, ${col}).`};
+                return {solved: false, reason: `Some monster is not in a dead end: ${coord(index)}.`};
             }
             // - each dead end contains a MONSTER
             if (!(tile instanceof Monster) && deadEnd) {
-                return {solved: false, reason: `Some dead end has no monster: (${row}, ${col}).`};
+                return {solved: false, reason: `Some dead end has no monster: ${coord(index)}.`};
             }
             // - no 2x2 blocks of FLOOR tiles unless a TREASURE is adjacent (including diagonals)
-            if (this.isWideHall([row, col])) {
-                if (!this.isTreasureRoom([row, col])) {
-                    return {solved: false, reason: `Hallway too wide: (${row}, ${col})`};
+            if (this.isWideHall(index)) {
+                if (!this.isTreasureRoom(index)) {
+                    return {solved: false, reason: `Hallway too wide: ${coord(index)}`};
                 }
             }
             // - each TREASURE is in a treasure room (3x3 block of 8 FLOOR and 1 TREASURE, adjacent to exactly 1 FLOOR and 0 MONSTER)
-            if (tile instanceof Treasure && !this.isTreasureRoom([row, col])) {
-                return {solved: false, reason: `Treasure not in proper room: (${row}, ${col})`};
+            if (tile instanceof Treasure && !this.isTreasureRoom(index)) {
+                return {solved: false, reason: `Treasure not in proper room: ${coord(index)}`};
             }
         }
         return {solved: true, reason: "Valid dungeon layout."};
     }
 
-    isWideHall([row, col]:tileIndex): boolean {
+    isWideHall([row, col]:tileCoords): boolean {
         const walkableCount = countInstances(WalkableTile, this.getTilesInRect([row, col], [2, 2]));
         const treasureCount = countInstances(Treasure, this.getTilesAdjacentTo([row-1, col-1], [2, 2]));
         return (walkableCount === 4 && treasureCount === 0);
     }
 
-    isTreasureRoom([row, col]:tileIndex) {
+    isTreasureRoom([row, col]:tileCoords) {
         for (const [index, tile] of this.getTilesInRect([row-2, col-2], [3, 3])) {
             const room = this.getTilesInRect(index, [3, 3]);
             const roomFloors = countInstances(Floor, room);
@@ -203,7 +207,7 @@ export class Puzzle extends EventTarget {
         return false;
     }
 
-    isDeadEnd(index:tileIndex): boolean {
+    isDeadEnd(index:tileCoords): boolean {
         if (this.getTile(index) instanceof Wall) {
             return false;
         }
@@ -265,7 +269,7 @@ export class Puzzle extends EventTarget {
 }
 
 export class SolvablePuzzle extends Puzzle {
-    canEditTile(index:tileIndex) {
+    canEditTile(index:tileCoords) {
         const oldTile = this.getTile(index);
         if (!oldTile || !oldTile.solvable) {
             return false;
@@ -275,7 +279,7 @@ export class SolvablePuzzle extends Puzzle {
 }
 
 export class EditablePuzzle extends Puzzle {
-    canEditTile(index:tileIndex) {
+    canEditTile(index:tileCoords) {
         return true;
     }
 
@@ -321,7 +325,7 @@ export class EditablePuzzle extends Puzzle {
         this.didChange();
     }
 
-    updateMonsters(index:tileIndex, size:tileSize=[1,1], monsterGlyph?: string) {
+    updateMonsters(index:tileCoords, size:tileSize=[1,1], monsterGlyph?: string) {
         for (const list of [this.getTilesInRect(index, size), this.getTilesAdjacentTo(index, size)]) {
             for (const [i, tile] of list) {
                 const deadEnd = this.isDeadEnd(i);
@@ -352,7 +356,7 @@ function arrayEqual<T>(a1: Array<T>, a2: Array<T>): boolean {
     return true;
 }
 
-export function countInstances(ofType: typeof Tile, a: Iterable<[tileIndex, Tile]>) {
+export function countInstances(ofType: typeof Tile, a: Iterable<[tileCoords, Tile]>) {
     let count = 0;
     for (const [index, tile] of a) {
         count += Number(tile instanceof ofType);
