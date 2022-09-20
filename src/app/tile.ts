@@ -63,8 +63,8 @@ export abstract class Tile {
     static Wall: TileClassType;
     static WalkableTile: TileClassType;
     static Floor: TileClassType;
-    static Room: TileClassType;
-    static Hall: TileClassType;
+    static RoomFloor: TileClassType;
+    static HallFloor: TileClassType;
     static Monster: TileClassType;
     static BossMonster: TileClassType;
     static Treasure: TileClassType;
@@ -95,8 +95,8 @@ export class MarkedFloor extends Floor {
     static pattern = /[xX×✖️╳⨯⨉❌⊘🚫💠❖]/iu;
 }
 
-export class Room extends Floor { }
-export class Hall extends Floor { }
+export class RoomFloor extends Floor { }
+export class HallFloor extends Floor { }
 
 export class Treasure extends WalkableTile {
     ASCII = "T";
@@ -119,7 +119,7 @@ export class BossMonster extends Monster {
 	solvable = false;
 }
 
-export const TileTypes = { Wall, WalkableTile, Floor, MarkedFloor, Room, Hall, Treasure, Monster, BossMonster };
+export const TileTypes = { Wall, WalkableTile, Floor, MarkedFloor, RoomFloor, HallFloor, Treasure, Monster, BossMonster };
 
 Object.assign(Tile, TileTypes);
 

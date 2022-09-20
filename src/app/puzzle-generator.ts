@@ -1,5 +1,5 @@
 import { Puzzle, EditablePuzzle, Tile, TileTypes, countInstances } from "./puzzle.js";
-const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, Room, Hall } = TileTypes;
+const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, RoomFloor, HallFloor } = TileTypes;
 
 type fraction = number;
 
@@ -94,7 +94,7 @@ export class PuzzleGenerator {
 
         for (let r=row; r<row+3; r++) {
             for (let c=col; c<col+3; c++) {
-                puzzle.setTile(r, c, new Room());
+                puzzle.setTile(r, c, new RoomFloor());
             }
         }
         puzzle.setTile(row+rng.randInt(3), col+rng.randInt(3), new Treasure());
@@ -131,7 +131,7 @@ export class PuzzleGenerator {
         // rng.randInt(puzzle.nRows-3), rng.randInt(puzzle.nCols-3)
 
         const cursor = [rng.randInt(nRows), rng.randInt(nCols)]
-        puzzle.setTile(cursor[0], cursor[1], new Hall());
+        puzzle.setTile(cursor[0], cursor[1], new HallFloor());
     }
 
     finalizePuzzle() {
