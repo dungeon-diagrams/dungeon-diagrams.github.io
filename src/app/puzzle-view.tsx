@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import { findParent } from "./html-utils.js";
-import { Puzzle, Tile } from "./puzzle.js";
+import { Puzzle, Tile, tileIndex } from "./puzzle.js";
 import { Brush, SolveBrush } from "./brush.js";
 import * as PuzzleString from "./puzzle-string.js";
 
@@ -73,16 +73,16 @@ export class PuzzleView extends Component<PuzzleViewProps, PuzzleViewState> {
         window.removeEventListener("mouseup", this.strokeEnd);
     }
 
-    getTile(x: number, y: number): [number, number, Tile | null] | [null, null, null] {
+    getTile(x: number, y: number): [tileIndex, Tile | null] | [null, null] {
         const targetEl = document.elementFromPoint(x, y) as HTMLElement | null;
         const tileEl = findParent(targetEl, ".puzzle-cell");
         if (tileEl) {
             const row = parseInt(tileEl.dataset.row || "", 10);
             const col = parseInt(tileEl.dataset.col || "", 10);
-            const tile = this.state.puzzle.getTile(row, col);
-            return [row, col, tile];
+            const tile = this.state.puzzle.getTile([row, col]);
+            return [[row, col], tile];
         }
-        return [null, null, null];
+        return [null, null];
     }
 
     mouseDown = (event: MouseEvent) => {
@@ -91,18 +91,18 @@ export class PuzzleView extends Component<PuzzleViewProps, PuzzleViewState> {
             return;
         }
         const eventType = event.button == 2 ? "rightClick": "leftClick";
-        const [row, col, tile] = this.getTile(event.clientX, event.clientY);
+        const [index, tile] = this.getTile(event.clientX, event.clientY);
         if (tile != null) {
-            this.props.brush.strokeStart(this.props.puzzle, row, col, eventType);
+            this.props.brush.strokeStart(this.props.puzzle, index, eventType);
         }
     };
 
     mouseMove = (event: MouseEvent) => {
         if (this.props.brush.activeTile) {
             event.preventDefault();
-            const [row, col, tile] = this.getTile(event.clientX, event.clientY);
+            const [index, tile] = this.getTile(event.clientX, event.clientY);
             if (tile != null) {
-                this.props.brush.strokeMove(this.props.puzzle, row, col);
+                this.props.brush.strokeMove(this.props.puzzle, index);
             }
         }
     };
@@ -123,9 +123,9 @@ export class PuzzleView extends Component<PuzzleViewProps, PuzzleViewState> {
         const eventType = "touch";
         for (let i = 0; i < event.targetTouches.length; i++) {
             const touch = event.targetTouches[i];
-            const [row, col, tile] = this.getTile(touch.clientX, touch.clientY);
+            const [index, tile] = this.getTile(touch.clientX, touch.clientY);
             if (tile != null) {
-                this.props.brush.strokeStart(this.props.puzzle, row, col, eventType);
+                this.props.brush.strokeStart(this.props.puzzle, index, eventType);
             }
         }
     };
@@ -134,9 +134,9 @@ export class PuzzleView extends Component<PuzzleViewProps, PuzzleViewState> {
         if (this.props.brush.activeTile) {
             for (let i = 0; i < event.targetTouches.length; i++) {
                 const touch = event.targetTouches[i];
-                const [row, col, tile] = this.getTile(touch.clientX, touch.clientY);
+                const [index, tile] = this.getTile(touch.clientX, touch.clientY);
                 if (tile != null) {
-                    this.props.brush.strokeMove(this.props.puzzle, row, col);
+                    this.props.brush.strokeMove(this.props.puzzle, index);
                 }
             }
         }

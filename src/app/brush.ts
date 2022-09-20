@@ -1,4 +1,4 @@
-import { Puzzle, EditablePuzzle, Tile, TileTypes } from "./puzzle.js";
+import { Puzzle, EditablePuzzle, Tile, TileTypes, tileIndex } from "./puzzle.js";
 import { appSettings } from "./settings.js";
 
 const { Wall, Floor, MarkedFloor, Monster, Treasure } = TileTypes;
@@ -57,40 +57,40 @@ export class Brush {
         return nextType;
     }
 
-    shouldPaint(puzzle:Puzzle, row:number, col:number) {
+    shouldPaint(puzzle:Puzzle, index:tileIndex) {
         // subclasses should override this to delegate
         return true;
     }
 
-    paintTile(puzzle:Puzzle, row:number, col:number) {
-        if (this.activeTile && this.shouldPaint(puzzle, row, col)) {
-            const result = puzzle.setTile(row, col, this.activeTile);
+    paintTile(puzzle:Puzzle, index:tileIndex) {
+        if (this.activeTile && this.shouldPaint(puzzle, index)) {
+            const result = puzzle.setTile(index, this.activeTile);
             if (result) {
-                this.didPaint(puzzle, row, col);
+                this.didPaint(puzzle, index);
             }
         }
     }
 
-    didPaint(puzzle: Puzzle, row: number, col: number) {
+    didPaint(puzzle:Puzzle, index:tileIndex) {
         // subclasses should override this to run a proc
         undefined;
     }
 
-    strokeStart(puzzle: Puzzle, row: number, col: number, eventType: EventType) {
-        const prevTile = puzzle.getTile(row, col) as Tile;
+    strokeStart(puzzle:Puzzle, index:tileIndex, eventType:EventType) {
+        const prevTile = puzzle.getTile(index) as Tile;
         const nextType = this.getNextTile(prevTile, eventType);
         this.activeTile = new nextType();
         if (this.glyph && nextType !== Floor) {
             this.activeTile.setGlyph(this.glyph);
         }
-        this.paintTile(puzzle, row, col);
+        this.paintTile(puzzle, index);
     }
 
-    strokeMove(puzzle: Puzzle, row: number, col: number) {
-        this.paintTile(puzzle, row, col);
+    strokeMove(puzzle:Puzzle, index:tileIndex) {
+        this.paintTile(puzzle, index);
     }
 
-    strokeEnd(puzzle: Puzzle) {
+    strokeEnd(puzzle:Puzzle) {
         this.activeTile = null;
     }
 }
@@ -125,9 +125,9 @@ export class DesignBrush extends Brush {
     autoMonster = true;
     autoTarget = true;
 
-    didPaint(puzzle:EditablePuzzle, row:number, col:number) {
+    didPaint(puzzle:EditablePuzzle, index:tileIndex) {
         if (this.autoMonster) {
-            puzzle.updateMonsters(row, col, 1, 1, this.monsterGlyph);
+            puzzle.updateMonsters(index, [1, 1], this.monsterGlyph);
         }
         if (this.autoTarget) {
             puzzle.updateWallTargets();
@@ -142,7 +142,7 @@ export class SolveBrush extends Brush {
         default: [Wall, MarkedFloor, Floor]
     };
 
-    shouldPaint(puzzle:Puzzle, row:number, col:number) {
+    shouldPaint(puzzle:Puzzle, index:tileIndex) {
         return (!puzzle.isSolved().solved);
     }
 

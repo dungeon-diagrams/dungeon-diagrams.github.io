@@ -98,10 +98,10 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
             puzzle.name = input.value;
         }
         else if (input.name === "nRows") {
-            puzzle.setSize(parseInt(input.value, 10), puzzle.nCols, this.brushes.wall.autoTarget);
+            puzzle.setSize([parseInt(input.value, 10), puzzle.nCols], this.brushes.wall.autoTarget);
         }
         else if (input.name === "nCols") {
-            puzzle.setSize(puzzle.nRows, parseInt(input.value, 10), this.brushes.wall.autoTarget);
+            puzzle.setSize([puzzle.nRows, parseInt(input.value, 10)], this.brushes.wall.autoTarget);
         }
         else if (input.name === "rowTargets") {
             puzzle.setRowTargets(input.value.split(",").map((s:string)=>parseInt(s, 10)));

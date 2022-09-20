@@ -1,4 +1,4 @@
-import { Puzzle, EditablePuzzle, Tile, TileTypes, countInstances } from "./puzzle.js";
+import { Puzzle, EditablePuzzle, Tile, TileTypes, countInstances, tileIndex, tileSize } from "./puzzle.js";
 const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, RoomFloor, HallFloor } = TileTypes;
 
 type fraction = number;
@@ -59,7 +59,7 @@ export class PuzzleGenerator {
     cosmeticRNG: RNG;
     puzzle: EditablePuzzle;
 
-    constructor(seed?:number, nRows:number=8, nCols:number=8) {
+    constructor(seed?:number, [nRows, nCols]:tileSize=[8,8]) {
         if (typeof seed === "undefined") {
             seed = getDayNumber();
         }
@@ -89,15 +89,15 @@ export class PuzzleGenerator {
         puzzle.setAllTiles(tiles);
     }
 
-    placeRoom(row:number, col:number) {
+    placeRoom([row, col]:tileIndex) {
         const { puzzle, rng } = this;
 
         for (let r=row; r<row+3; r++) {
             for (let c=col; c<col+3; c++) {
-                puzzle.setTile(r, c, new RoomFloor());
+                puzzle.setTile([r, c], new RoomFloor());
             }
         }
-        puzzle.setTile(row+rng.randInt(3), col+rng.randInt(3), new Treasure());
+        puzzle.setTile([row+rng.randInt(3), col+rng.randInt(3)], new Treasure());
     }
 
     placeRandomRoom() {
@@ -105,11 +105,11 @@ export class PuzzleGenerator {
 
         const row = rng.randInt(puzzle.nRows-3);
         const col = rng.randInt(puzzle.nCols-3);
-        const region = puzzle.getTilesInRect(row-1, col-1, 5, 5);
+        const region = puzzle.getTilesInRect([row-1, col-1], [5, 5]);
         const nFloors = countInstances(WalkableTile, region);
 
         if (nFloors === 0) {
-            this.placeRoom(row, col);
+            this.placeRoom([row, col]);
             return 1;
         }
         else {
@@ -130,15 +130,15 @@ export class PuzzleGenerator {
         */
         // rng.randInt(puzzle.nRows-3), rng.randInt(puzzle.nCols-3)
 
-        const cursor = [rng.randInt(nRows), rng.randInt(nCols)]
-        puzzle.setTile(cursor[0], cursor[1], new HallFloor());
+        const cursor: tileIndex = [rng.randInt(nRows), rng.randInt(nCols)]
+        puzzle.setTile(cursor, new HallFloor());
     }
 
     finalizePuzzle() {
         const { puzzle } = this;
 
         puzzle.updateWallTargets();
-        puzzle.updateMonsters(0, 0, puzzle.nRows, puzzle.nCols);
+        puzzle.updateMonsters([0, 0], [puzzle.nRows, puzzle.nCols]);
     }
 
     generate(): Puzzle {
@@ -157,8 +157,8 @@ export class PuzzleGenerator {
     }
 }
 
-export function generatePuzzle(seed?:number, nRows:number=8, nCols:number=8): Puzzle {
-    const generator = new PuzzleGenerator(seed, nRows, nCols);
+export function generatePuzzle(seed?:number, [nRows, nCols]:tileSize=[8,8]): Puzzle {
+    const generator = new PuzzleGenerator(seed, [nRows, nCols]);
     return generator.generate();
 }
 
