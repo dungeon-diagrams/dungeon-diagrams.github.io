@@ -35,6 +35,7 @@ export class Puzzle extends EventTarget {
         this.nCols = this.colTargets.length;
         this.setAllTiles(tiles);
         this.tiles ||= [];
+        this.hasChanged = false;
     }
 
     setAllTiles(newTiles:ReadonlyArray<ReadonlyArray<Tile>>, defaultTile:TileClassType=Floor) {
