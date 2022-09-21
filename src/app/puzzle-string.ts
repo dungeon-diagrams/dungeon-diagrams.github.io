@@ -119,16 +119,16 @@ export function unsolvedTileURI(tile: Tile): string {
         return ".";
     }
     else {
-        return tile.emoji;
+        return tile.emoji as string;
     }
 }
 
 export function tileURI(tile: Tile): string {
     if (tile.solvable) {
-        return tile.ASCII;
+        return tile.ASCII as string;
     }
     else {
-        return tile.emoji;
+        return tile.emoji as string;
     }
 }
 
