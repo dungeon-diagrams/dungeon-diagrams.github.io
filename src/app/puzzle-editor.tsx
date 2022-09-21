@@ -122,9 +122,10 @@ export class PuzzleEditor extends Component<PuzzleEditorProps, PuzzleEditorState
         else if (input.name === "treasureGlyph") {
             const glyphs = runes(input.value || "t");
             const glyph = glyphs[glyphs.length-1];
-            if (glyph.match(Treasure.pattern)) {
+			const tile = Tile.parse(glyph);
+            if (tile instanceof Treasure) {
                 this.brushes.treasure.glyph = glyph;
-                this.setState({treasureGlyph:glyph, tool: "treasure"});
+                this.setState({treasureGlyph:tile.toHTML(), tool: "treasure"});
             }
         }
         this.setState({});

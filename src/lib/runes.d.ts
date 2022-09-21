@@ -1,2 +1,4 @@
-declare module "runes";
-// declare function runes(string: string): string[];
+declare module "runes" {
+    function runes(string: string): string[];
+    export default runes;
+}

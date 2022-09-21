@@ -153,7 +153,7 @@ class ControlPanel extends Component {
                 appSettings.removeItem(name);
             }
             else if (name === "default-monster-glyph") {
-                const glyphs = runes(value);
+                const glyphs = runes(value as string);
                 const glyph = glyphs[glyphs.length-1];
                 const tile = Tile.parse(glyph);
                 if (tile instanceof Monster) {
