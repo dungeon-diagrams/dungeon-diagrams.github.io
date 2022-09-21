@@ -1,7 +1,7 @@
 import { Tile, TileTypes, TileClassType } from "./tile.js";
 export { Tile, TileTypes } from "./tile.js";
 
-const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile } = TileTypes;
+const { Floor, MarkedFloor, Wall, Treasure, Monster, WalkableTile, SolvableTile } = TileTypes;
 
 export type tileCoords = [number, number];
 export type tileSize = [number, number];
@@ -243,7 +243,7 @@ export class Puzzle extends EventTarget {
 
     unsolve() {
         for (const [index, tile] of this) {
-            if (tile.solvable) {
+            if (tile instanceof SolvableTile) {
                 this.setTile(index, new Floor());
             }
         }
@@ -271,7 +271,7 @@ export class Puzzle extends EventTarget {
 export class SolvablePuzzle extends Puzzle {
     canEditTile(index:tileCoords) {
         const oldTile = this.getTile(index);
-        if (!oldTile || !oldTile.solvable) {
+        if (!oldTile || !(oldTile instanceof SolvableTile)) {
             return false;
         }
         return true;
