@@ -10,8 +10,8 @@ export type TileClassType = (new (glyph?:string) => Tile);
  *   WalkableTile
  *     Floor
  *       MarkedFloor
- *       Room
- *       Hall
+ *       RoomFloor
+ *       HallFloor
  *     Monster
  *       BossMonster
  *     Treasure
