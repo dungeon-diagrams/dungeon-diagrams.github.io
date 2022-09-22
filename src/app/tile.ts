@@ -1,5 +1,5 @@
 import { default as runes } from "runes";
-export type TileClassType = (new () => Tile);
+export type TileClassType = (new (glyph?:string) => Tile);
 
 /**
  * @class Tile - Hierarchical representation of tile types.
@@ -33,18 +33,11 @@ export abstract class Tile {
         this.prototype.solvable = true;
     }
 
-    static [Symbol.match](str:string): RegExpMatchArray | null {
-        const glyph = runes(str)[0];
-        if (this.glyphs?.has(glyph)) {
-            return [glyph];
-        }
-        if (this.pattern?.test(glyph)) {
-            return [glyph];
-        }
-        return null;
+    constructor(glyph?:string) {
+        this.setGlyph(glyph);
     }
 
-    setGlyph(glyph: string) {
+    setGlyph(glyph?: string) {
         if (glyph) {
 			if (glyph != this.ASCII) {
 				this.glyph = glyph;
@@ -58,16 +51,33 @@ export abstract class Tile {
         }
     }
 
+    /**
+     * @param {string} glyph
+     * @returns instance of the matching subclass of Tile
+     */
     static parse(glyph: string): Tile {
         let tileType:TileClassType = Monster;
-        for (tileType of [Floor, Wall, Treasure, BossMonster, MarkedFloor, Monster]) {
+        for (tileType of [Floor, MarkedFloor, Wall, Treasure, BossMonster, Monster]) {
             if (glyph.match(tileType as unknown as RegExp)) {
                 break;
             }
         }
-        const tile = new tileType();
-        tile.setGlyph(glyph);
+        const tile = new tileType(glyph);
         return tile;
+    }
+
+    /**
+     * support for string.match(Tile)
+     */
+     static [Symbol.match](str:string): RegExpMatchArray | null {
+        const glyph = runes(str)[0];
+        if (this.glyphs?.has(glyph)) {
+            return [glyph];
+        }
+        if (this.pattern?.test(glyph)) {
+            return [glyph];
+        }
+        return null;
     }
 
     toHTML() {

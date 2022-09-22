@@ -67,6 +67,8 @@ We adhere to the following constraints:
 
 - The `Tile` class is a self-contained export. All subclasses and utility methods are static properties of the base class.
 
+- Default values of `Tile` properties are set on prototypes. Instance properties can be set in the superclass constructor without being overwritten by instance initializers.
+
 
 ### Development
 

@@ -330,10 +330,7 @@ export class EditablePuzzle extends Puzzle {
             for (const [i, tile] of list) {
                 const deadEnd = this.isDeadEnd(i);
                 if (deadEnd && !(tile instanceof Monster)) {
-                    const newTile = new Monster();
-                    if (monsterGlyph) {
-                        newTile.setGlyph(monsterGlyph);
-                    }
+                    const newTile = new Monster(monsterGlyph);
                     this.setTile(i, newTile);
                 }
                 else if ((tile instanceof Monster) && !deadEnd) {
