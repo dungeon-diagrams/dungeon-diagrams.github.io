@@ -19,12 +19,12 @@ export type TileClassType = (new (glyph?:string) => Tile);
 export abstract class Tile {
     static glyphs: Set<unknown>;
     static pattern: RegExp;
-    ASCII?: string; // should be encodable as a URI with no escape
-    emoji?: string; // should be square
+    ASCII!: string; // should be encodable as a URI with no escape
+    emoji!: string; // should be square
 	glyph?: string;
     HTML?: string;
-    walkable?: boolean;
-	solvable?: boolean;
+    walkable!: boolean;
+	solvable!: boolean;
 
     static {
         this.prototype.ASCII = "?";
@@ -84,19 +84,19 @@ export abstract class Tile {
         const glyph = this.HTML || this.glyph || this.emoji;
         const supported = document.fonts.check(`${css(document.body, "font-size")} ${css(document.body, "font-family")}`, glyph);
         if (supported) {
-            return glyph!;
+            return glyph;
         }
         else {
-            return this.ASCII!;
+            return this.ASCII;
         }
     }
 
     toURI(): string {
         if (this.solvable) {
-            return this.ASCII!;
+            return this.ASCII;
         }
         else {
-            return this.emoji!;
+            return this.emoji;
         }
     }
 
@@ -105,7 +105,7 @@ export abstract class Tile {
             return ".";
         }
         else {
-            return this.emoji!;
+            return this.emoji;
         }
     }
 
