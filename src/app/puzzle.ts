@@ -309,7 +309,7 @@ export class EditablePuzzle extends Puzzle {
         this.didChange();
     }
 
-    setRowTargets(rowTargets: number[]) {
+    setRowTargets(rowTargets:number[]) {
         this.rowTargets = rowTargets;
         if (this.rowTargets.length != this.nRows) {
             this.setSize([this.rowTargets.length, this.nCols]);
@@ -317,7 +317,7 @@ export class EditablePuzzle extends Puzzle {
         this.didChange();
     }
 
-    setColTargets(colTargets: number[]) {
+    setColTargets(colTargets:number[]) {
         this.colTargets = colTargets;
         if (this.colTargets.length != this.nCols) {
             this.setSize([this.nRows, this.colTargets.length]);
@@ -325,7 +325,7 @@ export class EditablePuzzle extends Puzzle {
         this.didChange();
     }
 
-    updateMonsters(index:tileCoords, size:tileSize=[1,1], monsterGlyph?: string) {
+    updateMonsters(index:tileCoords, size:tileSize=[1,1], monsterGlyph?:string) {
         for (const list of [this.getTilesInRect(index, size), this.getTilesAdjacentTo(index, size)]) {
             for (const [i, tile] of list) {
                 const deadEnd = this.isDeadEnd(i);
@@ -341,7 +341,7 @@ export class EditablePuzzle extends Puzzle {
     }
 }
 
-function arrayEqual<T>(a1: Array<T>, a2: Array<T>): boolean {
+function arrayEqual<T>(a1:Array<T>, a2:Array<T>): boolean {
     if (a1.length !== a2.length) {
         return false;
     }
@@ -353,7 +353,7 @@ function arrayEqual<T>(a1: Array<T>, a2: Array<T>): boolean {
     return true;
 }
 
-export function countInstances(ofType: typeof Tile, a: Iterable<[tileCoords, Tile]>) {
+export function countInstances(ofType:typeof Tile, a:Iterable<[tileCoords, Tile]>) {
     let count = 0;
     for (const [index, tile] of a) {
         count += Number(tile instanceof ofType);

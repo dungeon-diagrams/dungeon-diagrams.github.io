@@ -1,7 +1,7 @@
 import { default as runes } from "runes";
 import { Puzzle, Tile } from "./puzzle.js";
 
-export function parse(spec: string): Puzzle {
+export function parse(spec:string): Puzzle {
     const name = parseName(spec);
     const rowTargets = parseRowCounts(spec);
     const colTargets = parseColCounts(spec);
@@ -9,12 +9,12 @@ export function parse(spec: string): Puzzle {
     return new Puzzle({name, rowTargets, colTargets, tiles});
 }
 
-export function parseName(spec: string): string {
+export function parseName(spec:string): string {
     const nameLine = spec.trim().split(/[\n,!]/)[0];
 	return nameLine.replace(/[\s_+]+/g, " ").replace(/%21/g, "!").replace(/%2C/gi, ",");
 }
 
-export function parseRowCounts(spec: string): number[] {
+export function parseRowCounts(spec:string): number[] {
     const counts = [];
     const specRows = spec.trim().split(/[\n,!]/).slice(2);
     for (const specRow of specRows) {
@@ -23,7 +23,7 @@ export function parseRowCounts(spec: string): number[] {
     return counts;
 }
 
-export function parseColCounts(spec: string): number[] {
+export function parseColCounts(spec:string): number[] {
     const counts = [];
     const specCols = runes(spec.trim().split(/[\n,!]/)[1].trim()).slice(1);
     for (const specCol of specCols) {
@@ -32,7 +32,7 @@ export function parseColCounts(spec: string): number[] {
     return counts;
 }
 
-export function parseTiles(spec: string) {
+export function parseTiles(spec:string) {
     const tiles: Tile[][] = [];
     const specRows = spec.trim().split(/[\n,!]/).slice(2);
     for (const specRow of specRows) {
@@ -45,7 +45,7 @@ export function parseTiles(spec: string) {
     return tiles;
 }
 
-export function toASCII(puzzle: Puzzle): string {
+export function toASCII(puzzle:Puzzle): string {
     const lines: string[] = [puzzle.name];
     lines.push(`.${  puzzle.colTargets.join("")}`);
     let i = 0;
@@ -60,7 +60,7 @@ export function toASCII(puzzle: Puzzle): string {
     return lines.join("\n");
 }
 
-export function toEmoji(puzzle: Puzzle): string {
+export function toEmoji(puzzle:Puzzle): string {
     const lines: string[] = [puzzle.name];
     lines.push(`⬜️${  puzzle.colTargets.map(emojiNumber).join("")}`);
     let i = 0;
@@ -75,7 +75,7 @@ export function toEmoji(puzzle: Puzzle): string {
     return lines.join("\n");
 }
 
-export function toURI(puzzle: Puzzle, includeState=false): string {
+export function toURI(puzzle:Puzzle, includeState=false): string {
     let uri = `?puzzle=${ encodeURIComponent(toUnsolvedURI(puzzle)) }`;
     if (includeState) {
         uri += `#?state=${ encodeURIComponent(toStateURI(puzzle)) }`;
@@ -83,11 +83,11 @@ export function toURI(puzzle: Puzzle, includeState=false): string {
     return uri;
 }
 
-export function toUnsolvedURI(puzzle: Puzzle): string {
+export function toUnsolvedURI(puzzle:Puzzle): string {
     return toPuzzleURI(puzzle, false);
 }
 
-export function toPuzzleURI(puzzle: Puzzle, includeState = true): string {
+export function toPuzzleURI(puzzle:Puzzle, includeState=true): string {
 	const name = puzzle.name.replace(/\s/g, "_").replace(/!/g, "%21").replace(/,/g, "%2C");
     const lines: string[] = [name];
     lines.push(`.${  puzzle.colTargets.join("")}`);
@@ -97,10 +97,10 @@ export function toPuzzleURI(puzzle: Puzzle, includeState = true): string {
         rowStrings.push(puzzle.rowTargets[i++].toFixed(0));
         for (const tile of row) {
             if (includeState) {
-                rowStrings.push(tileURI(tile));
+                rowStrings.push(tile.toURI());
             }
             else {
-                rowStrings.push(unsolvedTileURI(tile));
+                rowStrings.push(tile.toUnsolvedURI());
             }
         }
         lines.push(rowStrings.join("").replace(/\.*$/, ""));
@@ -108,32 +108,14 @@ export function toPuzzleURI(puzzle: Puzzle, includeState = true): string {
     return lines.join("!");
 }
 
-export function toStateURI(puzzle: Puzzle): string {
+export function toStateURI(puzzle:Puzzle): string {
     return (puzzle.tiles.map((row)=>(
-        row.map(tileURI).join("").replace(/\.*$/, "")
+        row.map((t)=>t.toURI()).join("").replace(/\.*$/, "")
     )).join("!"));
 }
 
-export function unsolvedTileURI(tile: Tile): string {
-    if (tile.solvable) {
-        return ".";
-    }
-    else {
-        return tile.emoji as string;
-    }
-}
-
-export function tileURI(tile: Tile): string {
-    if (tile.solvable) {
-        return tile.ASCII as string;
-    }
-    else {
-        return tile.emoji as string;
-    }
-}
-
-export function emojiNumber(n: number): string {
-    const table = ["0️⃣","1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟"];
+export function emojiNumber(n:number): string {
+    const table = runes("0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣🔟");
     if (n < table.length) {
         return table[n];
     }

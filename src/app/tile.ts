@@ -37,7 +37,7 @@ export abstract class Tile {
         this.setGlyph(glyph);
     }
 
-    setGlyph(glyph?: string) {
+    setGlyph(glyph?:string) {
         if (glyph) {
 			if (glyph != this.ASCII) {
 				this.glyph = glyph;
@@ -55,7 +55,7 @@ export abstract class Tile {
      * @param {string} glyph
      * @returns instance of the matching subclass of Tile
      */
-    static parse(glyph: string): Tile {
+    static parse(glyph:string): Tile {
         let tileType:TileClassType = Monster;
         for (tileType of [Floor, MarkedFloor, Wall, Treasure, BossMonster, Monster]) {
             if (glyph.match(tileType as unknown as RegExp)) {
@@ -80,14 +80,32 @@ export abstract class Tile {
         return null;
     }
 
-    toHTML() {
+    toHTML(): string {
         const glyph = this.HTML || this.glyph || this.emoji;
         const supported = document.fonts.check(`${css(document.body, "font-size")} ${css(document.body, "font-family")}`, glyph);
         if (supported) {
-            return glyph;
+            return glyph!;
         }
         else {
-            return this.ASCII;
+            return this.ASCII!;
+        }
+    }
+
+    toURI(): string {
+        if (this.solvable) {
+            return this.ASCII!;
+        }
+        else {
+            return this.emoji!;
+        }
+    }
+
+    toUnsolvedURI(): string {
+        if (this.solvable) {
+            return ".";
+        }
+        else {
+            return this.emoji!;
         }
     }
 
