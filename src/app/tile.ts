@@ -17,14 +17,14 @@ export type TileClassType = (new () => Tile);
  *     Treasure
  */
 export abstract class Tile {
+    static glyphs: Set<unknown>;
+    static pattern: RegExp;
     ASCII?: string; // should be encodable as a URI with no escape
     emoji?: string; // should be square
 	glyph?: string;
     HTML?: string;
     walkable?: boolean;
 	solvable?: boolean;
-    static glyphs?: Set<unknown>;
-    static pattern?: RegExp;
 
     static {
         this.prototype.ASCII = "?";
@@ -82,13 +82,13 @@ export abstract class Tile {
     }
 
     static Wall: TileClassType;
-    static WalkableTile: TileClassType;
     static Floor: TileClassType;
     static RoomFloor: TileClassType;
     static HallFloor: TileClassType;
     static Monster: TileClassType;
     static BossMonster: TileClassType;
     static Treasure: TileClassType;
+    static WalkableTile: TileClassType;
     static SolvableTile: TileClassType;
 }
 
@@ -97,62 +97,64 @@ function css(element: HTMLElement, property:string): string {
 }
 
 export class Wall extends Tile {
+    static glyphs = new Set(runes("*#O◯◌⭕️🪨🟥🟧🟨🟩🟦🟪🟫"))
     static {
         this.prototype.ASCII = "*";
         this.prototype.emoji = "🟫";
         this.prototype.walkable = false;
     }
-    static glyphs = new Set(runes("*#O◯◌⭕️🪨🟥🟧🟨🟩🟦🟪🟫"))
 }
 
 export abstract class WalkableTile extends Tile { }
 
 export class Floor extends WalkableTile {
+    static glyphs = new Set(runes(".·🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️"));
+    static pattern = /\p{White_Space}/iu;
     static {
         this.prototype.ASCII = ".";
         this.prototype.emoji = "⬜️";
     }
-    static glyphs = new Set(runes(".·🔳🔲⬛️⬜️▪️▫️◾️◽️◼️◻️"));
-    static pattern = /\p{White_Space}/iu;
 }
 
 export class MarkedFloor extends Floor {
+    static glyphs = new Set(runes("xX×✖️╳⨯⨉❌⊘🚫💠❖"));
+    static pattern = /[x]/i;
     static {
         this.prototype.ASCII = "x";
         this.prototype.emoji = "🔳";
         this.prototype.HTML = "×";
     }
-    static glyphs = new Set(runes("xX×✖️╳⨯⨉❌⊘🚫💠❖"));
-    static pattern = /[x]/i;
 }
 
 export class RoomFloor extends Floor { }
 export class HallFloor extends Floor { }
 
 export class Treasure extends WalkableTile {
+    static glyphs = new Set(runes("tT💎👑💍🏆🥇🥈🥉🏅🎖🔮🎁📦🔑🗝"))
     static {
         this.prototype.ASCII = "T";
         this.prototype.emoji = "💎";
         this.prototype.solvable = false;
     }
-    static glyphs = new Set(runes("tT💎👑💍🏆🥇🥈🥉🏅🎖🔮🎁📦🔑🗝"))
 }
 
 export class Monster extends WalkableTile {
+    static glyphs = new Set(runes("☺︎☹☻♜♝♞♟♖♗♘♙☃️⛄️🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🦠😈👿👹👺🤡👻💀☠️👽👾🤖🎃🧛🧟🧞🧜🧚🗿🛸"));
+    static pattern = /[a-su-wyz]/u
     static {
         this.prototype.ASCII = "m";
         this.prototype.emoji = "🦁";
         this.prototype.solvable = false;
     }
-    static glyphs = new Set(runes("☺︎☹☻♜♝♞♟♖♗♘♙☃️⛄️🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄️🐨🐯🦁🐮🐷🐽🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🐣🐥🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🕸🦂🐢🐍🦎🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐕‍🦺🐈🐈‍⬛🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🦠😈👿👹👺🤡👻💀☠️👽👾🤖🎃🧛🧟🧞🧜🧚🗿🛸"));
-    static pattern = /[a-su-wyz]/u
 }
 
 export class BossMonster extends Monster {
-    ASCII = "M";
-    emoji = "🐲";
     static glyphs = new Set(runes("@♚♛♔♕🦖🦕🐊🐉🐲🧊"));
     static pattern = /[A-SU-WYZ]/u;
+    static {
+        this.prototype.ASCII = "M";
+        this.prototype.emoji = "🐲";
+    }
 }
 
 /**
