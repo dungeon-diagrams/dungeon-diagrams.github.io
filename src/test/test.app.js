@@ -2,14 +2,14 @@ import { App } from "../app/app.js";
 
 describe("App Component (router)", ()=>{
     it("should render the home page without errors", ()=>{
-        App("?");
+        new App({search:"?"});
     });
 
     it("should render a puzzle without errors", ()=>{
-        App("?puzzle_id=0");
+        new App({search:"?puzzle_id=0"});
     });
 
     it("should render the editor without errors", ()=>{
-        App("?mode=edit");
+        new App({search:"?mode=edit"});
     });
 });
