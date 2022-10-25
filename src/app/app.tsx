@@ -1,11 +1,11 @@
-import { h, Fragment } from "preact";
+import { h, Fragment, Component } from "preact";
 import { EditablePuzzle, Puzzle, SolvablePuzzle } from "./puzzle.js";
 import { PuzzleSolver } from "./puzzle-view.js";
 import { PuzzleEditor } from "./puzzle-editor.js";
 import * as PuzzleString from "./puzzle-string.js";
 import { SettingsButton } from "./settings.js";
 import { PuzzleGenerator, generatePuzzle } from "./puzzle-generator.js";
-import { toDayNumber } from "./daily.js";
+import { toDayNumber, getGameDate } from "./daily.js";
 
 /*
  idea for a router: use 404.html to serve the main app.
@@ -167,74 +167,109 @@ or to a partial solution:
 href="?puzzle=(shareable string)"
 */
 
-export function App(query?: string) {
-    const params = new URLSearchParams(document.location.search);
-    const puzzleString = params.get("puzzle");
-    const dayNum = parseInt(params.get("day") as string);
-    let puzzle;
-    if (puzzleString) {
-        puzzle = PuzzleString.parse(puzzleString);
-    }
-    else if (dayNum || dayNum === 0) {
-		const generator = new PuzzleGenerator(dayNum);
-		Object.assign(globalThis, {generator});
-        puzzle = generator.generate();
-		// puzzle.unsolve();
-    }
-    
-	let page;
-	if (params.get("mode") === "edit") {
-        puzzle ||= new Puzzle({name:"Untitled Dungeon", colTargets:[0,0,0,0,0,0,0,0], rowTargets:[0,0,0,0,0,0,0,0], tiles: []});
-		if (!(puzzle instanceof EditablePuzzle)) {
-			puzzle = puzzle.editableCopy();
-		}
-		page = <PuzzleEditor puzzle={puzzle as EditablePuzzle} />;
-	}
-    else if (puzzle) {
-		if (!(puzzle instanceof SolvablePuzzle)) {
-			puzzle = puzzle.solvableCopy();
-		}
-        puzzle.unsolve();
-		page = <PuzzleSolver puzzle={puzzle} />;
-    }
-    else {
-        const navLinks = [];
-        for (const puzzleString of examplePuzzles) {
-            const puzzle = PuzzleString.parse(puzzleString);
-            puzzle.unsolve();
-            navLinks.push(<li className="puzzle-list">
-                <a href={PuzzleString.toURI(puzzle)}>{puzzle.name}</a>
-                <pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
-            </li>);
-        }
-		const dayLinks = [];
-		for (let i=1; i<toDayNumber(); i++) {
-			const puzzle = generatePuzzle(i);
-			puzzle.unsolve();
-            dayLinks.push(<li className="puzzle-list">
-                <a href={`?day=${i}`}>Daily Dungeon {i}</a>
-                <pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
-            </li>);
-		}
-		page = (<>
-			<ul>
-				{navLinks}
-			</ul>
-			<ul>
-				{dayLinks}
-			</ul>
-			<ul>
-				<li><a href="?mode=edit">Create New Dungeon</a></li>
-			</ul>
-		</>);
-    }
+type AppProps = Location;
 
-	Object.assign(globalThis, {puzzle});
-	return (
-		<div id="app" className="app">
-			<SettingsButton />
-			<h1><a href=".">Daily Dungeons and Diagrams</a></h1>
-			{page}
-		</div>
-	)
+interface AppState {
+	date: Date;
+}
+
+export class App extends Component<AppProps, AppState> {
+	constructor(props?:AppProps) {
+		super()
+		this.state = {
+			date: new Date()
+		};
+		getGameDate().then((date)=>{
+			this.setState({
+				date
+			});
+		});
+	}
+
+	parseQuery(query?:string) {
+		query ||= document.location.search;
+		const params = new URLSearchParams(query);
+		const puzzleString = params.get("puzzle");
+		const dayNum = parseInt(params.get("day") as string);
+		const mode = params.get("mode");
+		return {
+			puzzleString,
+			dayNum,
+			mode
+		};
+	}
+
+	render(props:AppProps, state:AppState) {
+		const { puzzleString, dayNum, mode } = this.parseQuery(props?.search);
+
+		let puzzle;
+		if (puzzleString) {
+			puzzle = PuzzleString.parse(puzzleString);
+		}
+		else if (dayNum || dayNum === 0) {
+			const generator = new PuzzleGenerator(dayNum);
+			Object.assign(globalThis, {generator});
+			puzzle = generator.generate();
+			// puzzle.unsolve();
+		}
+    
+		let page;
+		if (!state.date) {
+			page = null;
+		}
+		else if (mode === "edit") {
+			puzzle ||= new Puzzle({name:"Untitled Dungeon", colTargets:[0,0,0,0,0,0,0,0], rowTargets:[0,0,0,0,0,0,0,0], tiles: []});
+			if (!(puzzle instanceof EditablePuzzle)) {
+				puzzle = puzzle.editableCopy();
+			}
+			page = <PuzzleEditor puzzle={puzzle as EditablePuzzle} />;
+		}
+		else if (puzzle) {
+			if (!(puzzle instanceof SolvablePuzzle)) {
+				puzzle = puzzle.solvableCopy();
+			}
+			puzzle.unsolve();
+			page = <PuzzleSolver puzzle={puzzle} />;
+		}
+		else {
+			const navLinks = [];
+			for (const puzzleString of examplePuzzles) {
+				const puzzle = PuzzleString.parse(puzzleString);
+				puzzle.unsolve();
+				navLinks.push(<li className="puzzle-list">
+					<a href={PuzzleString.toURI(puzzle)}>{puzzle.name}</a>
+					<pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
+				</li>);
+			}
+			const dayLinks = [];
+			for (let i=1; i<toDayNumber(state.date); i++) {
+				const puzzle = generatePuzzle(i);
+				// puzzle.unsolve();
+				dayLinks.push(<li className="puzzle-list">
+					<a href={`?day=${i}`}>Daily Dungeon {i}</a>
+					<pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
+				</li>);
+			}
+			page = (<>
+				<ul>
+					{navLinks}
+				</ul>
+				<ul>
+					{dayLinks}
+				</ul>
+				<ul>
+					<li><a href="?mode=edit">Create New Dungeon</a></li>
+				</ul>
+			</>);
+		}
+
+		Object.assign(globalThis, {puzzle, app:this});
+		return (
+			<div id="app" className="app">
+				<SettingsButton />
+				<h1><a href=".">Daily Dungeons and Diagrams</a></h1>
+				{page}
+			</div>
+		)
+	}
 }
