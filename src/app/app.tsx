@@ -3,7 +3,6 @@ import { EditablePuzzle, Puzzle, SolvablePuzzle } from "./puzzle.js";
 import { PuzzleSolver } from "./puzzle-view.js";
 import { PuzzleEditor } from "./puzzle-editor.js";
 import * as PuzzleString from "./puzzle-string.js";
-import { parseQuery } from "./html-utils.js";
 import { SettingsButton } from "./settings.js";
 import { PuzzleGenerator, generatePuzzle, getDayNumber } from "./puzzle-generator.js";
 
@@ -168,10 +167,9 @@ href="?puzzle=(shareable string)"
 */
 
 export function App(query?: string) {
-    query ||= document.location.search;
-    const params = parseQuery(query);
-    const puzzleString = params.puzzle as string;
-    const dayNum = params.day as number;
+    const params = new URLSearchParams(document.location.search);
+    const puzzleString = params.get("puzzle");
+    const dayNum = parseInt(params.get("day") as string);
     let puzzle;
     if (puzzleString) {
         puzzle = PuzzleString.parse(puzzleString);
@@ -184,7 +182,7 @@ export function App(query?: string) {
     }
     
 	let page;
-	if (params.mode === "edit") {
+	if (params.get("mode") === "edit") {
         puzzle ||= new Puzzle({name:"Untitled Dungeon", colTargets:[0,0,0,0,0,0,0,0], rowTargets:[0,0,0,0,0,0,0,0], tiles: []});
 		if (!(puzzle instanceof EditablePuzzle)) {
 			puzzle = puzzle.editableCopy();

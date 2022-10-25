@@ -1,22 +1,3 @@
-export function parseQuery(query: string): {[key:string]: (string | number | string[])} {
-    query = query.replace(/^#?\??|\/$/g,"");
-    const items = query.split("&");
-    const params: {[key:string]: (string | number | string[])} = {};
-    items.forEach((item)=> {
-        const parts = item.split("=");
-        const key = decodeURIComponent(parts[0]);
-        let value: string | string[] | number = decodeURIComponent(parts[1]);
-        if (value.match(/^-?\d+$/)) {
-            value = parseInt(value, 10);
-        }
-        else if (value.match(/,/)) {
-            value = value.split(/,/);
-        }
-        params[key] = value;
-    });
-    return params;
-}
-
 export function css(element: HTMLElement, property:string): string {
     return window.getComputedStyle(element, null).getPropertyValue(property);
 }
