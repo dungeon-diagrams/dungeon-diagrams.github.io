@@ -182,19 +182,31 @@ class ControlPanel extends Component {
                 <form onChange={this.saveSettings} onKeyUp={this.saveSettings} onSubmit={this.saveSettings}>
                     <fieldset>
                         <legend>Settings</legend>
-                        Color Scheme:<br />
-                        <label><input type="radio" name="preferred-color-scheme" value="default" checked={!values["preferred-color-scheme"]} /> System setting ({preferredColorScheme() || "light"})</label><br />
-                        <label><input type="radio" name="preferred-color-scheme" value="light" checked={values["preferred-color-scheme"] === "light"} /> Light</label><br />
-                        <label><input type="radio" name="preferred-color-scheme" value="dark" checked={values["preferred-color-scheme"] === "dark"} /> Dark</label>
-                        <br /><br />
-                        Contrast:<br />
-                        <label><input type="radio" name="preferred-contrast" value="default" checked={!values["preferred-contrast"]} /> System setting ({preferredContrast() || "less"})</label><br />
-                        <label><input type="radio" name="preferred-contrast" value="less" checked={values["preferred-contrast"] === "less"} /> Less</label><br />
-                        <label><input type="radio" name="preferred-contrast" value="more" checked={values["preferred-contrast"] === "more"} /> More</label>
-                        <br /><br />
-                        <label>Favorite Monster:<br />
-                            <input type="text" name="default-monster-glyph" size={1} value={values["default-monster-glyph"] || "🦁"} />
-                        </label>
+                        <div>
+                            Color Scheme:<br />
+                            <label><input type="radio" name="preferred-color-scheme" value="default" checked={!values["preferred-color-scheme"]} /> System setting ({preferredColorScheme() || "light"})</label><br />
+                            <label><input type="radio" name="preferred-color-scheme" value="light" checked={values["preferred-color-scheme"] === "light"} /> Light</label><br />
+                            <label><input type="radio" name="preferred-color-scheme" value="dark" checked={values["preferred-color-scheme"] === "dark"} /> Dark</label>
+                        </div>
+                        <div>
+                            Contrast:<br />
+                            <label><input type="radio" name="preferred-contrast" value="default" checked={!values["preferred-contrast"]} /> System setting ({preferredContrast() || "less"})</label><br />
+                            <label><input type="radio" name="preferred-contrast" value="less" checked={values["preferred-contrast"] === "less"} /> Less</label><br />
+                            <label><input type="radio" name="preferred-contrast" value="more" checked={values["preferred-contrast"] === "more"} /> More</label>
+                        </div>
+                        <div>
+                            <label>Favorite Monster:<br />
+                                <input type="text" name="default-monster-glyph" size={1} value={values["default-monster-glyph"] || "🦁"} />
+                            </label>
+                        </div>
+                        <div>
+                            Game Timezone:<br />
+                            <label><input type="radio" name="game-timezone" value="UTC" checked={!values["game-timezone"] || values["game-timezone"] === "UTC"} /> UTC</label><br />
+                            <label>
+                                <input type="radio" name="game-timezone" value="local" checked={values["game-timezone"] === "local"} /> Local Timezone
+                                {/* <br/><input type="radio" style={{visibility:"hidden"}} /> ({Intl.DateTimeFormat().resolvedOptions().timeZone}) */}
+                            </label>
+                        </div>
                     </fieldset>
                 </form>
                 <form onSubmit={this.resetRecords} style={{display:"none"}}>
