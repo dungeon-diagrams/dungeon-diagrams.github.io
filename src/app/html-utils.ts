@@ -17,29 +17,6 @@ export function parseQuery(query: string): {[key:string]: (string | number | str
     return params;
 }
 
-export function formValues(form: HTMLElement): {[key:string]: (string | number | boolean)} {
-    const values: {[key:string]: (string | number | boolean)} = {};
-    const inputs = form.querySelectorAll("[name]");
-    for (let i = 0; i < inputs.length; i++) {
-        const input = inputs[i] as HTMLInputElement;
-        if (input.type === "checkbox") {
-            values[input.name] = input.checked;
-        }
-        else if (input.type === "radio") {
-            if (input.checked) {
-                values[input.name] = input.value;
-            }
-        }
-        else if (input.type === "number") {
-            values[input.name] = parseInt(input.value, 10);
-        }
-        else {
-            values[input.name] = input.value;
-        }
-    }
-    return values;
-}
-
 export function findParent(el: HTMLElement | null, selector: string) {
     while (el) {
         if (el.matches(selector)) {

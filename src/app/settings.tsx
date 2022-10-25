@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import { default as runes } from "runes";
-import { preferredColorScheme, preferredContrast, formValues } from "./html-utils.js";
+import { preferredColorScheme, preferredContrast, findParent } from "./html-utils.js";
 import { Tile, Monster } from "./tile.js";
 
 /**
@@ -146,9 +146,9 @@ class ExpandableMenu extends Component<childrenProps, {open:boolean, transitioni
 class ControlPanel extends Component {
     saveSettings = (event:Event) => {
         event.preventDefault();
-        const form = event.target as HTMLElement;
-        const values = formValues(form.parentElement as HTMLElement);
-        for (const [name, value] of Object.entries(values)) {
+        const formElement = findParent(event.target as HTMLElement, 'form') as HTMLFormElement;
+        const formData = new FormData(formElement);
+        for (const [name, value] of formData.entries()) {
             if (value === "default" || value === "") {
                 appSettings.removeItem(name);
             }
