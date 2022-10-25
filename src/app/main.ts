@@ -10,6 +10,7 @@ import * as HTMLUtils from "./html-utils.js";
 import * as Brush from "./brush.js";
 import { appSettings } from "./settings.js";
 import * as PuzzleGenerator from "./puzzle-generator.js";
+import * as daily from "./daily.js";
 
 // debugging
 declare global {
@@ -28,7 +29,8 @@ Object.assign(globalThis, {
     Tile,
     PuzzleString,
     appSettings,
-    PuzzleGenerator
+    PuzzleGenerator,
+    daily
 }, TileTypes);
 Brush;
 PuzzleView;

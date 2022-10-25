@@ -4,7 +4,8 @@ import { PuzzleSolver } from "./puzzle-view.js";
 import { PuzzleEditor } from "./puzzle-editor.js";
 import * as PuzzleString from "./puzzle-string.js";
 import { SettingsButton } from "./settings.js";
-import { PuzzleGenerator, generatePuzzle, getDayNumber } from "./puzzle-generator.js";
+import { PuzzleGenerator, generatePuzzle } from "./puzzle-generator.js";
+import { toDayNumber } from "./daily.js";
 
 /*
  idea for a router: use 404.html to serve the main app.
@@ -207,7 +208,7 @@ export function App(query?: string) {
             </li>);
         }
 		const dayLinks = [];
-		for (let i=1; i<getDayNumber(); i++) {
+		for (let i=1; i<toDayNumber(); i++) {
 			const puzzle = generatePuzzle(i);
 			puzzle.unsolve();
             dayLinks.push(<li className="puzzle-list">

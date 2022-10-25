@@ -207,6 +207,11 @@ class ControlPanel extends Component {
                                 {/* <br/><input type="radio" style={{visibility:"hidden"}} /> ({Intl.DateTimeFormat().resolvedOptions().timeZone}) */}
                             </label>
                         </div>
+                        <div>
+                            Game Clock:<br />
+                            <label><input type="radio" name="game-clock" value="server" checked={!values["game-clock"] || values["game-clock"] === "server"} /> Server Clock</label><br />
+                            <label><input type="radio" name="game-clock" value="browser" checked={values["game-clock"] === "browser"} /> Browser Clock</label>
+                        </div>
                     </fieldset>
                 </form>
                 <form onSubmit={this.resetRecords} style={{display:"none"}}>

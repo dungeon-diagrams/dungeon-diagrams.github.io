@@ -1,3 +1,4 @@
+import { toDayNumber } from "./daily.js";
 import { Puzzle, EditablePuzzle, Tile, TileTypes, countInstances, tileCoords, tileSize } from "./puzzle.js";
 const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, RoomFloor, HallFloor } = TileTypes;
 
@@ -46,13 +47,6 @@ export class RNG {
     }
 }
 
-export function getDayNumber(date?:Date) {
-    date ||= new Date();
-    const day0 = new Date(Date.UTC(2022,8,1));
-    const dayOffset = (Number(date) - Number(day0)) / (24 * 60 * 60 * 1000);
-    return Math.floor(dayOffset);
-}
-
 export class PuzzleGenerator {
     seed: number;
     rng: RNG;
@@ -61,7 +55,7 @@ export class PuzzleGenerator {
 
     constructor(seed?:number, [nRows, nCols]:tileSize=[8,8]) {
         if (typeof seed === "undefined") {
-            seed = getDayNumber();
+            seed = toDayNumber();
         }
         this.seed = seed;
         this.rng = new RNG(seed);
