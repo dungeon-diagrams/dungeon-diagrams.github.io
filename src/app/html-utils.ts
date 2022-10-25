@@ -17,16 +17,6 @@ export function parseQuery(query: string): {[key:string]: (string | number | str
     return params;
 }
 
-export function findParent(el: HTMLElement | null, selector: string) {
-    while (el) {
-        if (el.matches(selector)) {
-            return el;
-        }
-        el = el.parentElement;
-    }
-    return null;
-}
-
 export function css(element: HTMLElement, property:string): string {
     return window.getComputedStyle(element, null).getPropertyValue(property);
 }
