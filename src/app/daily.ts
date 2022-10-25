@@ -32,7 +32,7 @@ export async function fetchServerDate(): Promise<Date> {
 
 export async function getGameDate(): Promise<Date> {
     const gameClock = appSettings.getItem("game-clock");
-    if (gameClock === "browser") {
+    if (gameClock === "browser" || typeof fetch === "undefined") {
         // use browser clock
         return new Date();
     }

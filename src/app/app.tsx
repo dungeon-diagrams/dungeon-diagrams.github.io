@@ -22,7 +22,9 @@ or to a partial solution:
 href="?puzzle=(shareable string)"
 */
 
-type AppProps = Location
+interface AppProps {
+	search?: string;
+}
 type AppState = object;
 
 export class App extends Component<AppProps, AppState> {

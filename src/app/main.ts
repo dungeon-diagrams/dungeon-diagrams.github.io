@@ -40,7 +40,7 @@ HTMLUtils;
 
 export function init() {
     try {
-        preact.render(preact.createElement(App, document.location), document.body, document.getElementById("app") as Element);
+        preact.render(preact.createElement(App, {}), document.body, document.getElementById("app") as Element);
     }
     catch (e: unknown) {
         console.error(e);
