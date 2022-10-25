@@ -179,7 +179,7 @@ class ControlPanel extends Component {
         const values = appSettings.values();
         return (
             <div className="control-panel">
-                <form onChange={this.saveSettings} onKeyUp={this.saveSettings}>
+                <form onChange={this.saveSettings} onKeyUp={this.saveSettings} onSubmit={this.saveSettings}>
                     <fieldset>
                         <legend>Settings</legend>
                         Color Scheme:<br />
