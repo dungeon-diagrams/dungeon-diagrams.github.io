@@ -54,7 +54,7 @@ class SettingsManager {
 
     static getSingleton() {
         if (!SettingsManager.singleton) {
-            let storage = {};
+            let storage;
             try {
                 storage = localStorage;
             }
@@ -62,7 +62,11 @@ class SettingsManager {
                 try {
                     storage = sessionStorage;
                 }
-                catch (e) {}
+                catch (e) {
+                    storage = {
+                        getItem: (key:string)=>{return null}
+                    }
+                }
             }
             let element;
             try {
