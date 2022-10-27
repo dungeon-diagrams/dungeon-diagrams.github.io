@@ -7,31 +7,23 @@ import { SettingsButton } from "./settings.js";
 import { PuzzleGenerator, generatePuzzle } from "./puzzle-generator.js";
 import { toDayNumber, getGameDate } from "./daily.js";
 
-/*
- idea for a router: use 404.html to serve the main app.
- then we can have urls like:
- /puzzle/1/Tenaxxus-Gullet
- /puzzle/1#?state=..xx+.t.m,..m.x|
- /puzzle/?r=424121&c=312512&t=0,5&m=4,5,5,0#?state=.x+.t.|
-*/
-
-/*
-We can link to an individual puzzle:
-href="?puzzle_id=4"
-or to a partial solution:
-href="?puzzle=(shareable string)"
-*/
-
 interface AppProps {
 	search?: string;
 }
-type AppState = object;
 
-export class App extends Component<AppProps, AppState> {
-	constructor(props?:AppProps) {
-		super()
-	}
-
+/**
+ * @class App - component that routes the URL search parameters to a specific page.
+ * We can link to an individual puzzle:
+ * href="?puzzle_id=4"
+ * or to a partial solution:
+ * href="?puzzle=(shareable string)"
+ * 
+ * An alternative would be a router that makes use of 404.html to have urls like:
+ * /puzzle/1/Tenaxxus-Gullet
+ * /puzzle/1#?state=..xx+.t.m,..m.x|
+ * /puzzle/?r=424121&c=312512&t=0,5&m=4,5,5,0#?state=.x+.t.|
+ */
+export class App extends Component<AppProps> {
 	parseQuery(query?:string) {
 		query ||= document.location.search;
 		const params = new URLSearchParams(query);
@@ -89,15 +81,15 @@ export class App extends Component<AppProps, AppState> {
 	}
 }
 
-interface ArchiveState {
-	date: Date;
+interface PuzzleArchiveState {
+	date: Date | null;
 }
 
-export class PuzzleArchive extends Component<object, ArchiveState> {
+export class PuzzleArchive extends Component<object, PuzzleArchiveState> {
 	constructor(props?:object) {
 		super()
 		this.state = {
-			date: new Date()
+			date: null
 		};
 		getGameDate().then((date)=>{
 			this.setState({
@@ -106,7 +98,7 @@ export class PuzzleArchive extends Component<object, ArchiveState> {
 		});
 	}
 	
-	render(props:object, state:ArchiveState) {
+	render(props:object, state:PuzzleArchiveState) {
 		const navLinks = [];
 		for (const puzzleString of examplePuzzles) {
 			const puzzle = PuzzleString.parse(puzzleString);
@@ -117,13 +109,15 @@ export class PuzzleArchive extends Component<object, ArchiveState> {
 			</li>);
 		}
 		const dayLinks = [];
-		for (let i=1; i<toDayNumber(state.date); i++) {
-			const puzzle = generatePuzzle(i);
-			// puzzle.unsolve();
-			dayLinks.push(<li className="puzzle-list">
-				<a href={`?day=${i}`}>Daily Dungeon {i}</a>
-				<pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
-			</li>);
+		if (state.date) {
+			for (let i=1; i<toDayNumber(state.date); i++) {
+				const puzzle = generatePuzzle(i);
+				// puzzle.unsolve();
+				dayLinks.push(<li className="puzzle-list">
+					<a href={`?day=${i}`}>Daily Dungeon {i}</a>
+					<pre className="puzzle-preview">{PuzzleString.toEmoji(puzzle)}</pre>
+				</li>);
+			}
 		}
 		return (<>
 			<ul>
