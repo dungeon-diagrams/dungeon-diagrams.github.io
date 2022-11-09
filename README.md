@@ -41,7 +41,6 @@ There are no 2x2 open spaces outside of a treasure room.
 
 
 
-
 ### Motivation
 
 The goal of this project is to create elegant examples of readable modern web code in a minimalist style.
@@ -63,11 +62,28 @@ We adhere to the following constraints:
 
 - The `PuzzleGrid` component calculates its size dynamically, and sets that size with an inline `<style>` element targeting its own descendents.
 
-- The `Puzzle` class uses mutable subclasses so that an IDE can detect that most editing methods are not available on the base class. Subclasses of `Puzzle` and `Brush` use a delegate pattern (overridden "should" and "did" methods) to control behavior of the superclass.
+- The `Puzzle` class uses mutable subclasses so that an IDE can detect that most editing methods are not available on the base class. Subclasses of `Puzzle` and `Brush` use a delegate pattern (overridden "should" and "did" methods) to control behavior of the superclass. Instead of a runtime immutable data structure for tile data, we use a `ReadonlyArray` type which is only cast to a mutable type in the `setTile()` method.
 
 - The `Tile` class is a self-contained export. All subclasses and utility methods are static properties of the base class.
 
 - Default values of `Tile` properties are set on prototypes. Instance properties can be set in the superclass constructor without being overwritten by instance initializers.
+
+> ES Class initialization order
+> 
+> - superclass property initializers
+> - superclass static initialization block (this can go first if bypassing property type checks)
+> - superclass constructor
+> - subclass property initializers (will override values set by superclass constructor)
+> - subclass static initialization block
+> - subclass constructor
+> 
+> Object property accessing order
+> 
+> - instance property
+> - prototype property
+> - superclass prototype property
+> 
+> So, to allow instances to have their own values of a property, while still falling back to class and superclass defaults, the default should be set on the prototype in each class static initialization block.
 
 
 ### Development
