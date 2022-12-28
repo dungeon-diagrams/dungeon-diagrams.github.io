@@ -15,11 +15,11 @@ export function toDayNumber(date?:Date, useLocalTimezone=false): number {
     const gameTimezone = appSettings.getItem("game-timezone");
     if (gameTimezone === "local") {
         // origin date in local time zone
-        day0 = new Date(2022,9,1);
+        day0 = new Date(2022,11,1);
     }
     else {
         // origin date in UTC time zone (default)
-        day0 = new Date(Date.UTC(2022,9,1));
+        day0 = new Date(Date.UTC(2022,11,1));
     }
     const dayOffset = (date.valueOf() - day0.valueOf()) / (24 * 60 * 60 * 1000);
     return Math.floor(dayOffset);
