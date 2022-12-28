@@ -2,6 +2,13 @@ import { toDayNumber } from "./daily.js";
 import { Puzzle, EditablePuzzle, Tile, TileTypes, countInstances, tileCoords, tileSize } from "./puzzle.js";
 const { Floor, MarkedFloor, Wall, Treasure, Monster, BossMonster, WalkableTile, RoomFloor, HallFloor } = TileTypes;
 
+/*
+see
+https://stackoverflow.com/questions/23843197/maze-generating-algorithm-in-grid
+https://en.wikipedia.org/wiki/Maze_generation_algorithm
+https://en.wikipedia.org/wiki/Loop-erased_random_walk
+*/
+
 type fraction = number;
 
 /**

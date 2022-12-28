@@ -60,7 +60,7 @@ We adhere to the following constraints:
 
 - Modules are preloaded in `main.js`, so the entire app loads in 3 round-trip times. It is possible to preload them directly in `index.html` for 2 round-trip times, but this increases file size as it requires listing each module twice to support all browsers. Rendering the complete list of modules into the HTML template could be a viable optimization.
 
-- The `PuzzleGrid` component calculates its size dynamically, and sets that size with an inline `<style>` element targeting its own descendents.
+- The `PuzzleGrid` component calculates its size dynamically, and sets that size with an inline `<style>` element targeting its own descendents. Event listeners set on mount/unmount work well for resizing the grid and resizing the window, but currently there is no good way to listen to events from a `puzzle` property that changes after initialization.
 
 - The `Puzzle` class uses mutable subclasses so that an IDE can detect that most editing methods are not available on the base class. Subclasses of `Puzzle` and `Brush` use a delegate pattern (overridden "should" and "did" methods) to control behavior of the superclass. Instead of a runtime immutable data structure for tile data, we use a `ReadonlyArray` type which is only cast to a mutable type in the `setTile()` method.
 
