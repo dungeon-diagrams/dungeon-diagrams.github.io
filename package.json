@@ -49,8 +49,10 @@
     "jsdom": "^20.0.0",
     "jsdom-global": "^3.0.2",
     "mocha": "^10.0.0",
-    "serve": "^14.0.1",
     "typescript": "^4.7.4"
+  },
+  "optionalDependencies": {
+    "serve": "^14.0.1"
   },
   "dependencies": {
     "es-module-shims": "^1.5.17",
