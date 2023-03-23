@@ -10,26 +10,24 @@
     <link rel="stylesheet" type="text/css" href="style/style.css?v={{ env.BUILD_VERSION or package.version }}" />
     <script async nomodule src="lib/es-module-shims.js"></script>
     <script type="module" src="app/main.js?v={{ env.BUILD_VERSION or package.version }}"></script>
-    {# <link rel="icon" href="" > #}
+    {# <link rel="icon" href="{{ package.logo_image }}" > #}
 
-    <!-- Open Graph / Twitter metadata -->
+    <!-- Open Graph metadata (link summary in social media and chat) -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" name="twitter:title" content="{{ package.title }}" />
-    <meta property="og:description" name="twitter:decsription" content="{{ package.description }}">
-    <meta property="og:url" name="twitter:url" content="{{ package.homepage }}" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:title" content="{{ package.title }}" />
+    <meta property="og:description" name="description" content="{{ package.description }}">
+    <meta property="og:url" content="{{ package.homepage }}" />
     <meta name="twitter:creator" content="@{{ package.author.twitter }}" />
-    {# <meta property="og:image" name="twitter:image" content="" /> #}
-    <!-- Schema.org microdata -->
-    <meta itemprop="name" content="{{ package.title }}" />
-    <meta itemprop="description" content="{{ package.description }}" />
+    {# <meta property="og:image" content="{{ package.logo_image }}" /> #}
+    <!-- Schema.org microdata (link grouping in search engine results) -->
     <meta itemprop="version" content="{{ package.version }}" />
     <meta itemprop="keywords" content="{{ package.keywords }}" />
-    {# <meta itemprop="image" content="" /> #}
+    {# <meta itemprop="image" content="{{ package.logo_image }}" /> #}
   </head>
   <body>
     <div id="app">
-      <h1>{{ package.title }}</h1>
+      <h1 itemprop="name">{{ package.title }}</h1>
+      <p itemprop="description">{{ package.description }}</p>
       <noscript>
         <div id="status-display" data-status="Error">This application requires JavaScript. Here are the <a href="http://www.enable-javascript.com/" target="_blank">instructions to enable JavaScript</a> in your web browser.</div>
       </noscript>
